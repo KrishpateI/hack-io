@@ -1,0 +1,52 @@
+{
+  "building_id": "sim-indoor-demo-building",
+  "name": "SIMULATED Demo Building",
+  "classification": "Simulated",
+  "notice": "SIMULATED fictional building. Not a real building and not a real UIC floor plan. Layout, stairwells and exits are invented for the indoor evacuation demo; do not use for real navigation.",
+  "source": "SIMULATED-INDOOR-DEMO",
+  "anchor": {
+    "lat": 41.8830,
+    "lon": -87.6345,
+    "comment": "South-west corner of the footprint, between the Loop and the UIC-downtown corridor, inside the extraction area. Local x is metres east, y is metres north."
+  },
+  "footprint": {"width_m": 80, "depth_m": 60},
+  "floors": [
+    {"level": "L1", "number": 1, "name": "SIMULATED Floor 1 (ground)", "ground": true},
+    {"level": "L2", "number": 2, "name": "SIMULATED Floor 2", "ground": false},
+    {"level": "L3", "number": 3, "name": "SIMULATED Floor 3", "ground": false}
+  ],
+  "speeds_mps": {"walking": 1.3, "stairs": 0.6},
+  "stair_length_m": 8,
+  "floor_nodes": [
+    {"key": "cor-W", "x": 10, "y": 30, "label": "West corridor junction"},
+    {"key": "cor-C", "x": 40, "y": 30, "label": "Central corridor junction"},
+    {"key": "cor-E", "x": 70, "y": 30, "label": "East corridor junction"},
+    {"key": "nor-W", "x": 10, "y": 50, "label": "North corridor west"},
+    {"key": "nor-C", "x": 40, "y": 50, "label": "North corridor centre"},
+    {"key": "nor-E", "x": 70, "y": 50, "label": "North corridor east"}
+  ],
+  "corridors": [
+    {"id": "corridor-1", "name": "SIMULATED Corridor 1 (south)", "path": ["cor-W", "cor-C", "cor-E"]},
+    {"id": "corridor-2", "name": "SIMULATED Corridor 2 (north)", "path": ["nor-W", "nor-C", "nor-E"]}
+  ],
+  "connectors": [["cor-W", "nor-W"], ["cor-C", "nor-C"], ["cor-E", "nor-E"]],
+  "zones": [
+    {"id": "zone-1", "name": "SIMULATED Zone 1", "x": 20, "y": 10, "connect": "cor-W"},
+    {"id": "zone-2", "name": "SIMULATED Zone 2", "x": 60, "y": 10, "connect": "cor-E"}
+  ],
+  "stairwells": [
+    {"id": "A", "name": "SIMULATED Stairwell A", "x": 10, "y": 20, "connect": "cor-W"},
+    {"id": "B", "name": "SIMULATED Stairwell B", "x": 40, "y": 40, "connect": "cor-C"},
+    {"id": "C", "name": "SIMULATED Stairwell C", "x": 70, "y": 20, "connect": "cor-E"}
+  ],
+  "exits": [
+    {"id": "exit-1", "name": "SIMULATED Exit 1", "level": "L1", "x": 0, "y": 30, "connect": "cor-W"},
+    {"id": "exit-2", "name": "SIMULATED Exit 2", "level": "L1", "x": 80, "y": 30, "connect": "cor-E"}
+  ],
+  "start_positions": [
+    {"id": "start-f2-zone-1", "level": "L2", "node": "zone-1", "name": "SIMULATED Floor 2, Zone 1"},
+    {"id": "start-f2-north-corridor", "level": "L2", "node": "nor-C", "name": "SIMULATED Floor 2, north corridor"},
+    {"id": "start-f3-zone-2", "level": "L3", "node": "zone-2", "name": "SIMULATED Floor 3, Zone 2"},
+    {"id": "start-f3-west-corridor", "level": "L3", "node": "cor-W", "name": "SIMULATED Floor 3, west corridor"}
+  ]
+}

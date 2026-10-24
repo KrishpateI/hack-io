@@ -22,6 +22,8 @@ DEFAULT_LIMITS: dict[str, tuple[int, int]] = {
     "message": (20, 60),
     "vote": (30, 600),
     "checkin": (10, 600),
+    "photo_presign": (10, 600),
+    "ai": (10, 60),
 }
 
 RATE_LIMIT_TABLE = "ratelimits"

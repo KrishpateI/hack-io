@@ -7,6 +7,7 @@ const h = vi.hoisted(() => {
   const state = {
     options: null as Record<string, unknown> | null,
     setLayoutProperty: null as unknown,
+    handlers: null as Record<string, (e?: unknown) => void> | null,
   };
   return { layers, state };
 });
@@ -20,10 +21,15 @@ vi.mock('maplibre-gl', () => {
       h.state.setLayoutProperty = this.setLayoutProperty;
       queueMicrotask(() => this.handlers.load?.());
     }
-    on(ev: string, fn: () => void) { this.handlers[ev] = fn; }
+    on(ev: string, fn: (e?: unknown) => void) { this.handlers[ev] = fn as () => void; h.state.handlers = this.handlers; }
+    off(ev: string) { delete this.handlers[ev]; }
+    queryRenderedFeatures() { return [{ layer: { id: 'buildings-fill' }, properties: { name: 'B' } }]; }
     addControl() {}
-    getSource() { return h.layers.has('src') ? {} : undefined; }
-    addSource() { h.layers.set('src', true); }
+    getSource(id: string) { return h.layers.has('src:' + id) ? { setData() {} } : undefined; }
+    addSource(id: string) { h.layers.set('src:' + id, true); }
+    hasImage() { return false; }
+    addImage() {}
+    setGlyphs() {}
     addLayer(l: { id: string }) { h.layers.set(l.id, l); }
     getLayer(id: string) { return h.layers.get(id); }
     setLayoutProperty = vi.fn();
@@ -54,6 +60,16 @@ describe('MapView', () => {
     expect(layer.paint['line-dasharray']).toBeDefined();
   });
 
+  it('reports the features under a click through onFeatureClick', async () => {
+    const onFeatureClick = vi.fn();
+    render(<MapView onFeatureClick={onFeatureClick} />);
+    await waitFor(() => expect(h.layers.has('buildings-fill')).toBe(true));
+    h.state.handlers!.click({ point: { x: 1, y: 2 }, lngLat: { lng: -87.63, lat: 41.88 } });
+    expect(onFeatureClick).toHaveBeenCalledWith({
+      lngLat: [-87.63, 41.88],
+      hits: [{ layerId: 'buildings-fill', properties: { name: 'B' } }],
+    });
+  });
   it('toggling a layer sets visibility immediately', async () => {
     render(<MapView />);
     await waitFor(() => expect(h.layers.has('extraction-area-line')).toBe(true));

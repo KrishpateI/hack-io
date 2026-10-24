@@ -97,6 +97,10 @@ class DemoTokenAuthProvider:
             return assigned
         return Role.GUEST if is_guest or subject.startswith("guest_") else Role.USER
 
+    def grant_role(self, subject: str, role: Role) -> None:
+        """Server-side role assignment (used only by the demo session endpoint, never by clients)."""
+        self._static_roles[subject] = role
+
     # -- tokens -----------------------------------------------------------------------
     def _sign(self, body: str) -> str:
         return hmac.new(self._secret, body.encode("ascii"), hashlib.sha256).hexdigest()

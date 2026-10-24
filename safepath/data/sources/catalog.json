@@ -257,6 +257,41 @@
         "Query: chicago.gov OEMC \"Central Business District Evacuation Plan\" newer version"
       ],
       "verification_status": "unknown"
+    },
+    {
+      "source_id": "PROTOMAPS-BASEMAP-CHICAGO",
+      "organization": "Protomaps (basemap build) / OpenStreetMap contributors (data)",
+      "url": "https://maps.protomaps.com/builds/",
+      "title": "Protomaps Basemap daily build, extracted to the Chicago_Extraction_Area",
+      "published_at": "2026-10-24",
+      "retrieved_at": "2026-10-24T20:44:57.154957Z",
+      "geographic_applicability": "Chicago bbox W -87.68, S 41.85, E -87.6, N 41.91",
+      "data_classification": "Current",
+      "is_official_source": false,
+      "verification_status": "verified",
+      "page_or_section": "https://docs.protomaps.com/basemaps/downloads",
+      "usage_restrictions": [
+        "Derived from OpenStreetMap data under the Open Database License (ODbL) 1.0; Protomaps distributes the basemap as a Produced Work: attribution to OpenStreetMap is required",
+        "Attribution text shown on the map: © OpenStreetMap contributors (https://www.openstreetmap.org/copyright)",
+        "Basemap is context only, not an official evacuation boundary or route authority"
+      ]
+    },
+    {
+      "source_id": "CTA-CUSTOMER-ALERTS-API",
+      "organization": "Chicago Transit Authority",
+      "url": "https://lapi.transitchicago.com/api/1.0/alerts.aspx",
+      "title": "CTA Customer Alerts API (keyless JSON/XML)",
+      "published_at": null,
+      "retrieved_at": "2026-10-24T21:04:06.084289Z",
+      "geographic_applicability": "CTA rail and bus service area, Chicago",
+      "data_classification": "Current",
+      "verification_status": "verified",
+      "page_or_section": "https://www.transitchicago.com/developers/",
+      "usage_restrictions": [
+        "Route/service-level alerts only; not evidence of station entrance safety or physical accessibility",
+        "Optional feature; disabled unless SAFEPATH_CTA_ALERTS_KEY or SAFEPATH_CTA_ALERTS_ENABLED is set; subject to CTA developer terms"
+      ],
+      "is_official_source": true
     }
   ]
 }

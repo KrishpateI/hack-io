@@ -65,11 +65,9 @@ def is_active(ctx: IncidentContext) -> bool:
 
 def notice_in_force(n: OfficialNotice, ctx: IncidentContext) -> bool:
     """Active, same incident, not CBD-derived, with a Source_Record."""
-    if n.incident_id != ctx.incident.incident_id or n.cbd_derived or not n.source_record_id:
-        return False
-    if n.effective_at > ctx.now:
-        return False
-    return n.expires_at is None or ctx.now <= n.expires_at + NOTICE_EXPIRY_GRACE
+    from app.disasters.rules_engine import notice_exclusion  # single eligibility definition
+
+    return notice_exclusion(n, ctx.now, ctx.incident.incident_id) is None
 
 
 def report_live(r: HazardReport, ctx: IncidentContext) -> bool:

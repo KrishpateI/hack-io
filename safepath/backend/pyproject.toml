@@ -8,6 +8,8 @@ dependencies = [
     "pydantic==2.14.1",
     "mangum==0.22.0",
     "uvicorn==0.54.0",
+    # uvicorn needs a websocket implementation to serve /ws/*; without it the route 404s.
+    "websockets==17.3",
     "pyyaml==6.0.3",
     "shapely==2.2.0",
     "numpy==2.5.4",
@@ -20,9 +22,12 @@ dev = [
     "hypothesis==6.170.9",
     "httpx==0.28.1",
 ]
-# Read-only AWS sandbox discovery (scripts/aws_discover.py); optional.
+# AWS adapters (DynamoDB, S3, AppSync Events, Cognito JWT) and read-only discovery
+# (scripts/aws_discover.py); optional. PyJWT + cryptography verify Cognito RS256 tokens.
 aws = [
     "boto3==1.43.118",
+    "PyJWT==2.15.1",
+    "cryptography==50.0.2",
 ]
 # Offline Data_Pipeline processing only; keeps the Lambda/API package light.
 pipeline = [

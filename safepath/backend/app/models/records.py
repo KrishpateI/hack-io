@@ -84,6 +84,8 @@ class StatusHistoryEntry(_Base):
     at: datetime
     actor_role: str | None = None
     reason: str | None = None
+    previous_status: str | None = None
+    actor_alias: str | None = None
 
 
 class HazardReportRecord(RoutingHazardReport):
@@ -98,6 +100,9 @@ class HazardReportRecord(RoutingHazardReport):
     duplicate_of: str | None = None
     version: int = Field(default=1, ge=1)
     client_report_id: str | None = None
+    # Set by the verification lifecycle (task 9.3).
+    source_category: str | None = None
+    restriction_id: str | None = None
 
     @property
     def owner_id(self) -> str:
@@ -239,7 +244,8 @@ class CheckInRecord(_Base):
     status: str
     created_at: datetime
     optional_location: tuple[float, float] | None = None  # coarse, rounded before storage
-    visibility: Literal["private", "shared"] = "private"
+    # "shared" is a legacy alias of "public" kept for stored/older records.
+    visibility: Literal["private", "incident-members", "public", "shared"] = "private"
     location_expires_at: datetime | None = None
 
     @property
@@ -247,7 +253,7 @@ class CheckInRecord(_Base):
         return self.user_id
 
     def _location_public(self, now: datetime | None) -> bool:
-        if self.visibility != "shared" or self.optional_location is None:
+        if self.visibility == "private" or self.optional_location is None:
             return False
         if self.location_expires_at is not None and (now is None or now >= self.location_expires_at):
             return False

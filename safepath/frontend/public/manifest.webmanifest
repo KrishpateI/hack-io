@@ -1,0 +1,11 @@
+{
+  "name": "SafePath (experimental prototype)",
+  "short_name": "SafePath",
+  "description": "Experimental disaster-aware evacuation navigation prototype for downtown Chicago. Not official guidance.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

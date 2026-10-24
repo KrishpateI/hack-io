@@ -1,0 +1,29 @@
+{
+  "version": "v20261024-2e1f05",
+  "built_at": "2026-10-24T20:02:04.419402Z",
+  "sha256": {
+    "edges.jsonl.gz": "281d6a328016a32c4456b6c9f62ac8893a4bfcf291f98962294c8e8534021b3b",
+    "layers/buildings.geojson": "8791e098fccdcba5644f11e87e2b9005d527a00f4461256b454486166bd7e73e",
+    "layers/cta_stations.geojson": "e26b70b7ac70a4d98663ccf1fe27265bcf8977818bc21f63749ab5d9c8f2c118",
+    "layers/extraction_boundary.geojson": "c2e07a5f2aac817e4910feeef301270d9605c2356dcb881149063ff43e91ef22",
+    "layers/simulated_station.geojson": "437cd7fff29312ce21754075c2938486584660ec3184d65cb7d8eb228ea205ad",
+    "nodes.jsonl.gz": "df668fdd85c63f3e06cccceb77d05f0aa12605f0a8d1b3e631891647a6080955"
+  },
+  "counts": {
+    "nodes": 61177,
+    "edges": 157687,
+    "layers": 4
+  },
+  "crs": "EPSG:4326",
+  "elevation_percentiles": {
+    "p5": 178.609,
+    "p95": 185.277
+  },
+  "source_record_ids": [
+    "src-cdp_centerlines",
+    "src-osm_streets",
+    "src-osm_pedestrian",
+    "src-osm_buildings",
+    "src-cta_gtfs"
+  ]
+}

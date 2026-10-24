@@ -91,13 +91,15 @@ class BodySizeLimitMiddleware:
     Checks Content-Length first, then counts streamed bytes (chunked uploads).
     """
 
-    def __init__(self, app: Any, max_bytes: int = MAX_BODY_BYTES):
+    def __init__(self, app: Any, max_bytes: int = MAX_BODY_BYTES,
+                 path_limits: dict[str, int] | None = None):
         self.app = app
         self.max_bytes = max_bytes
+        self.path_limits = path_limits or {}  # path prefix -> larger cap (photo uploads)
 
-    async def _reject(self, send: Any) -> None:
+    async def _reject(self, send: Any, limit: int) -> None:
         body = json.dumps(envelope(
-            "payload_too_large", f"request body exceeds {self.max_bytes} bytes")).encode()
+            "payload_too_large", f"request body exceeds {limit} bytes")).encode()
         await send({"type": "http.response.start", "status": 413, "headers": [
             (b"content-type", b"application/json"), (b"content-length", str(len(body)).encode())]})
         await send({"type": "http.response.body", "body": body})
@@ -106,14 +108,18 @@ class BodySizeLimitMiddleware:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
+        limit = self.max_bytes
+        for prefix, cap in self.path_limits.items():
+            if scope.get("path", "").startswith(prefix):
+                limit = cap
         for name, value in scope.get("headers", []):
             if name == b"content-length":
                 try:
-                    too_big = int(value) > self.max_bytes
+                    too_big = int(value) > limit
                 except ValueError:
                     too_big = False
                 if too_big:
-                    await self._reject(send)
+                    await self._reject(send, limit)
                     return
         # Buffer up to the cap so oversized chunked bodies never reach the app.
         chunks: list[dict] = []
@@ -124,8 +130,8 @@ class BodySizeLimitMiddleware:
                 chunks.append(message)
                 break
             total += len(message.get("body", b""))
-            if total > self.max_bytes:
-                await self._reject(send)
+            if total > limit:
+                await self._reject(send, limit)
                 return
             chunks.append(message)
             if not message.get("more_body", False):

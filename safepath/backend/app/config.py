@@ -20,6 +20,8 @@ class Settings(BaseModel):
     graph_version: str = "unbuilt"
     cors_origins: tuple[str, ...] = DEFAULT_CORS_ORIGINS
     max_body_bytes: int = 1_000_000
+    demo_mode: bool = False  # SAFEPATH_DEMO_MODE; MUST be off in production (Req 40)
+    demo_autoseed: bool = True  # seed demo scenarios in a background thread at startup
 
     @property
     def cors_allow_credentials(self) -> bool:
@@ -38,6 +40,8 @@ class Settings(BaseModel):
             profile=profile,  # type: ignore[arg-type]
             graph_version=e.get("SAFEPATH_GRAPH_VERSION", "unbuilt"),
             cors_origins=_parse_origins(e.get("SAFEPATH_CORS_ORIGINS")),
+            demo_mode=_flag(e.get("SAFEPATH_DEMO_MODE")),
+            demo_autoseed=_flag(e.get("SAFEPATH_DEMO_AUTOSEED"), default=True),
         )
 
 
@@ -45,3 +49,9 @@ def _parse_origins(raw: str | None) -> tuple[str, ...]:
     if raw is None or not raw.strip():
         return DEFAULT_CORS_ORIGINS
     return tuple(o.strip().rstrip("/") for o in raw.split(",") if o.strip())
+
+
+def _flag(raw: str | None, default: bool = False) -> bool:
+    if raw is None or not raw.strip():
+        return default
+    return raw.strip().lower() in ("1", "true", "yes", "on")

@@ -3,7 +3,7 @@
 Per-port overrides: SAFEPATH_REPOSITORY (memory|sqlite|dynamo), SAFEPATH_PUBLISHER
 (inprocess|appsync|apigw), SAFEPATH_AUTH (demo|cognito), SAFEPATH_BLOBSTORE (local|s3).
 Defaults: local profile -> memory / inprocess / demo / local; aws -> dynamo / appsync / cognito / s3.
-AWS implementations arrive in task 12.2 and currently raise AdapterNotAvailable.
+AWS implementations live in app.adapters.aws (imported lazily; they need `pip install -e "backend[aws]"`\nand raise AdapterNotAvailable when their configuration or boto3 is missing).
 """
 from __future__ import annotations
 
@@ -45,9 +45,19 @@ def _choice(port: str, env: Mapping[str, str]) -> str:
 
 def _unavailable(port: str, name: str) -> AdapterNotAvailable:
     return AdapterNotAvailable(
-        f"{port} implementation {name!r} is not available yet (AWS adapters arrive in task 12.2); "
+        f"{port} implementation {name!r} is not available; "
         f"set SAFEPATH_PROFILE=local or override {ENV_VARS[port]}"
     )
+
+
+def _aws(port: str, name: str, build):
+    """Run ``build`` (lazily importing app.adapters.aws.*); a missing extra -> AdapterNotAvailable."""
+    try:
+        return build()
+    except ImportError as exc:
+        raise AdapterNotAvailable(
+            f"{port} implementation {name!r} needs the aws extra: pip install -e \"backend[aws]\" ({exc})"
+        ) from exc
 
 
 def make_repository(env: Mapping[str, str] | None = None) -> Repository:
@@ -57,7 +67,12 @@ def make_repository(env: Mapping[str, str] | None = None) -> Repository:
         return MemoryRepository()
     if name == "sqlite":
         return SqliteRepository(e.get("SAFEPATH_SQLITE_PATH", ":memory:"))
-    raise _unavailable("repository", name)
+    def build():
+        from app.adapters.aws.dynamo import DynamoRepository
+
+        return DynamoRepository.from_env(e)
+
+    return _aws("repository", name, build)
 
 
 def make_publisher(env: Mapping[str, str] | None = None) -> RealtimePublisher:
@@ -65,7 +80,13 @@ def make_publisher(env: Mapping[str, str] | None = None) -> RealtimePublisher:
     name = _choice("publisher", e)
     if name == "inprocess":
         return InProcessPublisher()
-    raise _unavailable("publisher", name)
+    def build():
+        from app.adapters.aws.publishers import ApiGwWebSocketPublisher, AppSyncEventsPublisher
+
+        cls = AppSyncEventsPublisher if name == "appsync" else ApiGwWebSocketPublisher
+        return cls.from_env(e)
+
+    return _aws("publisher", name, build)
 
 
 def make_blob_store(env: Mapping[str, str] | None = None) -> BlobStore:
@@ -76,7 +97,12 @@ def make_blob_store(env: Mapping[str, str] | None = None) -> BlobStore:
             e.get("SAFEPATH_BLOB_DIR", "data/processed/blobs"),
             e.get("SAFEPATH_BLOB_SECRET", "safepath-local-dev-secret"),
         )
-    raise _unavailable("blobstore", name)
+    def build():
+        from app.adapters.aws.s3 import S3BlobStore
+
+        return S3BlobStore.from_env(e)
+
+    return _aws("blobstore", name, build)
 
 
 def make_auth_provider(env: Mapping[str, str] | None = None) -> AuthProvider:
@@ -91,4 +117,9 @@ def make_auth_provider(env: Mapping[str, str] | None = None) -> AuthProvider:
             roles_path=e.get("SAFEPATH_ROLES_FILE") or None,
             allow_ephemeral=profile == "local",
         )
-    raise _unavailable("auth", name)
+    def build():
+        from app.adapters.aws.cognito import CognitoAuthProvider
+
+        return CognitoAuthProvider.from_env(e)
+
+    return _aws("auth", name, build)

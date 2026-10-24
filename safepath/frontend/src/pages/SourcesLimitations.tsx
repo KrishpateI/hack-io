@@ -7,7 +7,7 @@ import { fetchSources, type SourceFilters, type SourceRecord } from '../services
 
 type Result = { key: string; error?: string; records?: SourceRecord[] };
 
-export default function SourcesLimitations() {
+export default function SourcesLimitations({ showHeading = true }: { showHeading?: boolean } = {}) {
   const [filters, setFilters] = useState<SourceFilters>({});
   const [result, setResult] = useState<Result | null>(null);
   const [selected, setSelected] = useState<SourceRecord | null>(null);
@@ -33,7 +33,7 @@ export default function SourcesLimitations() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-3">
-      <h2 className="text-xl font-semibold">Data sources and limitations</h2>
+      {showHeading && <h2 className="text-xl font-semibold">Data sources and limitations</h2>}
 
       <section aria-labelledby="src-h" className="space-y-3">
         <h3 id="src-h" className="text-lg font-semibold">Data sources</h3>

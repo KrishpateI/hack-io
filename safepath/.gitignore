@@ -49,3 +49,13 @@ credentials*.json
 *.sqlite3
 .dynamodb/
 .DS_Store
+
+# pmtiles CLI binaries downloaded by scripts/extract_pmtiles.py
+tools/bin/
+# Secret scanning / CDK (task 14.10)
+cdk.out/
+credentials
+*.p12
+*.pfx
+# Local copy of data/processed/tiles/chicago.pmtiles served by the Vite dev server (see README)
+frontend/public/tiles/*.pmtiles

@@ -287,7 +287,21 @@ class CostModel:
     @property
     def v_max(self) -> float:
         """Speed (m/s) for the admissible heuristic: haversine / v_max <= Route_Cost lower bound."""
-        return float(self.weights.v_max_mps[self.mode]) / min(1.0, self.mode_factor)
+        # The configured speed is raised to the fastest speed implied by the loaded graph
+        # (distance / travel time) so the heuristic stays admissible even when the graph holds
+        # edges faster than the configured bound (e.g. motorway edges at 24.6 m/s).
+        v = max(float(self.weights.v_max_mps[self.mode]), self._graph_max_speed())
+        return v / min(1.0, self.mode_factor)
+
+    def _graph_max_speed(self) -> float:
+        cached = getattr(self, "_graph_vmax", None)
+        if cached is None:
+            d = np.asarray(self.graph.edge_dist, dtype=float)
+            t = np.asarray(self.graph.edge_time, dtype=float)
+            ok = (t > 0) & (d > 0)
+            cached = float(np.max(d[ok] / t[ok])) if ok.any() else 0.0
+            self._graph_vmax = cached
+        return cached
 
     def scale(self, edge_index: int) -> float:
         return max(float(self.graph.edge_dist[edge_index]), self.weights.d_min_meters) / 100.0

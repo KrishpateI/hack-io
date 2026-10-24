@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "classification": "Simulated",
+  "notice": "SIMULATED demo scenarios. Every incident, notice, closure, hazard polygon and user in this file is invented for the SafePath demo. Nothing here is an official instruction, a real closure, a real flood extent or a statement about any real building.",
+  "moderator": {"user_id": "sim-demo-moderator", "display_name": "SIMULATED Demo Moderator", "role": "moderator"},
+  "scenarios": [
+    {
+      "scenario_id": "flood_loop",
+      "incident_id": "sim-flood-loop",
+      "name": "SIMULATED: Chicago Loop flooding",
+      "incident_type": "flood",
+      "simulation_flag": true,
+      "requirements": ["37.1", "37.2", "37.3", "37.4", "37.5", "37.6"],
+      "origin": {"latitude": 41.8882, "longitude": -87.6280, "label": "SIMULATED start near the Chicago Riverwalk"},
+      "destination": {
+        "latitude": 41.8827, "longitude": -87.6233,
+        "label": "SIMULATION DESTINATION \u2014 NOT an official evacuation shelter",
+        "notice_text": "SIMULATION DESTINATION \u2014 NOT an official evacuation shelter. Manually designated for the SafePath demo."
+      },
+      "route_request": {"travel_mode": "walking", "mobility_profile": "standard", "alternatives": 2},
+      "flood_highlight": {
+        "radius_m": 1500, "elevation_percentile": 20, "buffer_m": 12, "simplify_m": 3,
+        "label": "SIMULATED flood-prone segments (modeled; no water depth shown)",
+        "basis": "Edges with infrastructure_level lower-level or tunnel_flag set, plus edges whose mean elevation is in the lowest 20 percent of graph edges with known elevation."
+      },
+      "closure": {"restriction_id": "sim-flood-closure-1", "label": "SIMULATED verified road closure on the current best route"},
+      "steps": [
+        {"id": "activate", "order": 1, "kind": "activate_incident", "title": "Activate the SIMULATED flood incident"},
+        {"id": "highlight", "order": 2, "kind": "show_layer", "layer": "flood_highlight", "title": "Show affected low-lying segments (SIMULATED, no depth values)"},
+        {"id": "route", "order": 3, "kind": "calculate_routes", "title": "Calculate shortest and disaster-adjusted routes"},
+        {"id": "closure", "order": 4, "kind": "add_closure", "ref": "closure", "title": "Add a SIMULATED verified closure on the best route"},
+        {"id": "reroute", "order": 5, "kind": "calculate_routes", "title": "Recalculate; the route and explanation change", "expect": "route_changed"}
+      ]
+    },
+    {
+      "scenario_id": "earthquake_debris",
+      "incident_id": "sim-earthquake-debris",
+      "name": "SIMULATED: Earthquake / high-rise debris",
+      "incident_type": "earthquake",
+      "simulation_flag": true,
+      "requirements": ["38.1", "38.2", "38.3", "38.4"],
+      "origin": {"latitude": 41.8819, "longitude": -87.6278, "label": "SIMULATED start in the Loop"},
+      "destination": {
+        "latitude": 41.8760, "longitude": -87.6310,
+        "label": "SIMULATION DESTINATION \u2014 NOT an official evacuation shelter",
+        "notice_text": "SIMULATION DESTINATION \u2014 NOT an official evacuation shelter. Manually designated for the SafePath demo."
+      },
+      "route_request": {"travel_mode": "walking", "mobility_profile": "standard", "alternatives": 1},
+      "debris": {
+        "zones": 2, "max_route_distance_m": 12, "min_route_distance_m": 1, "ring_width_m": 15, "min_separation_m": 80,
+        "label": "SIMULATED debris zone",
+        "disclaimer": "Placed next to selected OSM building footprints purely for the demo. It says nothing about the real condition of any building."
+      },
+      "closure": {"restriction_id": "sim-eq-closure-1", "label": "SIMULATED confirmed road closure"},
+      "steps": [
+        {"id": "activate", "order": 1, "kind": "activate_incident", "title": "Activate the SIMULATED earthquake incident"},
+        {"id": "route", "order": 2, "kind": "calculate_routes", "title": "Calculate the route before any debris"},
+        {"id": "debris", "order": 3, "kind": "add_debris", "ref": "debris_zones", "title": "Activate SIMULATED debris zones next to real building footprints"},
+        {"id": "closure", "order": 4, "kind": "add_closure", "ref": "closure", "title": "Mark one road edge as a SIMULATED confirmed closure"},
+        {"id": "reroute", "order": 5, "kind": "calculate_routes", "title": "Recalculate; the alternate path cites the SIMULATED debris zone", "expect": "alternate_route"}
+      ]
+    },
+    {
+      "scenario_id": "blocked_stairwell",
+      "incident_id": "sim-blocked-stairwell",
+      "name": "SIMULATED: Blocked stairwell",
+      "incident_type": "building",
+      "simulation_flag": true,
+      "requirements": ["39.1", "39.2", "39.3", "39.4", "39.5", "39.6"],
+      "building_id": "sim-indoor-demo-building",
+      "stairwell": "A",
+      "users": [
+        {"key": "A", "user_id": "sim-blocked-stairwell-user-a", "display_name": "SIMULATED User A", "start_position": "start-f2-zone-1"},
+        {"key": "B", "user_id": "sim-blocked-stairwell-user-b", "display_name": "SIMULATED User B", "start_position": "start-f2-north-corridor"},
+        {"key": "C", "user_id": "sim-blocked-stairwell-user-c", "display_name": "SIMULATED User C", "start_position": "start-f3-west-corridor"}
+      ],
+      "closure": {"restriction_id": "sim-stairwell-a-closure-1", "label": "SIMULATED stairwell closure confirmed by the demo moderator", "kind": "stairwell_closure"},
+      "route_request": {"travel_mode": "walking", "mobility_profile": "standard", "alternatives": 1},
+      "steps": [
+        {"id": "load", "order": 1, "kind": "load_indoor_graph", "title": "Load the fictional SIMULATED Demo Building and place users A, B and C"},
+        {"id": "report_a", "order": 2, "kind": "submit_report", "actor": "A", "category": "stairwell_blocked", "stairwell": "A", "title": "User A reports Stairwell A blocked", "expect": "status Unverified"},
+        {"id": "see_b", "order": 3, "kind": "observe", "actor": "B", "within_seconds": 5, "title": "User B sees the report within 5 seconds without reloading"},
+        {"id": "corroborate_c", "order": 4, "kind": "confirm_report", "actor": "C", "title": "User C corroborates the report", "expect": "status Corroborated; not officially verified"},
+        {"id": "confirm", "order": 5, "kind": "confirm_stairwell_closure", "actor": "moderator", "ref": "closure", "title": "Demo moderator confirms the SIMULATED closure; Stairwell A edges are removed"},
+        {"id": "reroute", "order": 6, "kind": "calculate_routes", "actors": ["A", "B", "C"], "within_seconds": 5, "title": "Affected users see updated indoor routes"},
+        {"id": "assist", "order": 7, "kind": "post_message", "actor": "B", "message_type": "assistance_request", "content": "SIMULATED: I need help reaching an exit from Floor 2.", "within_seconds": 5, "title": "User B sends an assistance request to the incident channel"}
+      ]
+    },
+    {
+      "scenario_id": "tornado_shelter",
+      "incident_id": "sim-tornado-shelter",
+      "name": "SIMULATED: Tornado shelter-in-place",
+      "incident_type": "tornado",
+      "simulation_flag": true,
+      "requirements": ["19.1", "19.4"],
+      "optional": true,
+      "origin": {"latitude": 41.8830, "longitude": -87.6290, "label": "SIMULATED start in the Loop"},
+      "destination": null,
+      "boundary": {"center": {"latitude": 41.8830, "longitude": -87.6290}, "radius_m": 1500, "label": "SIMULATED tornado warning area"},
+      "route_request": {"travel_mode": "walking", "mobility_profile": "standard", "alternatives": 1},
+      "optional_shelter_notice": {
+        "notice_type": "shelter_in_place",
+        "text": "SIMULATED shelter notice: take cover in an interior room on the lowest floor of the building you are in. Not an official instruction."
+      },
+      "steps": [
+        {"id": "activate", "order": 1, "kind": "activate_incident", "title": "Activate the SIMULATED tornado warning"},
+        {"id": "route", "order": 2, "kind": "calculate_routes", "title": "Request a route: the answer is shelter in place, and no verified shelter is available", "expect": "SHELTER_IN_PLACE"},
+        {"id": "shelter", "order": 3, "kind": "add_notice", "ref": "optional_shelter_notice", "title": "Optional: define a SIMULATED shelter notice"}
+      ]
+    },
+    {
+      "scenario_id": "fire_downtown",
+      "incident_id": "sim-fire-downtown",
+      "name": "SIMULATED: Downtown fire perimeter",
+      "incident_type": "fire",
+      "simulation_flag": true,
+      "requirements": ["20.4"],
+      "optional": true,
+      "origin": {"latitude": 41.8800, "longitude": -87.6330, "label": "SIMULATED start outside the perimeter"},
+      "destination": {
+        "latitude": 41.8760, "longitude": -87.6350,
+        "label": "SIMULATION DESTINATION \u2014 NOT an official evacuation shelter",
+        "notice_text": "SIMULATION DESTINATION \u2014 NOT an official evacuation shelter. Manually designated for the SafePath demo."
+      },
+      "perimeter": {"center": {"latitude": 41.8850, "longitude": -87.6300}, "radius_m": 150, "label": "SIMULATED fire perimeter (not a real fire)",
+                    "notice_text": "SIMULATED fire perimeter. Stay out of the marked area. Not an official instruction."},
+      "route_request": {"travel_mode": "walking", "mobility_profile": "standard", "alternatives": 1},
+      "steps": [
+        {"id": "activate", "order": 1, "kind": "activate_incident", "title": "Activate the SIMULATED fire incident and perimeter"},
+        {"id": "route", "order": 2, "kind": "calculate_routes", "title": "Request a route; the SIMULATED perimeter is excluded"}
+      ]
+    }
+  ]
+}

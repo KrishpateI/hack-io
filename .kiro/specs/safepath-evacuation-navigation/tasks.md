@@ -46,7 +46,7 @@ Every task builds on earlier tasks and ends wired into the running app. Property
 - [ ] 2. Checkpoint - Foundation
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 3. Real Chicago street graph pipeline
+- [x] 3. Real Chicago street graph pipeline
   - [x] 3.1 Implement geographic utilities
     - In `backend/app/geo.py` implement bounds constants, boundary-inclusive `classify_coordinate` (invalid, outside-region, inside) identifying origin, destination or both, bbox clipping, haversine, and `building_height_class(height, floors)` with zero/negative/non-numeric treated as absent
     - _Requirements: 2.1, 2.4, 2.5, 6.2, 6.3_
@@ -68,7 +68,7 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - In `scripts/pipeline/` implement the fixed stage runner (check_availability, save_raw, reproject EPSG:26916, clip, clean_geometry, normalize, build_nodes_edges, save_outputs), fetch with 3 attempts and 60 s timeout, previous-copy fallback with timestamp warning, missing-source recording, per-stage failure isolation, fatal exit only when no street source exists in any form (leaving the saved Graph unchanged), and `summary_report.json` (feature count, URL, timestamp, acquisition status, warnings)
     - Auto-create a Source_Record for each retrieved dataset (OSM record with ODbL license and attribution restriction)
     - _Requirements: 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 3.7_
-  - [ ]* 3.7 Write property test for pipeline source resolution
+  - [x]* 3.7 Write property test for pipeline source resolution
     - **Property 42: Pipeline source resolution is deterministic**
     - **Validates: Requirements 3.5, 7.4, 7.5, 7.6, 7.7**
   - [x] 3.8 Implement `download_chicago_data.py`
@@ -80,14 +80,14 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - Merge Chicago Data Portal and OSM segments, extracting geometry, source id, road class, one-way, pedestrian access, bridge, tunnel, layer; assign `infrastructure_level` only where source identifies it and flag river crossings by source data
     - Store absent attributes as `Unknown` (never defaults); apply documented source precedence (CDP geometry and name, OSM access/bridge/tunnel/layer), record retained source and a conflict warning
     - _Requirements: 3.3, 3.4, 3.5, 3.6, 7.1_
-  - [ ]* 3.10 Write property test for attribute normalization
+  - [x]* 3.10 Write property test for attribute normalization
     - **Property 19: Missing attributes normalize to Unknown, never defaults**
     - **Validates: Requirements 3.4, 4.4, 4.5, 12.3**
   - [x] 3.11 Implement `import_elevation.py`
     - Sample USGS 3DEP (py3dep or TNM ImageServer) at every Node, store meters with NAVD 88 datum, set `elevation_start`/`elevation_end` per Edge and `elevation_confidence`, force Low/Unknown for bridge/tunnel/elevated/lower-level edges, record `Unknown` (never zero) when unavailable and report the Unknown count; compute elevation percentiles for the manifest
     - If 3DEP is unreachable, continue with Unknown elevations and a documented fallback warning
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 7.1_
-  - [ ] 3.12 Implement `build_graph.py`
+  - [x] 3.12 Implement `build_graph.py`
     - Build Nodes and Edges (directed one-way edges for vehicles), drop edges with missing endpoints with an `edge_id` warning, add building entrances, the simplified two-level station model (street and platform joined only by Level_Transition edges, classified Simulated), building footprints layer with `Building_Height_Class` and only source-present attributes, stations and boundary layers
     - Write the versioned artifact, manifest and `summary_report.json`
     - _Requirements: 2.2, 5.6, 6.4, 7.1, 7.8, 12.1, 12.5, 12.6, 12.8, 3.6_
@@ -98,7 +98,7 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - [x] 3.14 Create the fixture graph and documented fallback dataset
     - Generate a small synthetic Chicago-like graph artifact in `tests/fixtures/graph/` and a `scripts/make_fixture_graph.py` so development, CI and demos work when real downloads are unavailable; label it Simulated and document the limitation in `data/processed/fallbacks.json`
     - _Requirements: 7.4, 7.5, 45.6, 45.7_
-  - [ ]* 3.15 Write artifact smoke test and pipeline unit tests
+  - [x]* 3.15 Write artifact smoke test and pipeline unit tests
     - Fixture-based tests for Unknown handling, conflict warnings, manifest checksums, per-neighborhood routable Node presence (Loop, West Loop, Riverwalk, Clark/Lake, Millennium Park, DePaul Loop, UIC, UIC-downtown corridor)
     - _Requirements: 2.2, 3.4, 3.5, 7.3, 7.8_
 
@@ -107,7 +107,7 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - `services/sources.py` with case-insensitive substring search on organization/title, exact filters on Data_Classification and verification status, 400 listing permitted values for invalid filter values, response within 2 s
     - Store catalog in `data/sources/catalog.json` and enforce a Source_Record on every rule, zone, closure, shelter, destination, notice and dataset
     - _Requirements: 10.1, 10.2, 10.7_
-  - [ ]* 4.2 Write property test for catalog search and filter
+  - [x]* 4.2 Write property test for catalog search and filter
     - **Property 34: Source catalog search and filter**
     - **Validates: Requirements 10.2, 10.7**
   - [x] 4.3 Implement `import_emergency_plan.py` for the 2007 CBD Evacuation Plan
@@ -131,7 +131,7 @@ Every task builds on earlier tasks and ends wired into the running app. Property
 - [ ] 5. Checkpoint - Data and sources
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 6. Disaster-aware routing core
+- [x] 6. Disaster-aware routing core
   - [x] 6.1 Define domain and routing models plus request validation
     - `models/domain.py`: Incident, OfficialNotice, HazardReport (routing-relevant fields), Rule, Restriction/RestrictionCause, enums (PolicyOutcome, IncidentType, Verification_Status, TravelMode, MobilityProfile, UncertaintyLevel), PolicyDecision
     - `models/routing.py` and `routing/validation.py`: route request/response models; validate coordinates and region, `alternatives` integer 1..3 (default 1), supported `travel_mode`/`mobility_profile` listing supported values, unknown incident 404
@@ -168,71 +168,71 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - `disasters/tornado.py`: SHELTER_IN_PLACE override when origin is inside an active warning boundary, official shelter plus Source_Record or "no verified shelter available", outdoor edge exclusion, resume on status change
     - `disasters/fire.py`: hard restrictions for verified perimeters/prohibited areas and confirmed blocked streets; unverified perimeters as penalty plus warning; 100 m smoke/fire report penalty
     - _Requirements: 18.1, 18.2, 18.3, 18.4, 18.5, 18.6, 19.1, 19.2, 19.3, 19.4, 19.5, 19.6, 19.7, 20.1, 20.2, 20.3, 20.6_
-  - [ ] 6.12 Implement RoutingService and `POST /api/routes/calculate`
+  - [x] 6.12 Implement RoutingService and `POST /api/routes/calculate`
     - `routing/service.py` orchestrating validate, load context (via a `ContextProvider` protocol with in-memory implementation), Rules_Engine, data-sufficiency check, restriction resolution, endpoint snapping, cost, A*, alternatives, explanation; non-route outcomes return HTTP 200 with empty geometry and explanation; overlay read failure fails closed with 503; works with AI disabled; computes routes at request time with no precomputed route
     - _Requirements: 13.1, 13.3, 13.6, 13.7, 13.9, 13.10, 15.5, 43.2, 43.4, 43.8, 11.3, 46.2, 46.3_
-  - [ ]* 6.13 Create shared Hypothesis strategies
+  - [x]* 6.13 Create shared Hypothesis strategies
     - `tests/backend/strategies.py`: `graphs()`, `restriction_sets(graph)`, `notices()`, `incidents()`, `coordinates()`, `raw_segments()` per the design
     - _Requirements: 44.5, 44.8_
-  - [ ]* 6.14 Write property test for hard restrictions
+  - [x]* 6.14 Write property test for hard restrictions
     - **Property 1: Hard restrictions are never traversed** (at least 100 examples)
     - **Validates: Requirements 14.1, 14.3, 14.4, 14.6, 17.1, 17.5, 18.1, 18.2, 20.1, 20.2, 44.5**
-  - [ ]* 6.15 Write property test for search optimality
+  - [x]* 6.15 Write property test for search optimality
     - **Property 2: Search returns an optimal path** (A* vs reference Dijkstra and brute force)
     - **Validates: Requirements 13.1, 44.1, 44.2**
-  - [ ]* 6.16 Write property test for restriction add/remove
+  - [x]* 6.16 Write property test for restriction add/remove
     - **Property 3: Restriction add then remove restores routing**
     - **Validates: Requirements 14.7, 16.3, 21.4, 24.6, 44.2**
-  - [ ]* 6.17 Write property test for directed edges
+  - [x]* 6.17 Write property test for directed edges
     - **Property 4: Directed edges are traversed only in their permitted direction**
     - **Validates: Requirements 11.7, 12.6, 44.3**
-  - [ ]* 6.18 Write property test for alternatives
+  - [x]* 6.18 Write property test for alternatives
     - **Property 5: Alternatives are valid, distinct and counted** (at least 100 graphs)
     - **Validates: Requirements 13.4, 44.8**
-  - [ ]* 6.19 Write property test for unreachable or isolated endpoints
+  - [x]* 6.19 Write property test for unreachable or isolated endpoints
     - **Property 6: Unreachable or isolated endpoints yield NO_VERIFIED_ROUTE_AVAILABLE** (outdoor graph; indoor variant added in task 11.7)
     - **Validates: Requirements 13.6, 14.8, 44.4**
-  - [ ]* 6.20 Write property test for unconfirmed evidence
+  - [x]* 6.20 Write property test for unconfirmed evidence
     - **Property 7: Unconfirmed evidence is a penalty, never a Hard_Restriction**
     - **Validates: Requirements 14.3, 14.5, 16.5, 20.6**
-  - [ ]* 6.21 Write property test for cost decomposition
+  - [x]* 6.21 Write property test for cost decomposition
     - **Property 8: Route_Cost decomposes into non-negative recorded components**
     - **Validates: Requirements 13.2, 13.5**
-  - [ ]* 6.22 Write property test for Unknown data penalties
+  - [x]* 6.22 Write property test for Unknown data penalties
     - **Property 9: Unknown or low-confidence data is never treated as safe**
     - **Validates: Requirements 12.4, 13.8, 17.4, 44.7**
-  - [ ]* 6.23 Write property test for step-free profile
+  - [x]* 6.23 Write property test for step-free profile
     - **Property 10: Step-free profile excludes known-inaccessible edges**
     - **Validates: Requirements 13.8**
-  - [ ]* 6.24 Write property test for flood penalties
+  - [x]* 6.24 Write property test for flood penalties
     - **Property 11: Flood penalties are monotone in elevation and positive for exposed infrastructure**
     - **Validates: Requirements 17.2, 17.3, 17.8**
-  - [ ]* 6.25 Write property test for earthquake proximity penalty
+  - [x]* 6.25 Write property test for earthquake proximity penalty
     - **Property 12: Earthquake proximity penalty depends on hazard association, not height class**
     - **Validates: Requirements 18.3, 18.4**
-  - [ ]* 6.26 Write property test for fire smoke penalty
+  - [x]* 6.26 Write property test for fire smoke penalty
     - **Property 13: Fire smoke penalty applies within 100 m of unconfirmed fire reports**
     - **Validates: Requirements 20.3**
-  - [ ]* 6.27 Write property test for tornado behavior
+  - [x]* 6.27 Write property test for tornado behavior
     - **Property 14: Tornado warning yields shelter-in-place and no outdoor edges**
     - **Validates: Requirements 19.1, 19.5, 19.7**
-  - [ ]* 6.28 Write property test for policy precedence
+  - [x]* 6.28 Write property test for policy precedence
     - **Property 15: Policy precedence follows the documented order**
     - **Validates: Requirements 11.4, 11.5, 11.6, 11.8, 19.6, 20.4, 44.6**
-  - [ ]* 6.29 Write property test for ineligible records
+  - [x]* 6.29 Write property test for ineligible records
     - **Property 16: Ineligible records never influence evaluation**
     - **Validates: Requirements 8.9, 9.5, 10.8, 11.9**
-  - [ ]* 6.30 Write property test for the route response contract
+  - [x]* 6.30 Write property test for the route response contract
     - **Property 17: Route responses satisfy the response contract**
     - **Validates: Requirements 15.1, 15.5, 15.6, 43.2, 43.3**
-  - [ ]* 6.31 Write unit and example tests for routing
+  - [x]* 6.31 Write unit and example tests for routing
     - Known 6-node graph shortest path, weights file validation (missing, negative, non-numeric), one example per Policy_Outcome, tornado with and without an official shelter, 200-request performance smoke on the fixture graph (p95 under 5 s)
     - _Requirements: 13.10, 13.12, 44.1, 19.3, 19.4_
 
 - [ ] 7. Checkpoint - Routing core
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 8. Local-profile backend with adapter ports
+- [x] 8. Local-profile backend with adapter ports
   - [x] 8.1 Define adapter ports and local implementations
     - `backend/app/adapters/`: `Repository`, `RealtimePublisher`, `AuthProvider`, `BlobStore` protocols per the design; `MemoryRepository` (default), `SqliteRepository`, `LocalBlobStore` (signed expiring URLs), `InProcessPublisher`, and a factory selecting implementations from `SAFEPATH_PROFILE` and per-port overrides
     - `transact` is all-or-nothing and raises `RepositoryUnavailable`; `update_cas` and `put(if_absent)` raise `Conflict`
@@ -246,11 +246,11 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - [x] 8.4 Implement API infrastructure
     - Error envelope with field-level errors, body-size cap (1 MB, 413), `nh3` text sanitizer, `RateLimiter` port (in-memory and Repository-backed) enforcing 5 reports/10 min, 20 messages/min, 30 votes/10 min, 10 check-ins/10 min with 429 and `Retry-After`, CORS config, OpenAPI metadata
     - _Requirements: 28.1, 28.2, 28.4, 28.5, 28.9, 31.3, 42.2_
-  - [ ] 8.5 Implement incidents, notices and the overlay store, and wire routing to the Repository
+  - [x] 8.5 Implement incidents, notices and the overlay store, and wire routing to the Repository
     - Routers: `GET/POST /api/incidents`, `GET /api/incidents/{id}` (Moderator or Official for POST), `POST /api/notices` (Authorized_Official only, audited, 403 otherwise)
     - Overlay store with `overlay_version` counter incremented in the same transaction as any restriction change; Repository-backed `ContextProvider` for RoutingService with an in-process TTL of at most 2 s; routing fails closed (503) if overlays cannot be read
     - _Requirements: 11.2, 28.8, 30.7, 42.1, 42.3, 42.4, 42.7, 14.7, 16.3_
-  - [ ] 8.6 Export OpenAPI and generate the typed frontend client
+  - [x] 8.6 Export OpenAPI and generate the typed frontend client
     - Export `docs/openapi.json` from the app and generate `frontend/src/services/api.ts` via `openapi-typescript` with a thin fetch wrapper (bearer token, error envelope parsing); add npm and PowerShell scripts to regenerate
     - _Requirements: 42.2, 43.1_
   - [ ]* 8.7 Write the Repository contract test suite
@@ -273,35 +273,35 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - **Validates: Requirements 28.1, 28.2**
 
 - [ ] 9. Community reports, realtime, messages and check-ins
-  - [ ] 9.1 Implement the EventBus and local realtime endpoints
+  - [x] 9.1 Implement the EventBus and local realtime endpoints
     - `communication/events.py`: `Event` envelope with ULID `event_id`, publish-after-commit (Events row written in the same `transact`, publish failures logged and never failing the request), `GET /api/events?incident_id&since=`, FastAPI WebSocket `/ws/incidents/{id}` and SSE `/sse/incidents/{id}` via `InProcessPublisher`
     - _Requirements: 25.1, 25.3, 25.4, 25.6, 30.9_
-  - [ ] 9.2 Implement ReportService, report creation and listing
+  - [x] 9.2 Implement ReportService, report creation and listing
     - `POST /api/reports` and `GET /api/reports` with the nine categories, validation (category, position, 1000-char description, extraction-area check), Unverified initial status, edge association within 25 m, duplicate linking (same category within 50 m and 60 min), `client_report_id` idempotency via `uuid5`, 4-hour default expiry, anonymous alias, sanitized text, rate limits
     - Simulated flag propagation from the Incident
     - _Requirements: 23.1, 23.2, 23.3, 23.4, 23.7, 23.8, 28.3, 41.6, 16.1_
-  - [ ] 9.3 Implement the verification lifecycle and moderation
+  - [x] 9.3 Implement the verification lifecycle and moderation
     - `POST /api/reports/{id}/corroborate`, `/dispute`, `/moderate`: distinct non-reporter votes (409 on repeat, 403 own report), thresholds default 2, Corroborated and Disputed transitions, Officially_Verified only by Authorized_Official or demo Moderator (labeled simulated), Resolved by Moderator/Official, `update_cas` plus history append, audit row, overlay add/remove and event in one transaction, sequential application of concurrent changes
     - _Requirements: 24.1, 24.2, 24.3, 24.4, 24.6, 24.7, 24.9, 24.10, 28.6, 16.3, 16.5_
-  - [ ] 9.4 Implement the Sweeper
+  - [x] 9.4 Implement the Sweeper
     - `services/sweeper.py` `run_sweep(now)`: transition expired non-Resolved reports to Expired (removing their closure overlays) and scrub check-in location data past retention (default 72 h); idempotent; lazy Expired rendering on reads when the sweeper is late; local scheduler plus Lambda handler entry point
     - _Requirements: 24.5, 27.5_
-  - [ ] 9.5 Implement MessagingService
+  - [x] 9.5 Implement MessagingService
     - `GET/POST /api/messages`, `POST /api/messages/{id}/hide`: one channel per Incident, six message types, 1 to 1000 characters, unknown incident 404, Community vs Official source label, Moderator hide removed from public views within 5 s and audited
     - _Requirements: 26.1, 26.2, 26.3, 26.4, 26.6, 26.7, 26.8, 26.9_
-  - [ ] 9.6 Implement CheckInService
+  - [x] 9.6 Implement CheckInService
     - `POST/GET /api/checkins`: four statuses, location excluded by default, opt-in coarse rounding to at least 200 m grid, newest check-in as current with history retained, validation 400/404, location removal on opt-out within 5 s
     - _Requirements: 27.1, 27.2, 27.3, 27.4, 27.7, 27.8, 31.6, 31.9_
-  - [ ] 9.7 Implement photo upload presign
+  - [x] 9.7 Implement photo upload presign
     - `POST /api/photos/presign` using `BlobStore`: JPEG/PNG only (415), max 10 MB (413), private storage, 15-minute expiring URLs, disabled via a feature flag
     - _Requirements: 23.5, 23.9_
-  - [ ] 9.8 Implement the frontend realtime core
+  - [x] 9.8 Implement the frontend realtime core
     - `services/eventStore.ts` idempotent reducer with `appliedEventIds` and `lastEventId`; `services/backoff.ts` (1 s doubling to 30 s cap); `RealtimeClient` interface with `AppSyncEventsClient`, `WebSocketClient`, `SseClient` selected by `VITE_REALTIME_MODE`; `useRealtime` hook with catch-up via `/api/events?since=`, stale-data banner within 10 s showing last update time, polling no more often than every 30 s while disconnected
     - _Requirements: 25.2, 25.5, 25.6, 25.7, 25.8, 32.4_
-  - [ ] 9.9 Implement route recalculation on restriction events
+  - [x] 9.9 Implement route recalculation on restriction events
     - `hooks/useRouteRecalc.ts`: coalesce restriction events affecting the active route within a window into one request issued within 5 s; display the updated route with closed edges and cause; mark "Route no longer valid" on failure or non-route outcome
     - _Requirements: 16.4, 16.6, 16.7_
-  - [ ] 9.10 Build community UI components
+  - [x] 9.10 Build community UI components
     - `ReportForm`, `MessageList` (Official notices in a visually distinct, text-labeled section), `CheckInForm` (shows "SafePath does not dispatch emergency services" with 911 guidance on "I need assistance"), report markers with Verification_Status chips including "Corroborated by community — not officially verified" and "Expired"
     - _Requirements: 23.6, 24.5, 24.8, 26.4, 26.5, 27.6, 16.2_
   - [ ]* 9.11 Write property test for the verification lifecycle
@@ -338,17 +338,17 @@ Every task builds on earlier tasks and ends wired into the running app. Property
 - [ ] 10. Checkpoint - Backend and community
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 11. Indoor scenario and demo scenarios
-  - [ ] 11.1 Create the fictional Indoor_Graph
+- [x] 11. Indoor scenario and demo scenarios
+  - [x] 11.1 Create the fictional Indoor_Graph
     - `data/demo/indoor_building.json` (3 floors, 2 zones and 2 corridors per floor, stairwells A/B/C, ground-floor exits 1 and 2, anchored near the UIC–downtown corridor) and `routing/indoor.py` builder producing indoor Nodes/Edges with explicit Level_Transition edges (stairwell, exit to outdoor Node), classified Simulated and labeled fictional
     - _Requirements: 21.1, 21.2, 21.6, 9.4, 12.5_
-  - [ ] 11.2 Implement the Building_Emergency_Module
+  - [x] 11.2 Implement the Building_Emergency_Module
     - `disasters/building.py`: indoor routing through RoutingService via `origin_indoor_node_id`, reported-blocked stairwell penalty, stairwell closure confirmed only by demo Moderator or Authorized_Official (403 for Guest/User, graph unchanged), removal of stairwell edges from the mask, NO_VERIFIED_ROUTE_AVAILABLE when all stairwells to an exit are removed, no "safe" claims, stairwell report display within 5 s
     - _Requirements: 21.3, 21.4, 21.5, 21.7, 21.8_
-  - [ ] 11.3 Implement `seed_demo_incidents.py` and scenario data
+  - [x] 11.3 Implement `seed_demo_incidents.py` and scenario data
     - `data/demo/scenarios/{flood_loop,earthquake_debris,blocked_stairwell}.json` and seeding script: all Incidents `simulation_flag=true`, `scenario_id` on every record, flood origin within 200 m of the Riverwalk, designated "Simulation destination — NOT an official shelter", flood highlighting from the lowest 20% elevation percentile with no depth values, simulated debris zones adjacent to real OSM building footprints, three simulated indoor user positions, seeded users (Moderator, Users A/B/C)
     - _Requirements: 37.1, 37.2, 37.3, 37.6, 38.1, 38.2, 39.1, 40.4, 20.5, 7.1_
-  - [ ] 11.4 Implement the DemoService and admin endpoints
+  - [x] 11.4 Implement the DemoService and admin endpoints
     - `services/demo.py` and routers: `POST /api/demo/{scenario}/start|advance|reset`, `POST/DELETE /api/demo/closures` for simulated closures and hazard polygons (Moderator only, 403 otherwise); reset within 30 s removes only that scenario's records and restores seeds, idempotent when already seeded; debris zones mark edges blocked within 5 s with Simulated zone ids cited in route explanations
     - _Requirements: 40.1, 40.2, 40.3, 40.6, 40.7, 37.4, 37.5, 38.3, 38.4, 39.5_
   - [ ]* 11.5 Write property test for scenario reset
@@ -364,24 +364,24 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - Scenario 1 shortest plus disaster-adjusted route and recalculation after a simulated verified closure, Scenario 2 debris exclusion with zone references, Scenario 3 report, corroborate, moderator confirm, indoor reroute, assistance message published
     - _Requirements: 37.4, 37.5, 38.3, 38.4, 39.2, 39.3, 39.4, 39.5, 44.11_
 
-- [ ] 12. AWS discovery, CDK and deployment tooling
+- [x] 12. AWS discovery, CDK and deployment tooling
   - [x] 12.1 Implement AWS sandbox discovery
     - `scripts/aws_discovery.py` (read-only): `sts get-caller-identity`, region, IAM permission probes (`iam simulate-principal-policy` or probe calls), service quotas and availability for DynamoDB, Lambda, API Gateway, S3, CloudFront, Cognito, AppSync Events, Bedrock, Budgets, EventBridge, CloudWatch
     - Write findings to `docs/aws-deployment.md` and emit CDK context flags (`useCognito`, `realtime=appsync|apigw-ws`, `enableBudget`, `enableBedrock`, `enableCloudFront`) to `infrastructure/aws/cdk.context.json`; create a discovery gate file that `deploy` requires; run this before provisioning anything
     - _Requirements: 29.1, 29.5_
-  - [ ] 12.2 Implement AWS adapters and Lambda entry points
+  - [x] 12.2 Implement AWS adapters and Lambda entry points
     - `adapters/aws/`: `DynamoRepository` (boto3, supports DynamoDB Local via `AWS_ENDPOINT_URL`), `S3BlobStore` (presigned 15 min), `AppSyncEventsPublisher`, `ApiGwWebSocketPublisher` (fallback with connections table), `CognitoAuthProvider` (JWKS), S3 Graph source; Mangum `handler` and Sweeper Lambda handler; each labeled substitute documented when a service is unavailable
     - _Requirements: 29.3, 29.5, 30.7, 25.4, 31.4, 31.5_
-  - [ ] 12.3 Scaffold the CDK app and DataStack
+  - [x] 12.3 Scaffold the CDK app and DataStack
     - `infrastructure/aws/` TypeScript CDK app with an Aspect tagging every resource `Project=SafePath`, context-flag handling, `DataStack` (on-demand DynamoDB tables with SSE and TTL on events and rate limits, private versioned graphs bucket, private photos bucket, public access blocked)
     - _Requirements: 29.2, 29.6, 32.1, 32.2, 31.5, 30.7_
-  - [ ] 12.4 Implement ApiStack
+  - [x] 12.4 Implement ApiStack
     - Lambda (Python 3.12, Graph loaded from S3 at cold start) with one least-privilege role per function, HTTP API with throttling 50 rps and burst 100, Sweeper Lambda plus 1-minute EventBridge rule, Cognito pool/client/groups (when permitted), AppSync Events API or WebSocket API fallback, optional Bedrock invoke permission, CORS limited to the CloudFront origin
     - _Requirements: 29.3, 31.1, 32.5, 25.4, 31.5_
-  - [ ] 12.5 Implement WebStack, ObservabilityStack and BudgetStack
+  - [x] 12.5 Implement WebStack, ObservabilityStack and BudgetStack
     - S3 website bucket with CloudFront (OAC, TLS 1.2+) or documented alternative, PMTiles and GeoJSON static objects, CloudWatch log groups with 7-day retention and basic alarms, optional AWS Budgets monthly 25 USD with alert at 80% when permitted
     - _Requirements: 29.4, 32.3, 32.6, 31.5_
-  - [ ] 12.6 Write deployment and teardown tooling
+  - [x] 12.6 Write deployment and teardown tooling
     - `scripts/deploy.ps1`: refuse to run without the discovery gate, upload the Graph artifact, PMTiles and frontend bundle (building with only public identifiers), run `cdk deploy` with context flags, print the deployed URL; teardown limited to resources tagged `Project=SafePath`; failed deployments roll back only tagged resources created by that deployment; actual provisioning is run by the user after reviewing discovery results
     - _Requirements: 29.1, 29.6, 29.8, 31.2, 45.3_
   - [ ]* 12.7 Write CDK assertion tests
@@ -391,29 +391,29 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - Reuse the task 8.7 contract suite with `DynamoRepository`
     - _Requirements: 30.9, 44.11_
 
-- [ ] 13. Frontend screens and polish
-  - [ ] 13.1 Regenerate the API client and build the left sidebar
+- [x] 13. Frontend screens and polish
+  - [x] 13.1 Regenerate the API client and build the left sidebar
     - Regenerate `services/api.ts` from the final OpenAPI; implement `LeftSidebar` with active Incident, disaster type selector (flood, earthquake, tornado, fire, building emergency), start/destination inputs with map click selection, route alternatives list, official info links and uncertainty summary; `hooks/useIncident`, `hooks/useAuth` (guest session)
     - _Requirements: 34.2, 46.3, 22.1_
-  - [ ] 13.2 Build the route panel and outcome display
+  - [x] 13.2 Build the route panel and outcome display
     - `RoutePanel`: summary with "algorithm-generated" label, distance, duration, Uncertainty_Level text and confidence limitations, reasons versus alternatives, restrictions applied; SHELTER_IN_PLACE, FOLLOW_OFFICIAL_INSTRUCTIONS, NO_VERIFIED_ROUTE_AVAILABLE and INSUFFICIENT_DATA text displayed in place of navigation (with 911 guidance); render Graph-derived route geometry on the Map_View; export as a component wired in 13.8
     - _Requirements: 1.7, 15.4, 43.4, 21.7, 8.10, 44.11_
-  - [ ] 13.3 Build map data layers
+  - [x] 13.3 Build map data layers
     - Layers for roads, buildings, transit stations, elevation and hazard overlays (lowest-20% highlight), routes, report markers, incident boundaries, closures (red), verified destinations (green), and SIMULATED labels on every simulated feature within 5 s; CBD-derived layers carry the historical label; toggles take effect within 1 s
     - _Requirements: 1.3, 34.3, 36.1, 37.3, 38.3, 5.4, 8.10_
-  - [ ] 13.4 Implement map feature inspection
+  - [x] 13.4 Implement map feature inspection
     - `maps/inspect.ts`: road segment popup (street name, Edge attributes, closure status, active reports, Source_Record, last update), report marker popup, route popup, building popup, showing `Unknown` for missing attributes, all within 1 s
     - _Requirements: 35.1, 35.2, 35.3, 35.4, 6.5_
-  - [ ] 13.5 Build right sidebar, bottom controls and remaining screens
+  - [x] 13.5 Build right sidebar, bottom controls and remaining screens
     - `RightSidebar` (messages, reports, Verification_Status, check-ins, assistance requests), `BottomControls` (report hazard, request assistance, mark safe, view official guidance, recalculate route), and pages Disaster Selection, Route Details, Submit Report, Community Communication, Incident Overview, Safety Check-In
     - _Requirements: 34.4, 34.5, 34.6, 23.6_
-  - [ ] 13.6 Build the indoor building view
+  - [x] 13.6 Build the indoor building view
     - Floor-by-floor view of the fictional building labeled "fictional" and SIMULATED, stairwell and exit conditions shown as reported conditions with Verification_Status, indoor route display, emergency guidance when no route exists
     - _Requirements: 21.3, 21.5, 21.6, 21.7, 39.4_
-  - [ ] 13.7 Build the Demo_Admin_Console
+  - [x] 13.7 Build the Demo_Admin_Console
     - `pages/DemoAdmin.tsx`: start, advance and reset each scenario, add/remove simulated closures and hazard polygons, Moderator-only with 403 handling
     - _Requirements: 40.1, 40.2, 40.6, 34.6_
-  - [ ] 13.8 Wire the application shell, responsiveness and accessibility
+  - [x] 13.8 Wire the application shell, responsiveness and accessibility
     - Compose `MainMap` and routing between all pages, Header with logo, "Chicago", demo mode indicator, connectivity status and profile control, responsive layout from 320 to 2560 px without horizontal scrolling for all header, sidebar and bottom controls, keyboard operability with visible focus, accessible names, text/icon plus color for every status
     - _Requirements: 34.1, 34.7, 36.2, 36.4, 46.7_
   - [ ]* 13.9 Write frontend component and accessibility tests
@@ -423,35 +423,35 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - Scenario 1 (flood, route change explanation within 5 s) and Scenario 3 (two browser contexts: report, corroborate, moderator confirm, indoor reroute) following the demo script
     - _Requirements: 37.5, 39.2, 39.3, 39.4, 39.6, 44.11, 46.4, 46.5_
 
-- [ ] 14. Offline support, optional AI, documentation and demo script
-  - [ ] 14.1 Implement the Offline_Manager
+- [x] 14. Offline support, optional AI, documentation and demo script
+  - [x] 14.1 Implement the Offline_Manager
     - Workbox service worker precaching the app shell, runtime caching of PMTiles range requests, static GeoJSON (zoom 12 to 16) and static official guidance; IndexedDB queue (max 50, creation-order flush, client UUID idempotency key, "Queued — not yet received by server", "Rejected by server" with error and edit/discard); offline indicator with last sync time; "Cached as of [timestamp] — may be outdated" labels; `hooks/useOfflineQueue`
     - _Requirements: 41.1, 41.2, 41.3, 41.4, 41.5, 41.6, 41.7, 41.8_
   - [ ]* 14.2 Write property test for the offline queue
     - **Property 38: Offline queue ordering, idempotence and capacity** (fast-check)
     - **Validates: Requirements 41.4, 41.5, 41.6, 41.7, 41.8**
-  - [ ] 14.3 Add the PMTiles extraction script
+  - [x] 14.3 Add the PMTiles extraction script
     - `scripts/build_tiles.ps1` extracting a PMTiles archive for the Chicago bounding box (zoom 12 to 16) for local and S3/CloudFront hosting; if unavailable, document the dev-only OSM raster fallback and no bulk prefetch
     - _Requirements: 41.1, 3.8_
-  - [ ] 14.4 Implement the optional AI_Assistant
+  - [x] 14.4 Implement the optional AI_Assistant
     - `services/ai.py` with Bedrock client (15 s timeout), `POST /api/ai/summarize`, grounding guard that discards output referencing entities absent from the context or citing no supplied Source_Record and returns the unsummarized source data; never mutates Policy_Outcomes, routes, restrictions or Verification_Status; frontend AI-generated, non-authoritative label and "AI summaries unavailable" state
     - _Requirements: 33.1, 33.2, 33.3, 33.4, 33.5, 33.6, 33.7, 13.9_
   - [ ]* 14.5 Write property test for AI grounding
     - **Property 41: AI output is accepted only if grounded**
     - **Validates: Requirements 33.2, 33.3, 33.6, 33.7**
-  - [ ] 14.6 Implement optional CTA transit alerts
+  - [x] 14.6 Implement optional CTA transit alerts
     - `GET /api/transit/alerts` active only when credentials are configured: 10 s timeout, stale cached alerts with original timestamp, "live transit alerts unavailable" otherwise; frontend message where alerts would appear; station entrance safety status stays Unknown without an Official_Notice or Officially_Verified report
     - _Requirements: 5.2, 5.3, 5.4, 5.5_
-  - [ ] 14.7 Write architecture and technical documentation
+  - [x] 14.7 Write architecture and technical documentation
     - `docs/architecture.md` (including the data-flow diagram covering datasets, official plans, Routing_Engine, AWS services, user devices and community reporting), `docs/data-sources.md`, `docs/routing-design.md`, `docs/safety-limitations.md` listing every fallback, unavailable source, substitution and limitation (including that terrain elevation does not represent bridge, tunnel or underground levels)
     - _Requirements: 45.2, 45.4, 45.7, 4.6, 1.5_
-  - [ ] 14.8 Write README, deployment notes, demo script and pitch
+  - [x] 14.8 Write README, deployment notes, demo script and pitch
     - Complete `README.md` (setup, local development, deployment, data import, known limitations, deployed URL where permitted), finalize `docs/aws-deployment.md` with the substitution matrix, `docs/demo-script.md` (Scenarios 1 and 3 in 3 minutes) and a pitch script of 3 minutes or less
     - _Requirements: 45.2, 45.3, 45.5, 45.6, 40.5, 29.5_
-  - [ ] 14.9 Add the test-run recorder
+  - [x] 14.9 Add the test-run recorder
     - `scripts/run_tests.ps1` running pytest (JUnit XML), vitest and Playwright and writing `docs/test-results.md` with test name, pass/fail and execution date
     - _Requirements: 44.13_
-  - [ ] 14.10 Add secret scanning
+  - [x] 14.10 Add secret scanning
     - Add gitleaks (or equivalent) config and a script scanning the repo and built frontend bundle; verify no hardcoded credentials and that the bundle contains only public identifiers
     - _Requirements: 31.2, 31.3_
 

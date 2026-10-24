@@ -1,0 +1,3718 @@
+{
+  "components": {
+    "schemas": {
+      "ActBody": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "enum": [
+              "report",
+              "corroborate",
+              "dispute",
+              "message",
+              "confirm",
+              "resolve"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "actor": {
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "moderator"
+            ],
+            "title": "Actor",
+            "type": "string"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          },
+          "message_type": {
+            "default": "assistance_request",
+            "maxLength": 64,
+            "title": "Message Type",
+            "type": "string"
+          },
+          "report_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Id"
+          }
+        },
+        "required": [
+          "actor",
+          "action"
+        ],
+        "title": "ActBody",
+        "type": "object"
+      },
+      "ClosureBody": {
+        "additionalProperties": false,
+        "properties": {
+          "edge_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 200,
+            "title": "Edge Ids",
+            "type": "array"
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geometry"
+          },
+          "incident_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Incident Id",
+            "type": "string"
+          },
+          "kind": {
+            "default": "closure",
+            "enum": [
+              "closure",
+              "impassable_polygon"
+            ],
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "incident_id"
+        ],
+        "title": "ClosureBody",
+        "type": "object"
+      },
+      "DataClassification": {
+        "description": "Data_Classification assigned to every rule, zone, closure, shelter, destination, dataset.",
+        "enum": [
+          "Historical",
+          "Static",
+          "Current",
+          "Simulated"
+        ],
+        "title": "DataClassification",
+        "type": "string"
+      },
+      "EdgePenalty": {
+        "additionalProperties": false,
+        "properties": {
+          "edge_id": {
+            "title": "Edge Id",
+            "type": "string"
+          },
+          "hazard": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "default": {},
+            "title": "Hazard",
+            "type": "object"
+          },
+          "report_ids": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Report Ids",
+            "type": "array"
+          },
+          "travel": {
+            "minimum": 0.0,
+            "title": "Travel",
+            "type": "number"
+          },
+          "uncertainty": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "default": {},
+            "title": "Uncertainty",
+            "type": "object"
+          }
+        },
+        "required": [
+          "edge_id",
+          "travel"
+        ],
+        "title": "EdgePenalty",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "Incident": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "geographic_boundary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geographic Boundary"
+          },
+          "incident_id": {
+            "title": "Incident Id",
+            "type": "string"
+          },
+          "incident_type": {
+            "$ref": "#/components/schemas/IncidentType"
+          },
+          "scenario_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Id"
+          },
+          "simulation_flag": {
+            "default": false,
+            "title": "Simulation Flag",
+            "type": "boolean"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "status": {
+            "default": "active",
+            "title": "Status",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "incident_id",
+          "incident_type",
+          "source",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "Incident",
+        "type": "object"
+      },
+      "IncidentCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "geographic_boundary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geographic Boundary"
+          },
+          "incident_type": {
+            "$ref": "#/components/schemas/IncidentType"
+          },
+          "scenario_id": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Id"
+          },
+          "simulation_flag": {
+            "default": false,
+            "title": "Simulation Flag",
+            "type": "boolean"
+          },
+          "source": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "incident_type",
+          "source"
+        ],
+        "title": "IncidentCreate",
+        "type": "object"
+      },
+      "IncidentType": {
+        "enum": [
+          "flood",
+          "earthquake",
+          "tornado",
+          "fire",
+          "building"
+        ],
+        "title": "IncidentType",
+        "type": "string"
+      },
+      "LineStringGeometry": {
+        "additionalProperties": false,
+        "properties": {
+          "coordinates": {
+            "default": [],
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Coordinates",
+            "type": "array"
+          },
+          "type": {
+            "const": "LineString",
+            "default": "LineString",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "title": "LineStringGeometry",
+        "type": "object"
+      },
+      "LoginBody": {
+        "additionalProperties": false,
+        "properties": {
+          "password": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password",
+            "type": "string"
+          },
+          "user_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "password"
+        ],
+        "title": "LoginBody",
+        "type": "object"
+      },
+      "NoticeCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "edge_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 5000,
+            "title": "Edge Ids",
+            "type": "array"
+          },
+          "effective_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective At"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geometry"
+          },
+          "incident_id": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Incident Id",
+            "type": "string"
+          },
+          "notice_type": {
+            "enum": [
+              "temporary_perimeter",
+              "road_closure",
+              "incident_destination",
+              "shelter_in_place",
+              "road_direction_restriction",
+              "transportation_rule",
+              "follow_instructions"
+            ],
+            "title": "Notice Type",
+            "type": "string"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "simulation_flag": {
+            "default": false,
+            "title": "Simulation Flag",
+            "type": "boolean"
+          },
+          "source_organization": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Source Organization",
+            "type": "string"
+          },
+          "source_record_id": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Source Record Id",
+            "type": "string"
+          },
+          "source_url": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Source Url",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "incident_id",
+          "notice_type",
+          "text",
+          "source_organization",
+          "source_url",
+          "source_record_id"
+        ],
+        "title": "NoticeCreate",
+        "type": "object"
+      },
+      "NoticeIn": {
+        "properties": {
+          "notice_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notice Id"
+          },
+          "simulation_flag": {
+            "default": false,
+            "title": "Simulation Flag",
+            "type": "boolean"
+          },
+          "source_organization": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Organization"
+          },
+          "source_record_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Source Record Id",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          },
+          "verification_status": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verification Status"
+          }
+        },
+        "required": [
+          "text",
+          "source_record_id"
+        ],
+        "title": "NoticeIn",
+        "type": "object"
+      },
+      "OfficialNotice": {
+        "additionalProperties": false,
+        "properties": {
+          "cbd_derived": {
+            "default": false,
+            "title": "Cbd Derived",
+            "type": "boolean"
+          },
+          "edge_ids": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Edge Ids",
+            "type": "array"
+          },
+          "effective_at": {
+            "format": "date-time",
+            "title": "Effective At",
+            "type": "string"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geometry"
+          },
+          "incident_id": {
+            "title": "Incident Id",
+            "type": "string"
+          },
+          "notice_id": {
+            "title": "Notice Id",
+            "type": "string"
+          },
+          "notice_type": {
+            "enum": [
+              "temporary_perimeter",
+              "road_closure",
+              "incident_destination",
+              "shelter_in_place",
+              "road_direction_restriction",
+              "transportation_rule",
+              "follow_instructions"
+            ],
+            "title": "Notice Type",
+            "type": "string"
+          },
+          "published_at": {
+            "format": "date-time",
+            "title": "Published At",
+            "type": "string"
+          },
+          "retrieved_at": {
+            "format": "date-time",
+            "title": "Retrieved At",
+            "type": "string"
+          },
+          "simulation_flag": {
+            "title": "Simulation Flag",
+            "type": "boolean"
+          },
+          "source_organization": {
+            "title": "Source Organization",
+            "type": "string"
+          },
+          "source_record_id": {
+            "title": "Source Record Id",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "verification_status": {
+            "title": "Verification Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "notice_id",
+          "incident_id",
+          "notice_type",
+          "text",
+          "source_organization",
+          "source_url",
+          "source_record_id",
+          "effective_at",
+          "published_at",
+          "retrieved_at",
+          "verification_status",
+          "simulation_flag"
+        ],
+        "title": "OfficialNotice",
+        "type": "object"
+      },
+      "PolicyOutcome": {
+        "description": "Exactly one of these is set on every route response (13.3, 43.3).",
+        "enum": [
+          "ROUTE_OPTIONS_AVAILABLE",
+          "SHELTER_IN_PLACE",
+          "FOLLOW_OFFICIAL_INSTRUCTIONS",
+          "NO_VERIFIED_ROUTE_AVAILABLE",
+          "INSUFFICIENT_DATA"
+        ],
+        "title": "PolicyOutcome",
+        "type": "string"
+      },
+      "PrivacyBody": {
+        "additionalProperties": false,
+        "properties": {
+          "share_location": {
+            "title": "Share Location",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "share_location"
+        ],
+        "title": "PrivacyBody",
+        "type": "object"
+      },
+      "RegisterBody": {
+        "additionalProperties": false,
+        "properties": {
+          "display_name": {
+            "anyOf": [
+              {
+                "maxLength": 50,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "password": {
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "password"
+        ],
+        "title": "RegisterBody",
+        "type": "object"
+      },
+      "RestrictionConsidered": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "simulated": {
+            "default": false,
+            "title": "Simulated",
+            "type": "boolean"
+          },
+          "source_record_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Record Id"
+          }
+        },
+        "required": [
+          "kind",
+          "id"
+        ],
+        "title": "RestrictionConsidered",
+        "type": "object"
+      },
+      "RestrictionIn": {
+        "properties": {
+          "id": {
+            "maxLength": 128,
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "maxLength": 60,
+            "title": "Kind",
+            "type": "string"
+          },
+          "simulated": {
+            "default": false,
+            "title": "Simulated",
+            "type": "boolean"
+          },
+          "source_record_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Record Id"
+          }
+        },
+        "required": [
+          "kind",
+          "id"
+        ],
+        "title": "RestrictionIn",
+        "type": "object"
+      },
+      "ReuseDetermination": {
+        "additionalProperties": false,
+        "description": "Public-reuse determination for a UIC source: what is approved and what is excluded.",
+        "properties": {
+          "approved_content": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Approved Content",
+            "type": "array"
+          },
+          "basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis"
+          },
+          "determined_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Determined At"
+          },
+          "excluded_content": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Excluded Content",
+            "type": "array"
+          }
+        },
+        "required": [
+          "approved_content",
+          "excluded_content"
+        ],
+        "title": "ReuseDetermination",
+        "type": "object"
+      },
+      "RoleRequestBody": {
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role"
+        ],
+        "title": "RoleRequestBody",
+        "type": "object"
+      },
+      "Route": {
+        "additionalProperties": false,
+        "properties": {
+          "calculated_at": {
+            "format": "date-time",
+            "title": "Calculated At",
+            "type": "string"
+          },
+          "confidence_limitations": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Confidence Limitations",
+            "type": "array"
+          },
+          "distance_meters": {
+            "minimum": 0.0,
+            "title": "Distance Meters",
+            "type": "number"
+          },
+          "edge_penalties": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EdgePenalty"
+            },
+            "title": "Edge Penalties",
+            "type": "array"
+          },
+          "estimated_duration_seconds": {
+            "minimum": 0.0,
+            "title": "Estimated Duration Seconds",
+            "type": "number"
+          },
+          "excluded_edges_count": {
+            "minimum": 0.0,
+            "title": "Excluded Edges Count",
+            "type": "integer"
+          },
+          "geometry": {
+            "$ref": "#/components/schemas/LineStringGeometry"
+          },
+          "hazard_flags": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Hazard Flags",
+            "type": "array"
+          },
+          "label": {
+            "default": "algorithm-generated",
+            "title": "Label",
+            "type": "string"
+          },
+          "policy_outcome": {
+            "$ref": "#/components/schemas/PolicyOutcome"
+          },
+          "reason_summary": {
+            "default": "",
+            "title": "Reason Summary",
+            "type": "string"
+          },
+          "restrictions_considered": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/RestrictionConsidered"
+            },
+            "title": "Restrictions Considered",
+            "type": "array"
+          },
+          "route_id": {
+            "title": "Route Id",
+            "type": "string"
+          },
+          "route_type": {
+            "default": "disaster-adjusted",
+            "title": "Route Type",
+            "type": "string"
+          },
+          "sources": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "status": {
+            "default": "ok",
+            "title": "Status",
+            "type": "string"
+          },
+          "uncertainty_level": {
+            "$ref": "#/components/schemas/UncertaintyLevel"
+          }
+        },
+        "required": [
+          "route_id",
+          "distance_meters",
+          "estimated_duration_seconds",
+          "excluded_edges_count",
+          "uncertainty_level",
+          "policy_outcome",
+          "calculated_at"
+        ],
+        "title": "Route",
+        "type": "object"
+      },
+      "RouteResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "calculated_at": {
+            "format": "date-time",
+            "title": "Calculated At",
+            "type": "string"
+          },
+          "data_timestamp": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Timestamp"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "graph_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph Version"
+          },
+          "label": {
+            "default": "algorithm-generated",
+            "title": "Label",
+            "type": "string"
+          },
+          "missing_data": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Data",
+            "type": "array"
+          },
+          "notices": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/OfficialNotice"
+            },
+            "title": "Notices",
+            "type": "array"
+          },
+          "policy_outcome": {
+            "$ref": "#/components/schemas/PolicyOutcome"
+          },
+          "route_count": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Route Count",
+            "type": "integer"
+          },
+          "routes": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Route"
+            },
+            "title": "Routes",
+            "type": "array"
+          },
+          "sources": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "status": {
+            "default": "ok",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_outcome",
+          "explanation",
+          "calculated_at"
+        ],
+        "title": "RouteResponse",
+        "type": "object"
+      },
+      "SessionBody": {
+        "additionalProperties": false,
+        "properties": {
+          "actor": {
+            "anyOf": [
+              {
+                "enum": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor"
+          },
+          "kind": {
+            "enum": [
+              "guest",
+              "user",
+              "moderator"
+            ],
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "SessionBody",
+        "type": "object"
+      },
+      "SourceRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "check_status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "ok",
+                  "unreachable",
+                  "not_located"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Check Status"
+          },
+          "checked_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checked At"
+          },
+          "data_classification": {
+            "$ref": "#/components/schemas/DataClassification"
+          },
+          "geographic_applicability": {
+            "title": "Geographic Applicability",
+            "type": "string"
+          },
+          "is_official_source": {
+            "title": "Is Official Source",
+            "type": "boolean"
+          },
+          "organization": {
+            "title": "Organization",
+            "type": "string"
+          },
+          "page_or_section": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Or Section"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "retrieved_at": {
+            "format": "date-time",
+            "title": "Retrieved At",
+            "type": "string"
+          },
+          "reuse_determination": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReuseDetermination"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "usage_restrictions": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Usage Restrictions",
+            "type": "array"
+          },
+          "verification_status": {
+            "enum": [
+              "verified",
+              "unverified",
+              "unknown",
+              "simulated"
+            ],
+            "title": "Verification Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "organization",
+          "url",
+          "title",
+          "retrieved_at",
+          "geographic_applicability",
+          "data_classification",
+          "verification_status",
+          "is_official_source"
+        ],
+        "title": "SourceRecord",
+        "type": "object"
+      },
+      "SummarizeRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "hazard_flags": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Hazard Flags",
+            "type": "array"
+          },
+          "kind": {
+            "enum": [
+              "notice_summary",
+              "route_flags",
+              "report_categorize",
+              "verification_explainer"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "notices": {
+            "items": {
+              "$ref": "#/components/schemas/NoticeIn"
+            },
+            "maxItems": 20,
+            "title": "Notices",
+            "type": "array"
+          },
+          "penalty_components": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "maxProperties": 20,
+            "title": "Penalty Components",
+            "type": "object"
+          },
+          "restrictions_considered": {
+            "items": {
+              "$ref": "#/components/schemas/RestrictionIn"
+            },
+            "maxItems": 50,
+            "title": "Restrictions Considered",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Sources",
+            "type": "array"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "SummarizeRequest",
+        "type": "object"
+      },
+      "UncertaintyLevel": {
+        "enum": [
+          "Low",
+          "Medium",
+          "High",
+          "Unknown"
+        ],
+        "title": "UncertaintyLevel",
+        "type": "string"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "SafePath is a prototype evacuation-navigation demo. It is not an official emergency service, does not contact or dispatch 911, and its routes are algorithm-generated estimates, not safety guarantees. In an emergency call 911 and follow instructions from official authorities.",
+    "title": "SafePath API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/admin/sweep": {
+      "post": {
+        "operationId": "sweep_api_admin_sweep_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Sweep Api Admin Sweep Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Sweep",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/ai/summarize": {
+      "post": {
+        "operationId": "summarize_api_ai_summarize_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SummarizeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Summarize Api Ai Summarize Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Summarize",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/auth/guest": {
+      "post": {
+        "operationId": "create_guest_api_auth_guest_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Create Guest Api Auth Guest Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Create Guest",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "login_api_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Login Api Auth Login Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "me_api_auth_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Me Api Auth Me Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Me",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/me/privacy": {
+      "put": {
+        "operationId": "set_privacy_api_auth_me_privacy_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrivacyBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Set Privacy Api Auth Me Privacy Put",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Privacy",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "register_api_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Register Api Auth Register Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Register",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/role-request": {
+      "post": {
+        "description": "Roles come only from administrative configuration; self-assignment is always rejected.\n\nAttempts at Moderator or Authorized_Official are written to the audit log (Req 22.4).",
+        "operationId": "request_role_api_auth_role_request_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleRequestBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Request Role Api Auth Role Request Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Request Role",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/checkins": {
+      "get": {
+        "operationId": "list_checkins_api_checkins_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "maxLength": 64,
+              "minLength": 1,
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response List Checkins Api Checkins Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Checkins",
+        "tags": [
+          "messages"
+        ]
+      },
+      "post": {
+        "operationId": "create_checkin_api_checkins_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Create Checkin Api Checkins Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Checkin",
+        "tags": [
+          "messages"
+        ]
+      }
+    },
+    "/api/checkins/location": {
+      "delete": {
+        "description": "Remove the caller's stored check-in locations (opt-out), optionally for one incident.",
+        "operationId": "remove_locations_api_checkins_location_delete",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "incident_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Incident Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "title": "Response Remove Locations Api Checkins Location Delete",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove Locations",
+        "tags": [
+          "messages"
+        ]
+      }
+    },
+    "/api/demo/closures": {
+      "post": {
+        "operationId": "add_closure_api_demo_closures_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClosureBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Add Closure Api Demo Closures Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Closure",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/demo/closures/{restriction_id}": {
+      "delete": {
+        "operationId": "remove_closure_api_demo_closures__restriction_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "restriction_id",
+            "required": true,
+            "schema": {
+              "title": "Restriction Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Remove Closure Api Demo Closures  Restriction Id  Delete",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove Closure",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/demo/reset-all": {
+      "post": {
+        "operationId": "reset_all_api_demo_reset_all_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Reset All Api Demo Reset All Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Reset All",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/demo/scenarios": {
+      "get": {
+        "operationId": "list_scenarios_api_demo_scenarios_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Scenarios Api Demo Scenarios Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Scenarios",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/demo/scenarios/{scenario_id}/act": {
+      "post": {
+        "operationId": "act_api_demo_scenarios__scenario_id__act_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Act Api Demo Scenarios  Scenario Id  Act Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Act",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/demo/scenarios/{scenario_id}/advance": {
+      "post": {
+        "operationId": "advance_api_demo_scenarios__scenario_id__advance_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Advance Api Demo Scenarios  Scenario Id  Advance Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Advance",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/demo/scenarios/{scenario_id}/reset": {
+      "post": {
+        "operationId": "reset_api_demo_scenarios__scenario_id__reset_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Reset Api Demo Scenarios  Scenario Id  Reset Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reset",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/demo/scenarios/{scenario_id}/start": {
+      "post": {
+        "operationId": "start_api_demo_scenarios__scenario_id__start_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Start Api Demo Scenarios  Scenario Id  Start Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/demo/scenarios/{scenario_id}/steps/{step_id}/apply": {
+      "post": {
+        "operationId": "apply_step_api_demo_scenarios__scenario_id__steps__step_id__apply_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "step_id",
+            "required": true,
+            "schema": {
+              "title": "Step Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Apply Step Api Demo Scenarios  Scenario Id  Steps  Step Id  Apply Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Apply Step",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/demo/sessions": {
+      "post": {
+        "operationId": "create_session_api_demo_sessions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Create Session Api Demo Sessions Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Session",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/demo/status": {
+      "get": {
+        "operationId": "status_api_demo_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Status Api Demo Status Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Status",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/events": {
+      "get": {
+        "description": "Public events of one incident stored after ``since`` (an event_id), oldest first.",
+        "operationId": "catch_up_api_events_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "maxLength": 64,
+              "minLength": 1,
+              "title": "Incident Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Catch Up Api Events Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Catch Up",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/api/graph/edges/near": {
+      "get": {
+        "operationId": "edges_near_api_graph_edges_near_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "lat",
+            "required": true,
+            "schema": {
+              "maximum": 90,
+              "minimum": -90,
+              "title": "Lat",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "required": true,
+            "schema": {
+              "maximum": 180,
+              "minimum": -180,
+              "title": "Lon",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "default": 25.0,
+              "exclusiveMinimum": 0,
+              "maximum": 500,
+              "title": "Radius",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 5,
+              "maximum": 25,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "incident_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Incident Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Edges Near Api Graph Edges Near Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Edges Near",
+        "tags": [
+          "graph"
+        ]
+      }
+    },
+    "/api/graph/edges/{edge_id}": {
+      "get": {
+        "operationId": "get_edge_api_graph_edges__edge_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "edge_id",
+            "required": true,
+            "schema": {
+              "title": "Edge Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "incident_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Incident Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Edge Api Graph Edges  Edge Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Edge",
+        "tags": [
+          "graph"
+        ]
+      }
+    },
+    "/api/graph/status": {
+      "get": {
+        "operationId": "graph_status_api_graph_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Graph Status Api Graph Status Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Graph Status",
+        "tags": [
+          "regions"
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Health Api Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/incidents": {
+      "get": {
+        "operationId": "list_incidents_api_incidents_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Incident"
+                  },
+                  "title": "Response List Incidents Api Incidents Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Incidents",
+        "tags": [
+          "incidents"
+        ]
+      },
+      "post": {
+        "operationId": "create_incident_api_incidents_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IncidentCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Incident"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Incident",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
+    "/api/incidents/{incident_id}": {
+      "get": {
+        "operationId": "get_incident_api_incidents__incident_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Incident"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Incident",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
+    "/api/indoor/building": {
+      "get": {
+        "description": "Public, read-only. Every feature and the collection carry the SIMULATED notice.",
+        "operationId": "indoor_building_api_indoor_building_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Indoor Building Api Indoor Building Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Indoor Building",
+        "tags": [
+          "indoor"
+        ]
+      }
+    },
+    "/api/layers/{name}": {
+      "get": {
+        "description": "Return one GeoJSON layer of the loaded graph (public, read-only).",
+        "operationId": "get_layer_api_layers__name__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "bbox",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Bbox"
+            }
+          },
+          {
+            "in": "query",
+            "name": "simplify",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Simplify",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Layer",
+        "tags": [
+          "layers"
+        ]
+      }
+    },
+    "/api/messages": {
+      "get": {
+        "description": "Visible messages of one incident, oldest first; ``since`` is a message_id cursor.",
+        "operationId": "list_messages_api_messages_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "maxLength": 64,
+              "minLength": 1,
+              "title": "Incident Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Messages Api Messages Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Messages",
+        "tags": [
+          "messages"
+        ]
+      },
+      "post": {
+        "operationId": "create_message_api_messages_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Message",
+        "tags": [
+          "messages"
+        ]
+      }
+    },
+    "/api/messages/{message_id}/hide": {
+      "post": {
+        "operationId": "hide_message_api_messages__message_id__hide_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "message_id",
+            "required": true,
+            "schema": {
+              "title": "Message Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Hide Message Api Messages  Message Id  Hide Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Hide Message",
+        "tags": [
+          "messages"
+        ]
+      }
+    },
+    "/api/notices": {
+      "get": {
+        "operationId": "list_notices_api_notices_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "minLength": 1,
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OfficialNotice"
+                  },
+                  "title": "Response List Notices Api Notices Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Notices",
+        "tags": [
+          "incidents"
+        ]
+      },
+      "post": {
+        "operationId": "create_notice_api_notices_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoticeCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficialNotice"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Notice",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
+    "/api/photos/presign": {
+      "post": {
+        "operationId": "presign_api_photos_presign_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Presign Api Photos Presign Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Presign",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/photos/upload/{key}": {
+      "get": {
+        "operationId": "download_api_photos_upload__key__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "title": "Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "exp",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Exp",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sig",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Sig",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "op",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Op",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Download Api Photos Upload  Key  Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download",
+        "tags": [
+          "reports"
+        ]
+      },
+      "put": {
+        "operationId": "upload_api_photos_upload__key__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "title": "Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "exp",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Exp",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Max",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ct",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Ct",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sig",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Sig",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "op",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Op",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Upload Api Photos Upload  Key  Put"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Upload",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/regions": {
+      "get": {
+        "operationId": "list_regions_api_regions_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Regions Api Regions Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Regions",
+        "tags": [
+          "regions"
+        ]
+      }
+    },
+    "/api/regions/chicago/metadata": {
+      "get": {
+        "operationId": "chicago_metadata_api_regions_chicago_metadata_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Chicago Metadata Api Regions Chicago Metadata Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Chicago Metadata",
+        "tags": [
+          "regions"
+        ]
+      }
+    },
+    "/api/reports": {
+      "get": {
+        "operationId": "list_reports_api_reports_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "maxLength": 64,
+              "minLength": 1,
+              "title": "Incident Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_inactive",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Inactive",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Reports Api Reports Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Reports",
+        "tags": [
+          "reports"
+        ]
+      },
+      "post": {
+        "operationId": "create_report_api_reports_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Report",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/reports/{report_id}": {
+      "get": {
+        "operationId": "get_report_api_reports__report_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Report Api Reports  Report Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Report",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/reports/{report_id}/corroborate": {
+      "post": {
+        "operationId": "corroborate_report_api_reports__report_id__corroborate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Corroborate Report Api Reports  Report Id  Corroborate Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Corroborate Report",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/reports/{report_id}/dispute": {
+      "post": {
+        "operationId": "dispute_report_api_reports__report_id__dispute_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Dispute Report Api Reports  Report Id  Dispute Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dispute Report",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/reports/{report_id}/moderate": {
+      "post": {
+        "operationId": "moderate_report_api_reports__report_id__moderate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Moderate Report Api Reports  Report Id  Moderate Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Moderate Report",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/routes/calculate": {
+      "post": {
+        "operationId": "calculate_route_api_routes_calculate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouteResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Calculate Route",
+        "tags": [
+          "routes"
+        ]
+      }
+    },
+    "/api/sources": {
+      "get": {
+        "operationId": "list_sources_api_sources_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "data_classification",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Data Classification"
+            }
+          },
+          {
+            "in": "query",
+            "name": "verification_status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Verification Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SourceRecord"
+                  },
+                  "title": "Response List Sources Api Sources Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Sources",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/transit/alerts": {
+      "get": {
+        "description": "Current CTA alerts, or ``available: false`` with 'Live transit alerts are unavailable'.\n\n``station_alerts`` associates route alerts with stations served; entrance safety stays Unknown.",
+        "operationId": "transit_alerts_api_transit_alerts_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Transit Alerts Api Transit Alerts Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Transit Alerts",
+        "tags": [
+          "transit"
+        ]
+      }
+    },
+    "/sse/incidents/{incident_id}": {
+      "get": {
+        "operationId": "sse_incident_sse_incidents__incident_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "title": "Incident Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sse Incident",
+        "tags": [
+          "events"
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "description": "Service and graph status.",
+      "name": "health"
+    },
+    {
+      "description": "Supported regions and graph metadata.",
+      "name": "regions"
+    },
+    {
+      "description": "Read-only routing graph edge inspection.",
+      "name": "graph"
+    },
+    {
+      "description": "Disaster-aware route calculation.",
+      "name": "routes"
+    },
+    {
+      "description": "Incidents and official notices.",
+      "name": "incidents"
+    },
+    {
+      "description": "Community hazard reports and votes.",
+      "name": "reports"
+    },
+    {
+      "description": "Incident messages and check-ins.",
+      "name": "messages"
+    },
+    {
+      "description": "Source catalog and data limitations.",
+      "name": "sources"
+    },
+    {
+      "description": "Guest sessions and roles.",
+      "name": "auth"
+    },
+    {
+      "description": "Moderator operations such as an on-demand sweep.",
+      "name": "admin"
+    }
+  ]
+}

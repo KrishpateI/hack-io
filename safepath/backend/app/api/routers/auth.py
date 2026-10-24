@@ -12,6 +12,7 @@ from app.api.sanitize import sanitize_text
 from app.auth.audit import ROLE_ESCALATION_REJECTED
 from app.auth.deps import current_principal
 from app.auth.provider import PRIVILEGED_ROLES
+from app.models.privacy import alias_secret_or_dev, guest_alias
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -54,7 +55,9 @@ def _session(token: str, expires_at: datetime, subject: str, role: Role) -> dict
 def create_guest(request: Request) -> dict[str, Any]:
     auth, _, _ = _services(request)
     g = auth.issue_guest()
-    return _session(g.token, g.expires_at, g.principal.subject, g.principal.role)
+    alias = guest_alias(alias_secret_or_dev(), g.principal.subject)
+    return {**_session(g.token, g.expires_at, g.principal.subject, g.principal.role),
+            "display_name": alias, "alias": alias}
 
 
 @router.post("/register", status_code=201)
@@ -82,8 +85,9 @@ def login(body: LoginBody, request: Request) -> dict[str, Any]:
 def me(request: Request, principal: Principal = Depends(current_principal)) -> dict[str, Any]:
     _, accounts, _ = _services(request)
     user = accounts.ensure_user(principal.subject, principal.role)
+    alias = guest_alias(alias_secret_or_dev(), principal.subject) if principal.is_guest else None
     return {"subject": principal.subject, "role": principal.role.value, "is_guest": principal.is_guest,
-            "display_name": user.display_name,
+            "display_name": user.display_name or alias, "alias": alias,
             "privacy_preferences": user.privacy_preferences.model_dump(),
             "expires_at": principal.expires_at.isoformat() if principal.expires_at else None}
 
@@ -93,6 +97,12 @@ def set_privacy(body: PrivacyBody, request: Request,
                 principal: Principal = Depends(current_principal)) -> dict[str, Any]:
     _, accounts, _ = _services(request)
     user = accounts.set_share_location(principal.subject, principal.role, body.share_location)
+    if not body.share_location:  # Req 31.9: drop stored check-in locations right away
+        from app.api.routers.checkins import get_checkin_service
+        try:
+            get_checkin_service(request.app).revoke_locations(principal.subject)
+        except HTTPException:  # check-in service not wired in this profile: nothing stored
+            pass
     return {"privacy_preferences": user.privacy_preferences.model_dump()}
 
 

@@ -1,6 +1,6 @@
 version: 1
 mode_factor: { walking: 1.0, wheelchair: 1.4, driving: 1.0 }
-v_max_mps:   { walking: 2.0, wheelchair: 1.5, driving: 20.0 }
+v_max_mps:   { walking: 2.0, wheelchair: 1.5, driving: 24.6 }
 d_min_meters: 10
 uncertainty_attributes: [infrastructure_level, pedestrian_access, bridge_flag, tunnel_flag, elevation_confidence]
 uncertainty: { w_unknown_attr: 8, w_elev_low: 6, w_elev_unknown: 12, w_profile_unknown: 15, w_disputed: 10 }

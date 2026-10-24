@@ -85,15 +85,6 @@
     ],
     "warning": "USGS 3DEP is bare-earth terrain (NAVD 88). It does not represent bridge decks, tunnels or underground levels, and higher terrain does not guarantee flood safety."
   },
-  "elevation:partial_coverage": {
-    "abort_reason": "runtime cap reached",
-    "requirements": [
-      "4.5",
-      "7.5"
-    ],
-    "retrieved_at": "2026-10-24T19:16:48.571450+00:00",
-    "warning": "20004 of 51604 node elevations are Unknown (no 3DEP data or request failures)."
-  },
   "emergency_plan:cbd_plan_2007": {
     "acquisition_status": "freshly downloaded",
     "dataset": "cbd_plan_2007",
@@ -152,5 +143,19 @@
       "45.7"
     ],
     "source_id": "SIMULATED-FIXTURE-GRAPH"
+  },
+  "tiles:chicago_basemap": {
+    "acquisition_status": "freshly extracted",
+    "build_date": "20261024",
+    "dataset": "protomaps_basemap_chicago",
+    "errors": [],
+    "limitation": "If PMTiles extraction fails or the file is absent, the app falls back to light-use OpenStreetMap raster tiles in development builds only, or to a blank basemap (no third-party tile requests) in production. OSM tiles are never bulk-prefetched. Protomaps vector tiles top out at zoom 15; zoom 16 is over-zoomed by the client.",
+    "output_bytes": 4326219,
+    "reproduce": "backend\\.venv\\Scripts\\python.exe scripts\\extract_pmtiles.py --download-cli",
+    "requirements": [
+      "41.1",
+      "3.8"
+    ],
+    "retrieved_at": "2026-10-24T20:44:57.157339Z"
   }
 }

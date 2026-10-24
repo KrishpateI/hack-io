@@ -58,38 +58,31 @@
     }
   ],
   "elevation": {
-    "abort_reason": "runtime cap reached",
-    "aborted": true,
-    "cache_hits": 0,
+    "abort_reason": null,
+    "aborted": false,
+    "cache_hits": 51304,
     "datum": "NAVD88",
     "edge_confidence_counts": {
-      "High": 15,
-      "Low": 2446,
-      "Medium": 22858,
-      "Unknown": 17193
+      "High": 18,
+      "Low": 3960,
+      "Medium": 38534
     },
     "edge_count": 42512,
     "elevation_percentiles_m": {
-      "p5": 178.636,
-      "p95": 186.013
+      "p5": 178.609,
+      "p95": 185.277
     },
     "endpoint": "https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/getSamples",
-    "errors": [
-      "attempt 3: HTTPError: HTTP Error 502: Bad Gateway",
-      "attempt 3: HTTPError: HTTP Error 502: Bad Gateway",
-      "attempt 3: HTTPError: HTTP Error 502: Bad Gateway",
-      "attempt 3: HTTPError: HTTP Error 502: Bad Gateway",
-      "attempt 3: HTTPError: HTTP Error 502: Bad Gateway"
-    ],
-    "failed_requests": 7,
-    "generated_at": "2026-10-24T19:16:48.571450+00:00",
-    "known_count": 31600,
+    "errors": [],
+    "failed_requests": 0,
+    "generated_at": "2026-10-24T19:35:46.695796+00:00",
+    "known_count": 51604,
     "limitation": "USGS 3DEP is bare-earth terrain (NAVD 88). It does not represent bridge decks, tunnels or underground levels, and higher terrain does not guarantee flood safety.",
     "node_count": 51604,
-    "requests": 323,
+    "requests": 3,
     "source": "USGS 3DEP (3DEPElevation ImageServer getSamples)",
     "units": "meters",
-    "unknown_count": 20004
+    "unknown_count": 0
   },
   "fatal_reason": null,
   "generated_at": "2026-10-24T18:41:50.406357+00:00",
@@ -221,6 +214,198 @@
       "seg-cdp-115907: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
       "seg-cdp-114903: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
       "seg-cdp-162603: oneway conflict (cdp='no', osm='forward'); retained osm_streets"
+    ]
+  },
+  "graph_build": {
+    "generated_at": "2026-10-24T20:02:04.419402+00:00",
+    "version": "v20261024-2e1f05",
+    "build_seconds": 40.76,
+    "input_segments": 42512,
+    "counters": {
+      "t_junction_cuts_inserted": 4865,
+      "endpoints_snapped": 6407,
+      "segments_split": 20227,
+      "self_loop_pieces_skipped": 957,
+      "pieces_below_min_distance": 5,
+      "segments_in": 42512,
+      "pieces": 83873,
+      "edges_created": 157681,
+      "nodes_without_elevation": 100
+    },
+    "snap_tolerance_m": 3.0,
+    "elevation_sampling_for_cut_points": {
+      "requested": 15790,
+      "obtained": 15690,
+      "requests": 4,
+      "failed_requests": 1,
+      "cache_hits": 15390,
+      "aborted": false,
+      "abort_reason": null
+    },
+    "nodes": 61177,
+    "edges": 157687,
+    "nodes_by_kind": {
+      "intersection": 61175,
+      "pedestrian_junction": 1,
+      "indoor": 1
+    },
+    "nodes_elevation_unknown": 102,
+    "edges_by_kind": {
+      "street": 157683,
+      "level_transition": 4
+    },
+    "edges_by_classification": {
+      "Static": 157681,
+      "Simulated": 6
+    },
+    "edges_by_travel_mode": {
+      "driving": 50927,
+      "driving+walking+wheelchair": 184,
+      "walking+wheelchair": 103536,
+      "walking": 3040
+    },
+    "edges_unknown_counts": {
+      "bridge_flag": 153414,
+      "tunnel_flag": 152520,
+      "infrastructure_level": 147323,
+      "pedestrian_access": 46785,
+      "mobility_accessibility": 154609,
+      "road_type": 0,
+      "elevation_confidence": 652,
+      "current_closure_status": 157687
+    },
+    "edges_elevation_unknown": 652,
+    "edges_oneway_unknown_driving": 29120,
+    "connected_components": {
+      "all": {
+        "nodes": 61177,
+        "components": 262,
+        "largest": 60389,
+        "largest_fraction": 0.9871,
+        "top_sizes": [
+          60389,
+          36,
+          34,
+          27,
+          16,
+          15,
+          15,
+          13,
+          11,
+          9
+        ],
+        "islands_outside_largest": 261,
+        "nodes_outside_largest": 788
+      },
+      "walking": {
+        "nodes": 43192,
+        "components": 273,
+        "largest": 42101,
+        "largest_fraction": 0.9747,
+        "top_sizes": [
+          42101,
+          36,
+          34,
+          32,
+          30,
+          28,
+          27,
+          23,
+          23,
+          20
+        ],
+        "islands_outside_largest": 272,
+        "nodes_outside_largest": 1091
+      },
+      "wheelchair": {
+        "nodes": 42791,
+        "components": 481,
+        "largest": 40755,
+        "largest_fraction": 0.9524,
+        "top_sizes": [
+          40755,
+          70,
+          36,
+          34,
+          32,
+          30,
+          28,
+          27,
+          27,
+          26
+        ],
+        "islands_outside_largest": 480,
+        "nodes_outside_largest": 2036
+      },
+      "driving": {
+        "nodes": 25774,
+        "components": 353,
+        "largest": 24109,
+        "largest_fraction": 0.9354,
+        "top_sizes": [
+          24109,
+          45,
+          40,
+          33,
+          32,
+          32,
+          31,
+          26,
+          25,
+          24
+        ],
+        "islands_outside_largest": 352,
+        "nodes_outside_largest": 1665
+      }
+    },
+    "simulated_station": {
+      "built": true,
+      "station": "Clark/Lake",
+      "notice": "SIMULATED two-level station model placed at the Clark/Lake CTA station coordinate. It is a simplified demonstration (street level + platform joined by stair and ramp Level_Transitions) and is NOT the real station layout.",
+      "linked_to": "n41885681_-87630875",
+      "link_distance_m": 6.3
+    },
+    "buildings_layer": {
+      "features": 28694,
+      "height_class_counts": {
+        "Mid-rise": 1940,
+        "Low-rise": 11399,
+        "High-rise": 786,
+        "Unknown": 14569
+      },
+      "entrance_nodes_in_source": 0
+    },
+    "limitations": [
+      "Building entrances were not connected to the graph: the OSM buildings extract contains building footprints only (no entrance nodes), so no entrance location is supported by source data."
+    ],
+    "artifact_bytes": {
+      "edges.jsonl.gz": 6778088,
+      "manifest.json": 1047,
+      "nodes.jsonl.gz": 1257457,
+      "layers/buildings.geojson": 13250789,
+      "layers/cta_stations.geojson": 10222,
+      "layers/extraction_boundary.geojson": 300,
+      "layers/simulated_station.geojson": 4267
+    },
+    "artifact_total_bytes": 21302170,
+    "elevation_percentiles_m": {
+      "p5": 178.609,
+      "p95": 185.277
+    },
+    "source_record_ids": [
+      "src-cdp_centerlines",
+      "src-osm_streets",
+      "src-osm_pedestrian",
+      "src-osm_buildings",
+      "src-cta_gtfs"
+    ],
+    "warning_count": 5,
+    "warnings": [
+      "elevation sampling for noded cut points incomplete: request failures",
+      "all: 262 disconnected components; largest has 60389 of 61177 nodes (788 nodes on 261 islands; kept in the graph, not dropped)",
+      "walking: 273 disconnected components; largest has 42101 of 43192 nodes (1091 nodes on 272 islands; kept in the graph, not dropped)",
+      "wheelchair: 481 disconnected components; largest has 40755 of 42791 nodes (2036 nodes on 480 islands; kept in the graph, not dropped)",
+      "driving: 353 disconnected components; largest has 24109 of 25774 nodes (1665 nodes on 352 islands; kept in the graph, not dropped)"
     ]
   }
 }

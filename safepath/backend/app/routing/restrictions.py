@@ -72,11 +72,9 @@ def _to_projected(geojson: Mapping) -> BaseGeometry | None:
 
 
 def _notice_active(n: OfficialNotice, ctx: IncidentContext) -> bool:
-    if n.incident_id != ctx.incident.incident_id or n.cbd_derived or not n.source_record_id:
-        return False
-    if n.effective_at > ctx.now:
-        return False
-    return n.expires_at is None or ctx.now <= n.expires_at + NOTICE_EXPIRY_GRACE
+    from app.disasters.rules_engine import notice_exclusion  # single eligibility definition (Req 8.9, 9.5, 10.8, 11.9)
+
+    return notice_exclusion(n, ctx.now, ctx.incident.incident_id) is None
 
 
 def _report_confirmed(r: HazardReport, ctx: IncidentContext) -> bool:
@@ -155,18 +153,18 @@ class RestrictionResolver:
     def _fingerprint(ctx: IncidentContext, mods: list) -> tuple:
         """Guards the (overlay_version, incident, graph) cache against unversioned input drift."""
         return (
-            tuple(sorted(
+            tuple(sorted((
                 (r.restriction_id, r.active, len(r.edge_ids), r.geometry is not None)
                 for r in ctx.overlays
-            )),
-            tuple(sorted(
+            ), key=repr)),
+            tuple(sorted((
                 (n.notice_id, n.effective_at, n.expires_at, ctx.now > (n.expires_at or ctx.now)
                  + NOTICE_EXPIRY_GRACE) for n in ctx.notices
-            )),
-            tuple(sorted(
+            ), key=repr)),
+            tuple(sorted((
                 (r.report_id, r.verification_status.value, r.expires_at > ctx.now)
                 for r in ctx.reports
-            )),
+            ), key=repr)),
             tuple(id(m) for m in mods),
         )
 

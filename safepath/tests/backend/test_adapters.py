@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import pytest
+from fake_dynamodb import FakeDynamoDB
 from hypothesis import given, settings, strategies as st
 
+from app.adapters.aws.dynamo import DynamoRepository
 from app.adapters import (
     AdapterNotAvailable, Conflict, Event, InProcessPublisher, LocalBlobStore, MemoryRepository,
     RealtimePublisher, Repository, RepositoryUnavailable, SqliteRepository, TxOp,
@@ -11,9 +13,15 @@ from app.adapters import (
 )
 
 
-@pytest.fixture(params=["memory", "sqlite"])
+@pytest.fixture(params=["memory", "sqlite", "dynamo"])
 def repo(request):
-    r = MemoryRepository() if request.param == "memory" else SqliteRepository()
+    """The same Repository contract runs against every implementation (DynamoDB via a fake client)."""
+    if request.param == "memory":
+        r = MemoryRepository()
+    elif request.param == "sqlite":
+        r = SqliteRepository()
+    else:
+        r = DynamoRepository(FakeDynamoDB(page_size=2), table_prefix="test-")
     yield r
     if isinstance(r, SqliteRepository):
         r.close()
@@ -181,7 +189,8 @@ def test_factory_defaults_and_overrides(tmp_path):
 
 
 def test_factory_errors():
-    with pytest.raises(AdapterNotAvailable, match="12.2"):
+    # The aws profile without region/endpoint configuration fails clearly (and does not touch AWS).
+    with pytest.raises(AdapterNotAvailable, match="region"):
         make_repository({"SAFEPATH_PROFILE": "aws"})
     with pytest.raises(AdapterNotAvailable):
         make_publisher({"SAFEPATH_PROFILE": "aws"})

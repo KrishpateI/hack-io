@@ -27,6 +27,7 @@ from app.disasters.base import (
     PolicyOverride,
     register_module,
 )
+from app.disasters._common import notice_in_force
 from app.models.domain import IncidentType, Restriction, UncertaintyLevel
 from app.models.graph import UNKNOWN, Edge
 from app.routing.cost import Weights, load_weights
@@ -134,7 +135,7 @@ class FloodModule:
         return bool(
             ctx.overlays
             or ctx.reports
-            or any(n.incident_id == iid for n in ctx.notices)
+            or any(notice_in_force(n, ctx) for n in ctx.notices)
         )
 
     @staticmethod
@@ -152,7 +153,8 @@ class FloodModule:
             if r.active and r.incident_id == iid and r.kind in ("impassable_polygon", "closure"):
                 out.append(r)
         for n in ctx.notices:
-            if n.incident_id != iid or n.cbd_derived or not self._is_flood_notice(n):
+            # only notices in force (effective, unexpired, with a Source_Record, not CBD-derived)
+            if not notice_in_force(n, ctx) or not self._is_flood_notice(n):
                 continue
             if n.notice_type not in ("road_closure", "temporary_perimeter"):
                 continue
@@ -215,7 +217,7 @@ class FloodModule:
         out: list[Advisory] = []
         iid = ctx.incident.incident_id
         for n in ctx.notices:
-            if n.incident_id == iid and self._is_flood_notice(n) and n.source_record_id:
+            if notice_in_force(n, ctx) and self._is_flood_notice(n):
                 out.append(
                     Advisory(
                         f"{n.text} (Source: {n.source_organization})",

@@ -45,6 +45,26 @@ def reporter_alias(secret: bytes | str, user_id: str, incident_id: str) -> str:
     return f"{_ADJ[d[4] % len(_ADJ)]} {_NOUN[d[5] % len(_NOUN)]} {n % 1000:03d}"
 
 
+_DEV_ALIAS_SECRET = b"safepath-dev-alias-secret-not-for-production"
+
+
+def guest_alias(secret: bytes | str, subject: str) -> str:
+    """Stable anonymous label such as ``Guest-ab12`` derived from HMAC(secret, subject)."""
+    key = secret.encode("utf-8") if isinstance(secret, str) else secret
+    if not key:
+        raise ValueError("alias secret must not be empty")
+    d = hmac.new(key, f"guest-alias|{len(subject)}:{subject}".encode("utf-8"), hashlib.sha256).digest()
+    return f"Guest-{d[:2].hex()}"
+
+
+def alias_secret_or_dev(env: Mapping[str, str] | None = None) -> bytes:
+    """The configured alias secret, or the local development one (same fallback as messaging)."""
+    try:
+        return load_alias_secret(env)
+    except RuntimeError:
+        return _DEV_ALIAS_SECRET
+
+
 def coarsen(lat: float, lon: float, grid_m: float = MIN_GRID_M) -> tuple[float, float]:
     """Snap to a grid of at least ``MIN_GRID_M`` metres (31.8). Idempotent."""
     grid_m = max(grid_m, MIN_GRID_M)

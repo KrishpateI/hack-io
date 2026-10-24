@@ -23,6 +23,17 @@ FIXTURE_NOTICE = (
 )
 
 
+def _with_indoor(g: Graph) -> Graph:
+    """Merge the fictional SIMULATED indoor building (Req 21); on any failure keep ``g`` as is."""
+    try:
+        from app.routing.indoor import merge_indoor_runtime
+
+        return merge_indoor_runtime(g)
+    except Exception as exc:  # the outdoor graph must stay usable
+        g.warnings = [*g.warnings, f"indoor building not merged: {exc}"]
+        return g
+
+
 def _load(app: FastAPI) -> Graph:
     """Load the configured graph. Only when SAFEPATH_GRAPH_ROOT is unset and the default root
     has no loadable artifact, fall back to the SIMULATED fixture, clearly reported (7.4, 45.6)."""
@@ -38,8 +49,8 @@ def _load(app: FastAPI) -> Graph:
                 "classification": "Simulated",
                 "notice": FIXTURE_NOTICE,
             }
-            return fx
-    return g
+            return _with_indoor(fx)
+    return _with_indoor(g)
 
 
 def get_graph(app: FastAPI) -> Graph:

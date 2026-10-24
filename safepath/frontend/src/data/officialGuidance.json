@@ -1,0 +1,90 @@
+{
+  "disclaimer": "Static preparedness guidance paraphrased from official pages. It is not a current evacuation order. Always follow instructions from official responders.",
+  "guidance": [
+    {
+      "guidance_id": "ready-illinois-tornado",
+      "hazard": "tornado",
+      "title": "Tornado preparedness and shelter basics",
+      "notes": [
+        "Pick a safe zone at home and work in advance, preferably a basement or small interior room or hallway.",
+        "During a tornado warning, go to the safe zone, stay away from windows and do not open them.",
+        "Do not try to outrun a tornado in a car; leave the vehicle and seek sturdy shelter.",
+        "Keep a battery-powered NOAA Weather Radio for updates."
+      ],
+      "source_url": "https://ready.illinois.gov/hazards/tornadoes.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00"
+    },
+    {
+      "guidance_id": "ready-illinois-flood",
+      "hazard": "flood",
+      "title": "Flood safety basics",
+      "notes": [
+        "Move to higher ground and stay away from flooded areas, especially underpasses, canals and drainage channels.",
+        "Do not walk through moving water; six inches can knock a person off their feet.",
+        "Do not drive over a flooded road; if a vehicle stalls, abandon it."
+      ],
+      "source_url": "https://ready.illinois.gov/hazards/floods.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00"
+    },
+    {
+      "guidance_id": "ready-illinois-earthquake",
+      "hazard": "earthquake",
+      "title": "Earthquake: Drop, Cover, Hold",
+      "notes": [
+        "Indoors: drop to the floor, take cover under sturdy furniture and hold on until the shaking stops.",
+        "Outdoors: move to an open area away from trees, buildings, walls and power lines.",
+        "If driving, stop safely and do not stop under overpasses or bridges."
+      ],
+      "source_url": "https://ready.illinois.gov/hazards/earthquake.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00"
+    },
+    {
+      "guidance_id": "ready-illinois-fire-high-rise",
+      "hazard": "fire",
+      "title": "High-rise fire safety basics",
+      "notes": [
+        "Learn your building's evacuation plan and the sound of its fire alarm.",
+        "Call 9-1-1 early; do not assume someone else already has.",
+        "If a door is warm, do not open it; if there is smoke in the hallway, return to the room.",
+        "Once outside, stay out until the fire department says it is safe."
+      ],
+      "source_url": "https://ready.illinois.gov/hazards/hirise.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00"
+    },
+    {
+      "guidance_id": "ready-illinois-shelter-evacuate",
+      "hazard": "shelter_or_evacuation",
+      "title": "Staying put (shelter-in-place) versus evacuating",
+      "notes": [
+        "If officials tell you to shelter in place or to evacuate, follow the instruction immediately.",
+        "Shelter in place means taking immediate shelter indoors when going outside is more dangerous.",
+        "When evacuating, use authorized routes and take your Go Bag."
+      ],
+      "source_url": "https://ready.illinois.gov/plan/stayput.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00"
+    },
+    {
+      "guidance_id": "oemc-family-preparedness",
+      "hazard": "general",
+      "title": "How to prepare your family for an emergency",
+      "notes": [
+        "Be ready to care for your household for at least 3 days; city resources may be limited.",
+        "Choose two meeting places and identify two separate escape routes from home.",
+        "Pick an out-of-area contact person and build an Emergency Supply Kit and Go Bag."
+      ],
+      "source_url": "https://www.chicago.gov/city/en/depts/oem/supp_info/how_to_prepare_yourfamilyforanemergency.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00"
+    },
+    {
+      "guidance_id": "oemc-notify-chicago-alerts",
+      "hazard": "alerts",
+      "title": "OEMC alerts: Notify Chicago",
+      "notes": [
+        "NotifyChicago sends text or email alerts for severe weather emergencies, hazardous materials and traffic impacts.",
+        "OEMC also lists a CHILAKE text service for lakefront weather notices."
+      ],
+      "source_url": "https://www.chicago.gov/city/en/depts/oem/supp_info/oemc-alerts--current-threats-and-public-information.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00"
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "generated_at": "2026-10-24T17:30:37-04:00",
+  "tool_versions": {
+    "powershell": "5.1.26100.9711",
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "python": "Python 3.14.7",
+    "node": "v24.22.1",
+    "npm": "11.19.1",
+    "pytest": "9.1.1",
+    "hypothesis": "6.170.9",
+    "vitest": "5.0.5",
+    "fast-check": "4.10.2",
+    "aws-cdk": "2.1146.1",
+    "jest": "29.7.0"
+  },
+  "settings": {
+    "Hypothesis profile": "ci (100 examples per property; tests/backend/conftest.py)",
+    "fast-check numRuns": "set per property in frontend tests: 25 to 100 (see frontend/src/**/*.test.ts[x])"
+  },
+  "totals": {
+    "passed": 1244,
+    "failed": 1,
+    "skipped": 0,
+    "duration_s": 237.7
+  },
+  "steps": [
+    {
+      "component": "Backend+Pipeline",
+      "name": "pytest",
+      "command": "backend\\.venv\\Scripts\\python.exe -m pytest -q --junitxml=<tmp>\\pytest.xml",
+      "status": "PASSED",
+      "reason": "",
+      "exit_code": 0,
+      "duration_s": 154.2,
+      "timestamp": "2026-10-24T17:26:39",
+      "junit": "C:\\Users\\kp200\\AppData\\Local\\Temp\\safepath-tests-3fb906ee184a456e810861ac7e2282b8\\pytest.xml",
+      "output_tail": "",
+      "passed": 679,
+      "failed": 0,
+      "skipped": 0,
+      "failures": []
+    },
+    {
+      "component": "Frontend",
+      "name": "lint",
+      "command": "npm run lint",
+      "status": "FAILED",
+      "reason": "",
+      "exit_code": 1,
+      "duration_s": 6.7,
+      "timestamp": "2026-10-24T17:29:13",
+      "junit": null,
+      "output_tail": "\n> safepath-frontend@0.1.0 lint\n> eslint .\n\n\nC:\\Users\\kp200\\hack-io\\safepath\\frontend\\src\\services\\offline.test.ts\n  154:33  error  '_i' is defined but never used  @typescript-eslint/no-unused-vars\n\n\u00e2\u0153\u2013 1 problem (1 error, 0 warnings)\n",
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "failures": [
+        "lint"
+      ]
+    },
+    {
+      "component": "Frontend",
+      "name": "build",
+      "command": "npm run build",
+      "status": "PASSED",
+      "reason": "",
+      "exit_code": 0,
+      "duration_s": 10.7,
+      "timestamp": "2026-10-24T17:29:20",
+      "junit": null,
+      "output_tail": "",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "failures": []
+    },
+    {
+      "component": "Frontend",
+      "name": "vitest",
+      "command": "npm test -- --reporter=default --reporter=junit --outputFile.junit=<tmp>\\vitest.xml",
+      "status": "PASSED",
+      "reason": "",
+      "exit_code": 0,
+      "duration_s": 16.5,
+      "timestamp": "2026-10-24T17:29:30",
+      "junit": "C:\\Users\\kp200\\AppData\\Local\\Temp\\safepath-tests-3fb906ee184a456e810861ac7e2282b8\\vitest.xml",
+      "output_tail": "",
+      "passed": 520,
+      "failed": 0,
+      "skipped": 0,
+      "failures": []
+    },
+    {
+      "component": "Infra",
+      "name": "jest",
+      "command": "npm test -- --json --outputFile=<tmp>\\jest.json",
+      "status": "PASSED",
+      "reason": "",
+      "exit_code": 0,
+      "duration_s": 20.2,
+      "timestamp": "2026-10-24T17:29:47",
+      "junit": "C:\\Users\\kp200\\AppData\\Local\\Temp\\safepath-tests-3fb906ee184a456e810861ac7e2282b8\\jest.json",
+      "output_tail": "",
+      "passed": 43,
+      "failed": 0,
+      "skipped": 0,
+      "failures": []
+    },
+    {
+      "component": "Infra",
+      "name": "cdk synth",
+      "command": "npx cdk synth -q",
+      "status": "PASSED",
+      "reason": "",
+      "exit_code": 0,
+      "duration_s": 29.4,
+      "timestamp": "2026-10-24T17:30:07",
+      "junit": null,
+      "output_tail": "",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "failures": []
+    }
+  ]
+}

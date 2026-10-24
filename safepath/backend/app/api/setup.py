@@ -19,12 +19,14 @@ API_DESCRIPTION = (
 OPENAPI_TAGS = [
     {"name": "health", "description": "Service and graph status."},
     {"name": "regions", "description": "Supported regions and graph metadata."},
+    {"name": "graph", "description": "Read-only routing graph edge inspection."},
     {"name": "routes", "description": "Disaster-aware route calculation."},
     {"name": "incidents", "description": "Incidents and official notices."},
     {"name": "reports", "description": "Community hazard reports and votes."},
     {"name": "messages", "description": "Incident messages and check-ins."},
     {"name": "sources", "description": "Source catalog and data limitations."},
     {"name": "auth", "description": "Guest sessions and roles."},
+    {"name": "admin", "description": "Moderator operations such as an on-demand sweep."},
 ]
 
 
@@ -36,7 +38,8 @@ def install_api_infrastructure(app: FastAPI, settings: Settings) -> None:
     install_error_handlers(app)
     app.state.rate_limiter = InMemoryRateLimiter()
     # Added first = inner; CORS is outermost so error responses carry CORS headers too.
-    app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.max_body_bytes)
+    app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.max_body_bytes,
+                       path_limits={"/api/photos/upload/": 10 * 1024 * 1024 + 1024})
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.cors_origins),

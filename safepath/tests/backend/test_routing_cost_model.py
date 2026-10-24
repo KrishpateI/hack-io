@@ -154,5 +154,5 @@ def test_v_max_admissible_and_search_works(mode):
 
 def test_v_max_value_from_weights():
     g = make_graph([("a", "n0", "n1", 100, {})])
-    assert CostModel(g, W, ctx(mode=TravelMode.DRIVING)).v_max == 20.0
+    assert CostModel(g, W, ctx(mode=TravelMode.DRIVING)).v_max == 24.6
     assert CostModel(g, W, ctx(mode=TravelMode.WALKING)).v_max == 2.0

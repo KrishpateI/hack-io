@@ -94,7 +94,11 @@ def test_endpoints(tmp_path, monkeypatch):
     assert meta["graph_version"] == v and meta["crs"] == "EPSG:4326"
     assert meta["bounds"]["north"] == 41.91 and len(meta["neighborhoods"]) >= 8
     st = c.get("/api/graph/status").json()
-    assert st["status"] == OK and st["node_count"] == 3
+    # 3 outdoor nodes plus the merged SIMULATED indoor building (Req 21)
+    from app.routing.indoor import build_indoor_parts, load_spec
+
+    n_indoor = len(build_indoor_parts(load_spec(), Graph.load(tmp_path).model.nodes)[0])
+    assert st["status"] == OK and st["node_count"] == 3 + n_indoor
     assert c.get("/api/health").json()["graph_version"] == v
 
 

@@ -139,7 +139,8 @@ def test_sanitize(raw, expected):
 
 
 def test_default_limits():
-    assert DEFAULT_LIMITS == {"report": (5, 600), "message": (20, 60), "vote": (30, 600), "checkin": (10, 600)}
+    assert DEFAULT_LIMITS == {"report": (5, 600), "message": (20, 60), "vote": (30, 600), "checkin": (10, 600),
+                              "photo_presign": (10, 600), "ai": (10, 60)}
 
 
 @pytest.mark.parametrize("make", [
