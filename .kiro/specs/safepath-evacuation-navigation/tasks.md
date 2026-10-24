@@ -10,35 +10,35 @@ Every task builds on earlier tasks and ends wired into the running app. Property
 
 ## Tasks
 
-- [ ] 1. Project foundation and map
-  - [ ] 1.1 Scaffold the repository and backend skeleton
+- [x] 1. Project foundation and map
+  - [x] 1.1 Scaffold the repository and backend skeleton
     - Create the `safepath/` layout from Requirement 45.1 (frontend, backend/app/{api,models,services,routing,disasters,communication,auth}, backend/app/adapters, data/{raw,processed,demo,sources}, scripts, infrastructure/aws, tests, docs) and a `.gitignore` excluding `data/raw`, any file over 50 MB, `node_modules`, virtualenvs and secrets
     - Create `backend/pyproject.toml` (pinned FastAPI, Pydantic v2, Mangum, uvicorn, pytest, Hypothesis, pyyaml) and Hypothesis profiles `ci` (max_examples 100, deadline None) and `demo-check` (25) in `tests/backend/conftest.py`
     - Implement `create_app(settings)` with a `Settings` class driven by `SAFEPATH_PROFILE=local|aws`, a router registry that auto-includes every module in `backend/app/api/routers/` (so later tasks never edit `main.py`), and `GET /api/health` returning status, graph version placeholder and profile
     - Add `README.md` skeleton documenting layout deviations (adapters folder, tests subfolders) and local run commands for PowerShell
     - _Requirements: 29.7, 42.1, 42.6, 45.1, 45.3, 7.9_
-  - [ ] 1.2 Scaffold the frontend (Vite + React + TypeScript + Tailwind)
+  - [x] 1.2 Scaffold the frontend (Vite + React + TypeScript + Tailwind)
     - Create `frontend/` with Vite, React, Tailwind, vitest, fast-check, React Testing Library, Playwright config and ESLint
     - Add `styles/tokens.ts` and Tailwind theme: dark navy/charcoal base, cyan/blue routes, red closures, orange unverified, green verified resources
     - Add the root layout containing a non-dismissible `DisclaimerBanner` with the exact Disclaimer_Banner text, rendered on every screen at 320 to 2560 px, and a `Header` placeholder with SIMULATED indicator slot
     - Add `.env.example` with public identifiers only (API base URL, realtime mode) and no secrets
     - _Requirements: 1.1, 1.5, 34.1, 36.1, 31.2_
-  - [ ] 1.3 Implement shared labeling and status components
+  - [x] 1.3 Implement shared labeling and status components
     - Implement `services/labels.ts` `classify(item) -> Official | Simulated | Community | Unknown source` and `labelAttribute()` that renders `Unknown` for missing values
     - Implement `SourceLabel`, `SimulatedBadge`, `StatusBadge` (icon + text + color), and `Emergency911Panel` (911 guidance, visually separate, reachable in one interaction from every screen, with no claim of dispatching or notifying 911)
     - Show the "SIMULATED" header indicator whenever an active Incident has `simulation_flag` true
     - _Requirements: 1.2, 1.3, 1.4, 1.6, 10.4, 10.5, 36.2, 36.5_
-  - [ ] 1.4 Implement the Map_View with basemap, attribution and extraction boundary
+  - [x] 1.4 Implement the Map_View with basemap, attribution and extraction boundary
     - Implement `maps/MapView.tsx` with MapLibre GL JS centered on downtown Chicago, PMTiles protocol support in `maps/pmtiles.ts`, and a configurable style that falls back to light-use OSM raster tiles in development only when no PMTiles file is present (document the OSM tile policy)
     - Always render OpenStreetMap attribution on the Map_View
     - Render the Chicago_Extraction_Area (N 41.91, S 41.85, W -87.68, E -87.60) with a dashed distinct line style and the label "Data extraction boundary, not an official evacuation boundary"
     - Add `LayerToggles` that change layer `visibility` immediately
     - _Requirements: 2.3, 3.8, 34.3, 46.1_
-  - [ ]* 1.5 Write property test and component tests for content classification and the disclaimer
+  - [x]* 1.5 Write property test and component tests for content classification and the disclaimer
     - **Property 33: Content classification and labeling** (fast-check, numRuns 100)
     - Component tests: disclaimer present and verbatim at widths 320 and 2560 with no dismiss control, SIMULATED header indicator, 911 panel reachable in one interaction
     - **Validates: Requirements 1.1, 1.3, 10.4, 10.5, 10.8, 35.4, 36.5**
-  - [ ]* 1.6 Write palette contrast test and wording lint
+  - [x]* 1.6 Write palette contrast test and wording lint
     - Test every text/background token pair in `tokens.ts` for contrast ratio of at least 4.5:1
     - Add a lint test scanning UI strings and API explanation templates for forbidden claims ("safe route", "guaranteed", "certified", "approved", "flood-safe", dispatch/911 integration claims) outside the disclaimer
     - _Requirements: 1.5, 1.6, 1.7, 36.3, 17.7_
@@ -47,43 +47,43 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 3. Real Chicago street graph pipeline
-  - [ ] 3.1 Implement geographic utilities
+  - [x] 3.1 Implement geographic utilities
     - In `backend/app/geo.py` implement bounds constants, boundary-inclusive `classify_coordinate` (invalid, outside-region, inside) identifying origin, destination or both, bbox clipping, haversine, and `building_height_class(height, floors)` with zero/negative/non-numeric treated as absent
     - _Requirements: 2.1, 2.4, 2.5, 6.2, 6.3_
-  - [ ]* 3.2 Write property test for clipping and region bounds
+  - [x]* 3.2 Write property test for clipping and region bounds
     - **Property 20: Geometry clipping and region bounds are exact and boundary-inclusive**
     - **Validates: Requirements 2.1, 2.4, 2.5, 23.8**
-  - [ ]* 3.3 Write property test for building height class
+  - [x]* 3.3 Write property test for building height class
     - **Property 21: Building height class is a pure, total function of source data**
     - **Validates: Requirements 6.2, 6.3**
-  - [ ] 3.4 Define Graph and provenance models and the versioned artifact format
+  - [x] 3.4 Define Graph and provenance models and the versioned artifact format
     - Implement Pydantic models `Node`, `Edge` (all attributes in Requirement 12.2, `Unknown` literal never null/false/0), `SourceRecord`, `ReuseDetermination`, and the Data_Classification enum in `backend/app/models/graph.py` and `provenance.py`
     - Validators: `distance_meters > 0`, `estimated_travel_time_seconds > 0`, endpoints exist, Level_Transition required when node levels differ
     - Implement artifact writer/reader (`nodes.jsonl.gz`, `edges.jsonl.gz`, `manifest.json` with sha256 and counts, `layers/*.geojson`), version id `v{UTC date}-{short hash}`, no overwrite of prior versions, `latest.json` updated last and atomically
     - _Requirements: 12.1, 12.2, 12.3, 12.5, 12.6, 12.7, 7.8, 10.1_
-  - [ ]* 3.5 Write property test for graph structural invariants
+  - [x]* 3.5 Write property test for graph structural invariants
     - **Property 18: Graph structural invariants** (positive distance/time, endpoints present, edges to absent nodes excluded with edge_id warning, level changes only via Level_Transition)
     - **Validates: Requirements 12.5, 12.7, 12.8, 21.2, 44.9, 5.6**
-  - [ ] 3.6 Build the Data_Pipeline framework
+  - [x] 3.6 Build the Data_Pipeline framework
     - In `scripts/pipeline/` implement the fixed stage runner (check_availability, save_raw, reproject EPSG:26916, clip, clean_geometry, normalize, build_nodes_edges, save_outputs), fetch with 3 attempts and 60 s timeout, previous-copy fallback with timestamp warning, missing-source recording, per-stage failure isolation, fatal exit only when no street source exists in any form (leaving the saved Graph unchanged), and `summary_report.json` (feature count, URL, timestamp, acquisition status, warnings)
     - Auto-create a Source_Record for each retrieved dataset (OSM record with ODbL license and attribution restriction)
     - _Requirements: 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 3.7_
   - [ ]* 3.7 Write property test for pipeline source resolution
     - **Property 42: Pipeline source resolution is deterministic**
     - **Validates: Requirements 3.5, 7.4, 7.5, 7.6, 7.7**
-  - [ ] 3.8 Implement `download_chicago_data.py`
+  - [x] 3.8 Implement `download_chicago_data.py`
     - Download Chicago Data Portal centerlines (6imu-meau), OSMnx streets/walkways/pedestrian paths, OSM building footprints for the Chicago_Extraction_Area, and the CTA GTFS static feed; save to git-ignored `data/raw`
     - Handle unavailable sources using the framework fallbacks (previous copy, else missing) and write each fallback and limitation to `docs/safety-limitations.md` input data (`data/processed/fallbacks.json`); document a reproduce command in the README
     - Extract CTA stations (location, id, name, routes) inside the extraction area
     - _Requirements: 3.1, 3.2, 5.1, 6.1, 7.1, 7.4, 7.5, 7.9_
-  - [ ] 3.9 Implement `process_streets.py`
+  - [x] 3.9 Implement `process_streets.py`
     - Merge Chicago Data Portal and OSM segments, extracting geometry, source id, road class, one-way, pedestrian access, bridge, tunnel, layer; assign `infrastructure_level` only where source identifies it and flag river crossings by source data
     - Store absent attributes as `Unknown` (never defaults); apply documented source precedence (CDP geometry and name, OSM access/bridge/tunnel/layer), record retained source and a conflict warning
     - _Requirements: 3.3, 3.4, 3.5, 3.6, 7.1_
   - [ ]* 3.10 Write property test for attribute normalization
     - **Property 19: Missing attributes normalize to Unknown, never defaults**
     - **Validates: Requirements 3.4, 4.4, 4.5, 12.3**
-  - [ ] 3.11 Implement `import_elevation.py`
+  - [x] 3.11 Implement `import_elevation.py`
     - Sample USGS 3DEP (py3dep or TNM ImageServer) at every Node, store meters with NAVD 88 datum, set `elevation_start`/`elevation_end` per Edge and `elevation_confidence`, force Low/Unknown for bridge/tunnel/elevated/lower-level edges, record `Unknown` (never zero) when unavailable and report the Unknown count; compute elevation percentiles for the manifest
     - If 3DEP is unreachable, continue with Unknown elevations and a documented fallback warning
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 7.1_
@@ -91,36 +91,36 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - Build Nodes and Edges (directed one-way edges for vehicles), drop edges with missing endpoints with an `edge_id` warning, add building entrances, the simplified two-level station model (street and platform joined only by Level_Transition edges, classified Simulated), building footprints layer with `Building_Height_Class` and only source-present attributes, stations and boundary layers
     - Write the versioned artifact, manifest and `summary_report.json`
     - _Requirements: 2.2, 5.6, 6.4, 7.1, 7.8, 12.1, 12.5, 12.6, 12.8, 3.6_
-  - [ ] 3.13 Implement the Graph runtime loader and region/graph endpoints
+  - [x] 3.13 Implement the Graph runtime loader and region/graph endpoints
     - `routing/graph.py`: `Graph.load(source)` with checksum validation, array-based adjacency, lazy STRtree, `snap(lat, lon, mask)`; fall back to previous version on checksum failure and report `INSUFFICIENT_DATA` when none loads
     - Routers: `GET /api/regions`, `GET /api/regions/chicago/metadata` (bounds, neighborhoods, CRS, graph version), `GET /api/graph/status`; update `/api/health` with loaded graph version
     - _Requirements: 2.6, 42.1, 42.5, 42.6, 43.8, 13.7_
-  - [ ] 3.14 Create the fixture graph and documented fallback dataset
+  - [x] 3.14 Create the fixture graph and documented fallback dataset
     - Generate a small synthetic Chicago-like graph artifact in `tests/fixtures/graph/` and a `scripts/make_fixture_graph.py` so development, CI and demos work when real downloads are unavailable; label it Simulated and document the limitation in `data/processed/fallbacks.json`
     - _Requirements: 7.4, 7.5, 45.6, 45.7_
   - [ ]* 3.15 Write artifact smoke test and pipeline unit tests
     - Fixture-based tests for Unknown handling, conflict warnings, manifest checksums, per-neighborhood routable Node presence (Loop, West Loop, Riverwalk, Clark/Lake, Millennium Park, DePaul Loop, UIC, UIC-downtown corridor)
     - _Requirements: 2.2, 3.4, 3.5, 7.3, 7.8_
 
-- [ ] 4. Emergency plan ingestion and source catalog
-  - [ ] 4.1 Implement the Source_Catalog service and `GET /api/sources`
+- [x] 4. Emergency plan ingestion and source catalog
+  - [x] 4.1 Implement the Source_Catalog service and `GET /api/sources`
     - `services/sources.py` with case-insensitive substring search on organization/title, exact filters on Data_Classification and verification status, 400 listing permitted values for invalid filter values, response within 2 s
     - Store catalog in `data/sources/catalog.json` and enforce a Source_Record on every rule, zone, closure, shelter, destination, notice and dataset
     - _Requirements: 10.1, 10.2, 10.7_
   - [ ]* 4.2 Write property test for catalog search and filter
     - **Property 34: Source catalog search and filter**
     - **Validates: Requirements 10.2, 10.7**
-  - [ ] 4.3 Implement `import_emergency_plan.py` for the 2007 CBD Evacuation Plan
+  - [x] 4.3 Implement `import_emergency_plan.py` for the 2007 CBD Evacuation Plan
     - Download the CBD_Plan PDF and store a local copy only if terms permit (record the determination), classify as Historical with the 2007 date
     - Extract Evacuation Levels I-III, activation conditions, shelter-in-place vs evacuation criteria, activation authority, CBD boundaries, hot/cold zones, transportation coordination, closure procedures, CTA/Metra coordination, Assembly/Transportation Centers, shelters, communication procedures, agency roles, each with page number and section heading; record not-found topics
     - Record the approximate CBD boundary (Division to Roosevelt, Halsted to Lake Michigan) labeled approximate; set `cbd_derived=true` on all records
     - Add search records for appendices and newer plan versions (date and result); leave content unpopulated when not located
     - If the PDF is unreachable, reuse a previous copy or record the plan as unavailable, continue, and document the fallback
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 7.1_
-  - [ ] 4.4 Implement official source review (OEMC, UIC, UIC Ready, Ready Illinois, Cook County HMP)
+  - [x] 4.4 Implement official source review (OEMC, UIC, UIC Ready, Ready Illinois, Cook County HMP)
     - Add `scripts/review_official_sources.py` that creates Source_Records for the five required URLs, checks reachability (60 s timeout, record unreachable with check date and keep the prior record), writes UIC reuse determinations, excludes UIC access codes, security procedures, restricted areas and unreviewed floor plans, and classifies Cook HMP areas as long-term mitigation
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.7_
-  - [ ] 4.5 Build the Data Sources and Limitations screen and official info links
+  - [x] 4.5 Build the Data Sources and Limitations screen and official info links
     - `pages/SourcesLimitations.tsx` listing all Source_Records (filter/search via `/api/sources`) and documented limitations; selected-feature popup showing source organization, URL, title, dates, classification, verification status and page/section within 1 s
     - Official information links (OEMC, Ready Illinois, UIC Ready) in the left sidebar component and a `HistoricalLabel` component with the text "Historical reference (2007), not a current evacuation order" used next to CBD-derived content
     - _Requirements: 8.10, 9.6, 10.3, 10.6, 46.6_
@@ -132,38 +132,38 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 6. Disaster-aware routing core
-  - [ ] 6.1 Define domain and routing models plus request validation
+  - [x] 6.1 Define domain and routing models plus request validation
     - `models/domain.py`: Incident, OfficialNotice, HazardReport (routing-relevant fields), Rule, Restriction/RestrictionCause, enums (PolicyOutcome, IncidentType, Verification_Status, TravelMode, MobilityProfile, UncertaintyLevel), PolicyDecision
     - `models/routing.py` and `routing/validation.py`: route request/response models; validate coordinates and region, `alternatives` integer 1..3 (default 1), supported `travel_mode`/`mobility_profile` listing supported values, unknown incident 404
     - _Requirements: 13.3, 13.11, 15.1, 43.1, 43.2, 43.3, 43.5, 43.6, 43.7, 11.1_
-  - [ ] 6.2 Implement the weights loader and validator
+  - [x] 6.2 Implement the weights loader and validator
     - `routing/cost.py` weights loading from `routing_weights.yaml` (design defaults), validation at startup and reload (missing file, negative or non-numeric weights, `w_unknown_attr > 0`), and a degraded state where `/health` reports `routing: invalid_configuration` and route requests return 503 naming the file and field
     - _Requirements: 13.2, 13.12_
-  - [ ] 6.3 Define the DisasterModule protocol, IncidentContext, RestrictionSet and EdgeMask
+  - [x] 6.3 Define the DisasterModule protocol, IncidentContext, RestrictionSet and EdgeMask
     - `disasters/base.py` with `DisasterModule` (policy_override, hard_restrictions, edge_penalty, route_filter, uncertainty_floor, advisories), module registry, `IncidentContext`, `RestrictionSet` (blocked_edges with causes, overlay_version) and numpy `EdgeMask`
     - _Requirements: 14.2, 11.3_
-  - [ ] 6.4 Implement the RestrictionResolver (hard step)
+  - [x] 6.4 Implement the RestrictionResolver (hard step)
     - `routing/restrictions.py`: resolve confirmed closures (Officially_Verified or demo Moderator-confirmed), official prohibited/impassable polygons using exact LineString `intersects`, notice road-direction restrictions as directed constraints, module hard restrictions; exclude Unverified/Corroborated/Disputed reports; cache by (overlay_version, incident_id, graph_version); report `excluded_edges_count`; detect isolated origin/destination
     - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5, 14.6, 14.7, 14.8, 11.7_
-  - [ ] 6.5 Implement the CostModel (soft step)
+  - [x] 6.5 Implement the CostModel (soft step)
     - `routing/cost.py`: `Route_Cost = travel_cost + disaster_hazard_penalty + uncertainty_penalty`, length-scaled, non-negative, strictly positive penalty per Unknown attribute, Low/Unknown elevation confidence, Unknown `mobility_accessibility` under step-free profile, disputed report hits; record `PenaltyComponents` per edge; step-free profile excludes known-inaccessible edges
     - _Requirements: 13.2, 13.5, 13.8, 12.4, 17.4_
-  - [ ] 6.6 Implement A* and the Dijkstra reference search
+  - [x] 6.6 Implement A* and the Dijkstra reference search
     - `routing/search.py`: A* with admissible haversine/`v_max` heuristic over the masked graph honoring directed edges and `route_filter`, plus a reference Dijkstra used by tests
     - _Requirements: 13.1, 12.6, 11.7_
-  - [ ] 6.7 Implement alternatives
+  - [x] 6.7 Implement alternatives
     - `routing/alternatives.py`: penalty-based k-alternatives (inflate factor, max attempts), distinctness by at least one edge, Yen-style spur fallback, report true uninflated cost and the count returned; hard restrictions in the mask for all passes
     - _Requirements: 13.4_
-  - [ ] 6.8 Implement explanation and uncertainty level
+  - [x] 6.8 Implement explanation and uncertainty level
     - `routing/explain.py`: restrictions considered, excluded edge count, per-edge penalty components, reason summary relative to other routes, data timestamp, sources, `algorithm-generated` label, uncertainty level (Low <5%, Medium <20%, High otherwise, Unknown with no coverage) raised only by module floors; flood wording limited to "lower modeled exposure"
     - _Requirements: 15.1, 15.2, 15.3, 15.6, 1.7, 17.7_
-  - [ ] 6.9 Implement the Rules_Engine
+  - [x] 6.9 Implement the Rules_Engine
     - `disasters/rules_engine.py`: pure `evaluate(ctx) -> PolicyDecision` with eligibility filter (no Source_Record, CBD-derived, Cook HMP area as live boundary, expiry + 60 s, not yet effective) and precedence (conflicting notices, shelter-in-place, unmodelable instruction including fire, module override, insufficient data, no route, route options); incident-specific destination ranked ahead of non-official ones
     - _Requirements: 11.1, 11.2, 11.4, 11.5, 11.6, 11.8, 11.9, 8.9, 9.5, 10.8, 20.4_
-  - [ ] 6.10 Implement the Flood module
+  - [x] 6.10 Implement the Flood module
     - `disasters/flood.py`: hard restrictions for confirmed closures, modeled impassable polygons and officially reported flooded segments; tunnel/underpass, lower-level and shoreline-proximity penalties (50 m); elevation penalty non-increasing in mean elevation; uncertainty penalty for Low/Unknown elevation confidence; no-evidence case sets `uncertainty_floor` High; Simulated flood polygons with no depth values
     - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5, 17.6, 17.7, 17.8_
-  - [ ] 6.11 Implement Earthquake, Tornado and Fire modules
+  - [x] 6.11 Implement Earthquake, Tornado and Fire modules
     - `disasters/earthquake.py`: hard restrictions for bridge closures, collapse and debris zones, notice-identified segments; high-rise proximity penalty only within 50 m of buildings tied to active debris zone/notice/report, never from `Building_Height_Class` alone; confirmed structural info replaces heuristics
     - `disasters/tornado.py`: SHELTER_IN_PLACE override when origin is inside an active warning boundary, official shelter plus Source_Record or "no verified shelter available", outdoor edge exclusion, resume on status change
     - `disasters/fire.py`: hard restrictions for verified perimeters/prohibited areas and confirmed blocked streets; unverified perimeters as penalty plus warning; 100 m smoke/fire report penalty
@@ -233,17 +233,17 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 8. Local-profile backend with adapter ports
-  - [ ] 8.1 Define adapter ports and local implementations
+  - [x] 8.1 Define adapter ports and local implementations
     - `backend/app/adapters/`: `Repository`, `RealtimePublisher`, `AuthProvider`, `BlobStore` protocols per the design; `MemoryRepository` (default), `SqliteRepository`, `LocalBlobStore` (signed expiring URLs), `InProcessPublisher`, and a factory selecting implementations from `SAFEPATH_PROFILE` and per-port overrides
     - `transact` is all-or-nothing and raises `RepositoryUnavailable`; `update_cas` and `put(if_absent)` raise `Conflict`
     - _Requirements: 29.7, 30.9_
-  - [ ] 8.2 Implement persistent record models, ids and public/private serializers
+  - [x] 8.2 Implement persistent record models, ids and public/private serializers
     - Models for Users, Incidents, HazardReports, ReportVotes, Messages, CheckIns, OfficialNotices, Overlays, Events, AuditLog, RateLimits; ULID ids with type prefix unique per record type; `PublicView` and `PrivateView` per record; HMAC-based anonymous reporter alias
     - _Requirements: 30.1, 30.2, 30.3, 30.4, 30.5, 30.6, 30.8, 22.5, 31.8_
-  - [ ] 8.3 Implement authentication, roles and audit
+  - [x] 8.3 Implement authentication, roles and audit
     - `DemoTokenAuthProvider` (HMAC-signed tokens, 24 h guest expiry), roles from `roles.yaml` admin config, `require(role_set)` dependency (401 for missing/expired/invalid, 403 for insufficient role), self-escalation rejection with audit entry, privacy preferences defaulting to location sharing off, `POST /api/auth/guest`, audit log writer
     - _Requirements: 22.1, 22.2, 22.3, 22.4, 22.6, 22.7, 28.7, 31.4, 31.7, 42.3, 42.4_
-  - [ ] 8.4 Implement API infrastructure
+  - [x] 8.4 Implement API infrastructure
     - Error envelope with field-level errors, body-size cap (1 MB, 413), `nh3` text sanitizer, `RateLimiter` port (in-memory and Repository-backed) enforcing 5 reports/10 min, 20 messages/min, 30 votes/10 min, 10 check-ins/10 min with 429 and `Retry-After`, CORS config, OpenAPI metadata
     - _Requirements: 28.1, 28.2, 28.4, 28.5, 28.9, 31.3, 42.2_
   - [ ] 8.5 Implement incidents, notices and the overlay store, and wire routing to the Repository
@@ -365,7 +365,7 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - _Requirements: 37.4, 37.5, 38.3, 38.4, 39.2, 39.3, 39.4, 39.5, 44.11_
 
 - [ ] 12. AWS discovery, CDK and deployment tooling
-  - [ ] 12.1 Implement AWS sandbox discovery
+  - [x] 12.1 Implement AWS sandbox discovery
     - `scripts/aws_discovery.py` (read-only): `sts get-caller-identity`, region, IAM permission probes (`iam simulate-principal-policy` or probe calls), service quotas and availability for DynamoDB, Lambda, API Gateway, S3, CloudFront, Cognito, AppSync Events, Bedrock, Budgets, EventBridge, CloudWatch
     - Write findings to `docs/aws-deployment.md` and emit CDK context flags (`useCognito`, `realtime=appsync|apigw-ws`, `enableBudget`, `enableBedrock`, `enableCloudFront`) to `infrastructure/aws/cdk.context.json`; create a discovery gate file that `deploy` requires; run this before provisioning anything
     - _Requirements: 29.1, 29.5_

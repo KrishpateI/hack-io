@@ -1,0 +1,51 @@
+[project]
+name = "safepath-backend"
+version = "0.1.0"
+description = "SafePath evacuation navigation backend"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi==0.162.0",
+    "pydantic==2.14.1",
+    "mangum==0.22.0",
+    "uvicorn==0.54.0",
+    "pyyaml==6.0.3",
+    "shapely==2.2.0",
+    "numpy==2.5.4",
+    "nh3==0.3.7",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    "hypothesis==6.170.9",
+    "httpx==0.28.1",
+]
+# Read-only AWS sandbox discovery (scripts/aws_discover.py); optional.
+aws = [
+    "boto3==1.43.118",
+]
+# Offline Data_Pipeline processing only; keeps the Lambda/API package light.
+pipeline = [
+    "osmnx==2.1.1",
+    "geopandas==1.2.0",
+    "pyproj==3.8.0",
+    "pyogrio==0.13.0",
+    "networkx==3.7",
+]
+
+# PDF text extraction for scripts/import_emergency_plan.py (offline pipeline only).
+pdf = [
+    "pypdf==6.1.1",
+]
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+# Run from safepath/backend; tests live in safepath/tests/backend.
+testpaths = ["../tests/backend", "../tests/pipeline"]
+pythonpath = ["."]
+addopts = "-ra"

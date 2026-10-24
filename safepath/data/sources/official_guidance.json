@@ -1,0 +1,313 @@
+{
+  "generated_at": "2026-10-24T18:47:35.427379+00:00",
+  "disclaimer": "Static preparedness guidance paraphrased from official pages. It is not a current evacuation order. Always follow instructions from official responders.",
+  "official_links": [
+    {
+      "id": "OEMC-CHICAGO",
+      "label": "Chicago OEMC",
+      "url": "https://www.chicago.gov/city/en/depts/oem.html",
+      "source_id": "OEMC-CHICAGO"
+    },
+    {
+      "id": "UIC-READY",
+      "label": "UIC Ready",
+      "url": "https://ready.uic.edu/",
+      "source_id": "UIC-READY"
+    },
+    {
+      "id": "READY-ILLINOIS",
+      "label": "Ready Illinois",
+      "url": "https://ready.illinois.gov/",
+      "source_id": "READY-ILLINOIS"
+    }
+  ],
+  "guidance": [
+    {
+      "guidance_id": "ready-illinois-tornado",
+      "hazard": "tornado",
+      "title": "Tornado preparedness and shelter basics",
+      "notes": [
+        "Pick a safe zone at home and work in advance, preferably a basement or small interior room or hallway.",
+        "During a tornado warning, go to the safe zone, stay away from windows and do not open them.",
+        "Do not try to outrun a tornado in a car; leave the vehicle and seek sturdy shelter.",
+        "Keep a battery-powered NOAA Weather Radio for updates."
+      ],
+      "source_id": "READY-ILLINOIS",
+      "source_url": "https://ready.illinois.gov/hazards/tornadoes.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00",
+      "data_classification": "Static",
+      "attribution": "Paraphrased summary; see the source page for the full guidance."
+    },
+    {
+      "guidance_id": "ready-illinois-flood",
+      "hazard": "flood",
+      "title": "Flood safety basics",
+      "notes": [
+        "Move to higher ground and stay away from flooded areas, especially underpasses, canals and drainage channels.",
+        "Do not walk through moving water; six inches can knock a person off their feet.",
+        "Do not drive over a flooded road; if a vehicle stalls, abandon it."
+      ],
+      "source_id": "READY-ILLINOIS",
+      "source_url": "https://ready.illinois.gov/hazards/floods.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00",
+      "data_classification": "Static",
+      "attribution": "Paraphrased summary; see the source page for the full guidance."
+    },
+    {
+      "guidance_id": "ready-illinois-earthquake",
+      "hazard": "earthquake",
+      "title": "Earthquake: Drop, Cover, Hold",
+      "notes": [
+        "Indoors: drop to the floor, take cover under sturdy furniture and hold on until the shaking stops.",
+        "Outdoors: move to an open area away from trees, buildings, walls and power lines.",
+        "If driving, stop safely and do not stop under overpasses or bridges."
+      ],
+      "source_id": "READY-ILLINOIS",
+      "source_url": "https://ready.illinois.gov/hazards/earthquake.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00",
+      "data_classification": "Static",
+      "attribution": "Paraphrased summary; see the source page for the full guidance."
+    },
+    {
+      "guidance_id": "ready-illinois-fire-high-rise",
+      "hazard": "fire",
+      "title": "High-rise fire safety basics",
+      "notes": [
+        "Learn your building's evacuation plan and the sound of its fire alarm.",
+        "Call 9-1-1 early; do not assume someone else already has.",
+        "If a door is warm, do not open it; if there is smoke in the hallway, return to the room.",
+        "Once outside, stay out until the fire department says it is safe."
+      ],
+      "source_id": "READY-ILLINOIS",
+      "source_url": "https://ready.illinois.gov/hazards/hirise.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00",
+      "data_classification": "Static",
+      "attribution": "Paraphrased summary; see the source page for the full guidance."
+    },
+    {
+      "guidance_id": "ready-illinois-shelter-evacuate",
+      "hazard": "shelter_or_evacuation",
+      "title": "Staying put (shelter-in-place) versus evacuating",
+      "notes": [
+        "If officials tell you to shelter in place or to evacuate, follow the instruction immediately.",
+        "Shelter in place means taking immediate shelter indoors when going outside is more dangerous.",
+        "When evacuating, use authorized routes and take your Go Bag."
+      ],
+      "source_id": "READY-ILLINOIS",
+      "source_url": "https://ready.illinois.gov/plan/stayput.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00",
+      "data_classification": "Static",
+      "attribution": "Paraphrased summary; see the source page for the full guidance."
+    },
+    {
+      "guidance_id": "oemc-family-preparedness",
+      "hazard": "general",
+      "title": "How to prepare your family for an emergency",
+      "notes": [
+        "Be ready to care for your household for at least 3 days; city resources may be limited.",
+        "Choose two meeting places and identify two separate escape routes from home.",
+        "Pick an out-of-area contact person and build an Emergency Supply Kit and Go Bag."
+      ],
+      "source_id": "OEMC-CHICAGO",
+      "source_url": "https://www.chicago.gov/city/en/depts/oem/supp_info/how_to_prepare_yourfamilyforanemergency.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00",
+      "data_classification": "Static",
+      "attribution": "Paraphrased summary; see the source page for the full guidance."
+    },
+    {
+      "guidance_id": "oemc-notify-chicago-alerts",
+      "hazard": "alerts",
+      "title": "OEMC alerts: Notify Chicago",
+      "notes": [
+        "NotifyChicago sends text or email alerts for severe weather emergencies, hazardous materials and traffic impacts.",
+        "OEMC also lists a CHILAKE text service for lakefront weather notices."
+      ],
+      "source_id": "OEMC-CHICAGO",
+      "source_url": "https://www.chicago.gov/city/en/depts/oem/supp_info/oemc-alerts--current-threats-and-public-information.html",
+      "retrieved_at": "2026-10-24T18:47:35.427379+00:00",
+      "data_classification": "Static",
+      "attribution": "Paraphrased summary; see the source page for the full guidance."
+    }
+  ],
+  "not_found": [],
+  "oemc_public_evacuation_procedures": {
+    "topic": "oemc-public-evacuation-procedures",
+    "checked_urls": [
+      "https://www.chicago.gov/city/en/depts/oem.html",
+      "https://www.chicago.gov/city/en/depts/oem/provdrs/alertchicago.html",
+      "https://www.chicago.gov/city/en/depts/oem/supp_info/oemc-alerts--current-threats-and-public-information.html",
+      "https://www.chicago.gov/city/en/depts/oem/supp_info/how_to_prepare_yourfamilyforanemergency.html"
+    ],
+    "pages_read": 4,
+    "checked_at": "2026-10-24T18:47:35.427379+00:00",
+    "incidental_mentions": [
+      {
+        "url": "https://www.chicago.gov/city/en/depts/oem/supp_info/how_to_prepare_yourfamilyforanemergency.html",
+        "excerpt": "te a location to meet in case it is impossible to return home or if you have to evacuate"
+      }
+    ],
+    "status": "not_found",
+    "reason": "no current public evacuation procedure found on the OEMC pages read (only generic family-planning mentions); SafePath links to OEMC and does not state any OEMC evacuation procedure"
+  },
+  "terms_of_use": [
+    {
+      "source_id": "OEMC-CHICAGO",
+      "url": "https://www.chicago.gov/city/en/general/disclaimer.html",
+      "checked_at": "2026-10-24T18:47:35.427379+00:00",
+      "status": "ok",
+      "summary": "City disclaimer: website content is provided as-is with no guarantee of accuracy or availability; third-party links are subject to their own terms. No content reuse license was found."
+    },
+    {
+      "source_id": "READY-ILLINOIS",
+      "url": "https://ready.illinois.gov/disclaimer.html",
+      "checked_at": "2026-10-24T18:47:35.427379+00:00",
+      "status": "ok",
+      "summary": "State disclaimer: information is for convenience; accuracy, completeness and timeliness are not guaranteed. No content reuse license was found."
+    }
+  ],
+  "uic": {
+    "real_floor_plan_reuse_confirmed": false,
+    "building_emergency_module_plan": "fictional",
+    "excluded_content": [
+      "Building access codes",
+      "Security procedures",
+      "Restricted-area locations",
+      "Floor plans and evacuation drawings without a public-reuse determination (the drawings linked from UIC pages have not been reviewed for reuse and are not copied)",
+      "Names and contact details of building representatives and evacuation monitors"
+    ]
+  },
+  "cook_county_hmp": {
+    "classification": "long_term_mitigation_planning",
+    "live_incident_boundary_allowed": false
+  },
+  "page_inspections": [
+    {
+      "source_id": "OEMC-CHICAGO",
+      "url": "https://www.chicago.gov/city/en/depts/oem.html",
+      "checked_at": "2026-10-24T18:47:35.427379+00:00",
+      "attempts": 1,
+      "status": "ok",
+      "page_title": "City of Chicago :: Emergency Management & Communications",
+      "content_sha256": "f0c3db16343ea27e7e48f8e6eac93fa7183061622cfb0453d8fe0dc51dcd5090",
+      "bytes": 107209,
+      "topics_found": [
+        "flood",
+        "public_alerts"
+      ],
+      "topics_not_found": [
+        "tornado",
+        "earthquake",
+        "fire",
+        "shelter",
+        "evacuation",
+        "building_plans",
+        "hazard_mitigation"
+      ],
+      "link_count": 256
+    },
+    {
+      "source_id": "UIC-EHSO-BUILDING-EAP",
+      "url": "https://ehso.uic.edu/fire-safety/building-specific-emergency-action-plans/",
+      "checked_at": "2026-10-24T18:47:35.427379+00:00",
+      "attempts": 1,
+      "status": "ok",
+      "page_title": "Building Specific Emergency Action Plans | Environmental Health and Safety | University of Illinois ChicagoUniversity of Illinois ChicagoClose search boxUniversity of Illinois ChicagoExpand Research Safety menuExpand Chemical Disposal menuExpand Occupational Safety menuExpand Fire Safety menuExpand About Us menuDown arrow iconBack to main contentUniversity of Illinois Chicago",
+      "content_sha256": "2fb48847b909e3a0fd5bd64ebbda3395b16f2b275ef9cd83bd42d81f86338160",
+      "bytes": 433519,
+      "topics_found": [
+        "fire",
+        "shelter",
+        "evacuation",
+        "building_plans"
+      ],
+      "topics_not_found": [
+        "tornado",
+        "flood",
+        "earthquake",
+        "hazard_mitigation",
+        "public_alerts"
+      ],
+      "link_count": 834
+    },
+    {
+      "source_id": "UIC-READY",
+      "url": "https://ready.uic.edu/",
+      "checked_at": "2026-10-24T18:47:35.427379+00:00",
+      "attempts": 1,
+      "status": "ok",
+      "page_title": "Office of Preparedness and Response | University of Illinois ChicagoUniversity of Illinois ChicagoClose search boxUniversity of Illinois ChicagoExpand WHAT WE DO menuExpand SAFETY RESOURCES menuExpand EMERGENCY GUIDELINES menuExpand REPORTING menuExpand ABOUT menuEdit iconUser iconUniversity of Illinois ChicagoXInstagramYouTube",
+      "content_sha256": "c84715c45893d63c2a4cd8cdcf2d3c42e721ba4fe7fd751ce0faf717157fb379",
+      "bytes": 359847,
+      "topics_found": [
+        "fire",
+        "hazard_mitigation",
+        "public_alerts"
+      ],
+      "topics_not_found": [
+        "tornado",
+        "flood",
+        "earthquake",
+        "shelter",
+        "evacuation",
+        "building_plans"
+      ],
+      "link_count": 120
+    },
+    {
+      "source_id": "READY-ILLINOIS",
+      "url": "https://ready.illinois.gov/",
+      "checked_at": "2026-10-24T18:47:35.427379+00:00",
+      "attempts": 1,
+      "status": "ok",
+      "page_title": "Ready Illinois",
+      "content_sha256": "797db052ed6c45949f7b287a247b56ef8b09c5cc14da342410c9246f9831b117",
+      "bytes": 71304,
+      "topics_found": [
+        "tornado",
+        "flood",
+        "public_alerts"
+      ],
+      "topics_not_found": [
+        "earthquake",
+        "fire",
+        "shelter",
+        "evacuation",
+        "building_plans",
+        "hazard_mitigation"
+      ],
+      "link_count": 80
+    },
+    {
+      "source_id": "COOK-COUNTY-HMP",
+      "url": "https://www.cookcountyemergencymanagement.org/hmp",
+      "checked_at": "2026-10-24T18:47:35.427379+00:00",
+      "attempts": 1,
+      "status": "ok",
+      "page_title": "Hazard Mitigation Plan Updates | Emergency Management and Regional Security",
+      "content_sha256": "8eb30e27528e0a42130bd6dc48fd0dfb935719449d5f1f842b2d7001010f3805",
+      "bytes": 153742,
+      "topics_found": [
+        "hazard_mitigation"
+      ],
+      "topics_not_found": [
+        "tornado",
+        "flood",
+        "earthquake",
+        "fire",
+        "shelter",
+        "evacuation",
+        "building_plans",
+        "public_alerts"
+      ],
+      "link_count": 406
+    }
+  ],
+  "requirements": [
+    "9.1",
+    "9.2",
+    "9.3",
+    "9.4",
+    "9.5",
+    "9.7"
+  ]
+}

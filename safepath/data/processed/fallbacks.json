@@ -1,0 +1,156 @@
+{
+  "download:cdp_centerlines": {
+    "acquisition_status": "freshly downloaded",
+    "dataset": "cdp_centerlines",
+    "errors": [],
+    "feature_count": 5972,
+    "limitation": "Chicago Data Portal centerlines (pr57-gg9e) are a periodic snapshot (map view 6imu-meau dated August 2016) and carry no bridge, tunnel or pedestrian-access attributes; those come from OSM or stay Unknown.",
+    "reproduce": "backend\\.venv\\Scripts\\python.exe scripts\\download_chicago_data.py",
+    "requirements": [
+      "7.4",
+      "7.5",
+      "7.9"
+    ],
+    "retrieved_at": "2026-10-24T18:39:40.750382+00:00",
+    "source_url": "https://data.cityofchicago.org/resource/pr57-gg9e.geojson?$limit=50000&$where=within_box(the_geom,41.91,-87.68,41.85,-87.6)",
+    "warnings": []
+  },
+  "download:cta_gtfs": {
+    "acquisition_status": "freshly downloaded",
+    "dataset": "cta_gtfs",
+    "errors": [],
+    "feature_count": 38,
+    "limitation": "CTA GTFS is a schedule feed; stations are GTFS parent stations. Wheelchair boarding is Unknown where the feed does not state it. It says nothing about service disruptions.",
+    "reproduce": "backend\\.venv\\Scripts\\python.exe scripts\\download_chicago_data.py",
+    "requirements": [
+      "7.4",
+      "7.5",
+      "7.9"
+    ],
+    "retrieved_at": "2026-10-24T18:41:39.386640+00:00",
+    "source_url": "https://www.transitchicago.com/downloads/sch_data/google_transit.zip",
+    "warnings": []
+  },
+  "download:osm_buildings": {
+    "acquisition_status": "freshly downloaded",
+    "dataset": "osm_buildings",
+    "errors": [],
+    "feature_count": 28694,
+    "limitation": "OSM building height and floor tags are sparse; building height class is Unknown where tags are absent. Multipolygon relations are not downloaded; only building ways.",
+    "reproduce": "backend\\.venv\\Scripts\\python.exe scripts\\download_chicago_data.py",
+    "requirements": [
+      "7.4",
+      "7.5",
+      "7.9"
+    ],
+    "retrieved_at": "2026-10-24T18:41:31.375506+00:00",
+    "source_url": "https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A180%5D%3B%28way%5B%22building%22%5D%2841.85%2C-87.68%2C41.91%2C-87.6%29%3B%29%3Bout+geom%3B",
+    "warnings": []
+  },
+  "download:osm_pedestrian": {
+    "acquisition_status": "freshly downloaded",
+    "dataset": "osm_pedestrian",
+    "errors": [],
+    "feature_count": 26126,
+    "limitation": "OSM pedestrian coverage (walkways, steps, indoor corridors, skywalk or underpass tagging) is incomplete; Level_Transition and accessibility data may be Unknown.",
+    "reproduce": "backend\\.venv\\Scripts\\python.exe scripts\\download_chicago_data.py",
+    "requirements": [
+      "7.4",
+      "7.5",
+      "7.9"
+    ],
+    "retrieved_at": "2026-10-24T18:40:58.938116+00:00",
+    "source_url": "https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A180%5D%3B%28way%5B%22highway%22~%22%5E%28footway%7Cpedestrian%7Cpath%7Csteps%7Ccorridor%29%24%22%5D%2841.85%2C-87.68%2C41.91%2C-87.6%29%3B%29%3Bout+geom%3B",
+    "warnings": []
+  },
+  "download:osm_streets": {
+    "acquisition_status": "freshly downloaded",
+    "dataset": "osm_streets",
+    "errors": [],
+    "feature_count": 12932,
+    "limitation": "OSM street attributes (bridge, tunnel, layer, access, oneway) are volunteer-contributed and incomplete; missing values are kept Unknown and penalized, never assumed safe.",
+    "reproduce": "backend\\.venv\\Scripts\\python.exe scripts\\download_chicago_data.py",
+    "requirements": [
+      "7.4",
+      "7.5",
+      "7.9"
+    ],
+    "retrieved_at": "2026-10-24T18:40:20.019828+00:00",
+    "source_url": "https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A180%5D%3B%28way%5B%22highway%22~%22%5E%28motorway%7Cmotorway_link%7Ctrunk%7Ctrunk_link%7Cprimary%7Cprimary_link%7Csecondary%7Csecondary_link%7Ctertiary%7Ctertiary_link%7Cunclassified%7Cresidential%7Cliving_street%7Cservice%29%24%22%5D%2841.85%2C-87.68%2C41.91%2C-87.6%29%3B%29%3Bout+geom%3B",
+    "warnings": []
+  },
+  "elevation:limitation": {
+    "requirements": [
+      "4.6"
+    ],
+    "warning": "USGS 3DEP is bare-earth terrain (NAVD 88). It does not represent bridge decks, tunnels or underground levels, and higher terrain does not guarantee flood safety."
+  },
+  "elevation:partial_coverage": {
+    "abort_reason": "runtime cap reached",
+    "requirements": [
+      "4.5",
+      "7.5"
+    ],
+    "retrieved_at": "2026-10-24T19:16:48.571450+00:00",
+    "warning": "20004 of 51604 node elevations are Unknown (no 3DEP data or request failures)."
+  },
+  "emergency_plan:cbd_plan_2007": {
+    "acquisition_status": "freshly downloaded",
+    "dataset": "cbd_plan_2007",
+    "errors": [],
+    "limitation": "Historical (2007) plan used for planning concepts only; never an active Official_Notice. Appendices (CPD, OEMC, CTA, IDOT) and any newer plan version were not located publicly; their content is left unpopulated.",
+    "record_count": 87,
+    "reproduce": "backend\\.venv\\Scripts\\python.exe scripts\\import_emergency_plan.py",
+    "requirements": [
+      "8.1",
+      "8.2",
+      "8.3",
+      "8.4",
+      "8.5",
+      "8.6",
+      "8.7",
+      "8.8",
+      "7.1"
+    ],
+    "retrieved_at": "2026-10-24T18:46:50.014724+00:00",
+    "source_url": "https://webapps1.chicago.gov/ChicagoAlertWeb/resources/pdf/CBD_Evac_Plan_final_30-5-07.pdf"
+  },
+  "official_sources:oemc_public_evacuation_procedures": {
+    "checked_at": "2026-10-24T18:47:35.427379+00:00",
+    "checked_urls": [
+      "https://www.chicago.gov/city/en/depts/oem.html",
+      "https://www.chicago.gov/city/en/depts/oem/provdrs/alertchicago.html",
+      "https://www.chicago.gov/city/en/depts/oem/supp_info/oemc-alerts--current-threats-and-public-information.html",
+      "https://www.chicago.gov/city/en/depts/oem/supp_info/how_to_prepare_yourfamilyforanemergency.html"
+    ],
+    "incidental_mentions": [
+      {
+        "excerpt": "te a location to meet in case it is impossible to return home or if you have to evacuate",
+        "url": "https://www.chicago.gov/city/en/depts/oem/supp_info/how_to_prepare_yourfamilyforanemergency.html"
+      }
+    ],
+    "limitation": "SafePath states no OEMC evacuation procedure; it links to OEMC only.",
+    "pages_read": 4,
+    "reason": "no current public evacuation procedure found on the OEMC pages read (only generic family-planning mentions); SafePath links to OEMC and does not state any OEMC evacuation procedure",
+    "requirements": [
+      "9.1"
+    ],
+    "status": "not_found",
+    "topic": "oemc-public-evacuation-procedures"
+  },
+  "synthetic_fixture_graph": {
+    "artifact_root": "tests/fixtures/graph",
+    "classification": "Simulated",
+    "fallback": "Synthetic Chicago-like street grid used when real street downloads are unavailable.",
+    "graph_version": "v20260101-6b3896",
+    "limitation": "SIMULATED. Street geometry, bridges, tunnels, one-way flags, elevations and buildings are invented for development, CI and demos. They do not represent real Chicago streets and must not be used for real navigation or evacuation guidance.",
+    "reproduce": "py scripts/make_fixture_graph.py --force",
+    "requirements": [
+      "7.4",
+      "7.5",
+      "45.6",
+      "45.7"
+    ],
+    "source_id": "SIMULATED-FIXTURE-GRAPH"
+  }
+}

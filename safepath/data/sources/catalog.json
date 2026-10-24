@@ -1,0 +1,262 @@
+{
+  "sources": [
+    {
+      "source_id": "OEMC-CHICAGO",
+      "organization": "City of Chicago Office of Emergency Management and Communications",
+      "url": "https://www.chicago.gov/city/en/depts/oem.html",
+      "title": "Emergency Management & Communications (OEMC)",
+      "published_at": null,
+      "retrieved_at": "2026-10-24T18:47:35.427379Z",
+      "geographic_applicability": "City of Chicago",
+      "data_classification": "Current",
+      "verification_status": "verified",
+      "page_or_section": "Department home page",
+      "usage_restrictions": [
+        "City website disclaimer: content provided as-is, no guarantee of accuracy; no reuse license located, so SafePath links and keeps short attributed notes only",
+        "Not a current evacuation order"
+      ],
+      "is_official_source": true,
+      "reuse_determination": null,
+      "check_status": "ok",
+      "checked_at": "2026-10-24T18:47:35.427379Z"
+    },
+    {
+      "source_id": "UIC-EHSO-BUILDING-EAP",
+      "organization": "University of Illinois Chicago Environmental Health and Safety",
+      "url": "https://ehso.uic.edu/fire-safety/building-specific-emergency-action-plans/",
+      "title": "Building Specific Emergency Action Plans",
+      "published_at": null,
+      "retrieved_at": "2026-10-24T18:47:35.427379Z",
+      "geographic_applicability": "University of Illinois Chicago campus buildings",
+      "data_classification": "Static",
+      "verification_status": "verified",
+      "page_or_section": "Building-specific EAP index",
+      "usage_restrictions": [
+        "No reuse license stated on the page; link and short attributed notes only",
+        "Excludes access codes, security procedures, restricted areas and unreviewed floor plans"
+      ],
+      "is_official_source": true,
+      "reuse_determination": {
+        "approved_content": [
+          "Link to the public building-specific emergency action plan page",
+          "Short attributed description of the resources the page offers (plans, evacuation drawings categories, contacts form)"
+        ],
+        "excluded_content": [
+          "Building access codes",
+          "Security procedures",
+          "Restricted-area locations",
+          "Floor plans and evacuation drawings without a public-reuse determination (the drawings linked from UIC pages have not been reviewed for reuse and are not copied)",
+          "Names and contact details of building representatives and evacuation monitors"
+        ],
+        "determined_at": "2026-10-24T18:47:35.427379Z",
+        "basis": "Pages are public but state no content reuse license (footer: copyright The Board of Trustees of the University of Illinois). SafePath therefore links to the pages and keeps only short attributed descriptions. No real UIC floor plan is confirmed publicly reusable, so the Building_Emergency_Module uses a fictional indoor floor plan (Req 9.4)."
+      },
+      "check_status": "ok",
+      "checked_at": "2026-10-24T18:47:35.427379Z"
+    },
+    {
+      "source_id": "UIC-READY",
+      "organization": "University of Illinois Chicago Office of Preparedness and Response",
+      "url": "https://ready.uic.edu/",
+      "title": "UIC Ready: Office of Preparedness and Response",
+      "published_at": null,
+      "retrieved_at": "2026-10-24T18:47:35.427379Z",
+      "geographic_applicability": "University of Illinois Chicago campus",
+      "data_classification": "Current",
+      "verification_status": "verified",
+      "page_or_section": "Site home page",
+      "usage_restrictions": [
+        "No reuse license stated on the page; link and short attributed notes only",
+        "Excludes access codes, security procedures, restricted areas and unreviewed floor plans"
+      ],
+      "is_official_source": true,
+      "reuse_determination": {
+        "approved_content": [
+          "Link to UIC Ready and its public emergency guideline pages",
+          "Short attributed description of the preparedness resources the site offers"
+        ],
+        "excluded_content": [
+          "Building access codes",
+          "Security procedures",
+          "Restricted-area locations",
+          "Floor plans and evacuation drawings without a public-reuse determination (the drawings linked from UIC pages have not been reviewed for reuse and are not copied)",
+          "Names and contact details of building representatives and evacuation monitors"
+        ],
+        "determined_at": "2026-10-24T18:47:35.427379Z",
+        "basis": "Pages are public but state no content reuse license (footer: copyright The Board of Trustees of the University of Illinois). SafePath therefore links to the pages and keeps only short attributed descriptions. No real UIC floor plan is confirmed publicly reusable, so the Building_Emergency_Module uses a fictional indoor floor plan (Req 9.4)."
+      },
+      "check_status": "ok",
+      "checked_at": "2026-10-24T18:47:35.427379Z"
+    },
+    {
+      "source_id": "READY-ILLINOIS",
+      "organization": "Illinois Emergency Management Agency and Office of Homeland Security",
+      "url": "https://ready.illinois.gov/",
+      "title": "Ready Illinois",
+      "published_at": null,
+      "retrieved_at": "2026-10-24T18:47:35.427379Z",
+      "geographic_applicability": "State of Illinois",
+      "data_classification": "Static",
+      "verification_status": "verified",
+      "page_or_section": "Site home page",
+      "usage_restrictions": [
+        "State disclaimer: accuracy, completeness and timeliness not guaranteed; no reuse license located, so SafePath links and keeps short attributed notes only"
+      ],
+      "is_official_source": true,
+      "reuse_determination": null,
+      "check_status": "ok",
+      "checked_at": "2026-10-24T18:47:35.427379Z"
+    },
+    {
+      "source_id": "COOK-COUNTY-HMP",
+      "organization": "Cook County Emergency Management and Regional Security",
+      "url": "https://www.cookcountyemergencymanagement.org/hmp",
+      "title": "Cook County Multi-Jurisdictional Hazard Mitigation Plan",
+      "published_at": null,
+      "retrieved_at": "2026-10-24T18:47:35.427379Z",
+      "geographic_applicability": "Cook County, Illinois (long-term mitigation planning areas)",
+      "data_classification": "Static",
+      "verification_status": "verified",
+      "page_or_section": "Hazard Mitigation Plan page",
+      "usage_restrictions": [
+        "long_term_mitigation_planning",
+        "Plan areas are long-term mitigation planning areas, not live Incident boundaries (Req 9.5)"
+      ],
+      "is_official_source": true,
+      "reuse_determination": null,
+      "check_status": "ok",
+      "checked_at": "2026-10-24T18:47:35.427379Z"
+    },
+    {
+      "check_status": "ok",
+      "checked_at": "2026-10-24T18:46:50.014724Z",
+      "data_classification": "Historical",
+      "geographic_applicability": "Chicago Central Business District (approx. Division St to Roosevelt Rd, Halsted St to Lake Michigan)",
+      "is_official_source": true,
+      "organization": "City of Chicago Office of Emergency Management & Communications (OEMC)",
+      "page_or_section": "Pages 1-18 (see per-record page and section_heading)",
+      "published_at": "2007-05-16",
+      "retrieved_at": "2026-10-24T18:46:50.014724Z",
+      "reuse_determination": {
+        "approved_content": [
+          "Short attributed excerpts with PDF page and section heading"
+        ],
+        "basis": "No copyright, licence or reuse statement appears in the PDF text, and no explicit reuse licence was found for it on chicago.gov (checked via web search). Storage permission is therefore NOT confirmed: the PDF is kept only as a git-ignored local cache (data/raw/cbd_plan/) for extraction and is never committed or redistributed. Only short attributed excerpts with page references are stored under data/sources/.",
+        "determined_at": "2026-10-24T18:46:50.014724Z",
+        "excluded_content": [
+          "Redistribution of the full PDF or its pages in the repository"
+        ]
+      },
+      "source_id": "cbd_plan_2007",
+      "title": "City of Chicago Central Business District Evacuation Plan (2007)",
+      "url": "https://webapps1.chicago.gov/ChicagoAlertWeb/resources/pdf/CBD_Evac_Plan_final_30-5-07.pdf",
+      "usage_restrictions": [
+        "Historical reference (2007), not a current evacuation order",
+        "cbd_derived: never evaluated as an active Official_Notice",
+        "Local copy storage permission not confirmed; PDF kept only as git-ignored cache (data/raw/cbd_plan/)",
+        "Plan date 05-16-07 (cover: Additions 29 May 07); contact details and procedures may be out of date"
+      ],
+      "verification_status": "unverified"
+    },
+    {
+      "check_status": "not_located",
+      "checked_at": "2026-10-24T00:00:00Z",
+      "data_classification": "Historical",
+      "geographic_applicability": "Chicago Central Business District",
+      "is_official_source": false,
+      "organization": "City of Chicago Office of Emergency Management & Communications (OEMC)",
+      "page_or_section": "Searched 2026-10-24: not located: searches returned only the 2007 plan itself (plus unrelated chicago.gov and IDOT pages); no public copy of this item was found",
+      "published_at": null,
+      "retrieved_at": "2026-10-24T18:46:50.014724Z",
+      "reuse_determination": null,
+      "source_id": "cbd_plan_2007_search_appendix_cpd",
+      "title": "Search record: CPD Central Business District Evacuation Deployment Plan (Appendix)",
+      "url": "https://www.chicago.gov/city/en/depts/oem.html",
+      "usage_restrictions": [
+        "Search record only; item unavailable, content left unpopulated (not inferred)",
+        "Query: Chicago OEMC Central Business District Evacuation Plan appendix CPD CTA IDOT deployment plan; \"CTA Central Business District Evacuation Plan\" OR \"CPD Central Business District Evacuation Deployment Plan\" Chicago"
+      ],
+      "verification_status": "unknown"
+    },
+    {
+      "check_status": "not_located",
+      "checked_at": "2026-10-24T00:00:00Z",
+      "data_classification": "Historical",
+      "geographic_applicability": "Chicago Central Business District",
+      "is_official_source": false,
+      "organization": "City of Chicago Office of Emergency Management & Communications (OEMC)",
+      "page_or_section": "Searched 2026-10-24: not located: searches returned only the 2007 plan itself (plus unrelated chicago.gov and IDOT pages); no public copy of this item was found",
+      "published_at": null,
+      "retrieved_at": "2026-10-24T18:46:50.014724Z",
+      "reuse_determination": null,
+      "source_id": "cbd_plan_2007_search_appendix_cta",
+      "title": "Search record: CTA Central Business District Evacuation Plan (Appendix)",
+      "url": "https://www.chicago.gov/city/en/depts/oem.html",
+      "usage_restrictions": [
+        "Search record only; item unavailable, content left unpopulated (not inferred)",
+        "Query: \"CTA Central Business District Evacuation Plan\" OR \"CPD Central Business District Evacuation Deployment Plan\" Chicago"
+      ],
+      "verification_status": "unknown"
+    },
+    {
+      "check_status": "not_located",
+      "checked_at": "2026-10-24T00:00:00Z",
+      "data_classification": "Historical",
+      "geographic_applicability": "Chicago Central Business District",
+      "is_official_source": false,
+      "organization": "City of Chicago Office of Emergency Management & Communications (OEMC)",
+      "page_or_section": "Searched 2026-10-24: not located: searches returned only the 2007 plan itself (plus unrelated chicago.gov and IDOT pages); no public copy of this item was found",
+      "published_at": null,
+      "retrieved_at": "2026-10-24T18:46:50.014724Z",
+      "reuse_determination": null,
+      "source_id": "cbd_plan_2007_search_appendix_idot",
+      "title": "Search record: State of Illinois Evacuation Plan for Chicago Central Business District & Chicago Expressway System (IDOT Appendix)",
+      "url": "https://www.chicago.gov/city/en/depts/oem.html",
+      "usage_restrictions": [
+        "Search record only; item unavailable, content left unpopulated (not inferred)",
+        "Query: \"State of Illinois Evacuation Plan for Chicago Central Business District & Chicago Expressway System\" IDOT"
+      ],
+      "verification_status": "unknown"
+    },
+    {
+      "check_status": "not_located",
+      "checked_at": "2026-10-24T00:00:00Z",
+      "data_classification": "Historical",
+      "geographic_applicability": "Chicago Central Business District",
+      "is_official_source": false,
+      "organization": "City of Chicago Office of Emergency Management & Communications (OEMC)",
+      "page_or_section": "Searched 2026-10-24: not located: searches returned only the 2007 plan itself (plus unrelated chicago.gov and IDOT pages); no public copy of this item was found",
+      "published_at": null,
+      "retrieved_at": "2026-10-24T18:46:50.014724Z",
+      "reuse_determination": null,
+      "source_id": "cbd_plan_2007_search_appendix_oemc",
+      "title": "Search record: OEMC Central Business District Evacuation Deployment Plan (Appendix)",
+      "url": "https://www.chicago.gov/city/en/depts/oem.html",
+      "usage_restrictions": [
+        "Search record only; item unavailable, content left unpopulated (not inferred)",
+        "Query: Chicago OEMC Central Business District Evacuation Plan appendix CPD CTA IDOT deployment plan"
+      ],
+      "verification_status": "unknown"
+    },
+    {
+      "check_status": "not_located",
+      "checked_at": "2026-10-24T00:00:00Z",
+      "data_classification": "Historical",
+      "geographic_applicability": "Chicago Central Business District",
+      "is_official_source": false,
+      "organization": "City of Chicago Office of Emergency Management & Communications (OEMC)",
+      "page_or_section": "Searched 2026-10-24: not located: searches returned only the 2007 plan itself (plus unrelated chicago.gov and IDOT pages); no public copy of this item was found",
+      "published_at": null,
+      "retrieved_at": "2026-10-24T18:46:50.014724Z",
+      "reuse_determination": null,
+      "source_id": "cbd_plan_2007_search_newer_version",
+      "title": "Search record: Newer version of the Chicago CBD Evacuation Plan (after 2007)",
+      "url": "https://www.chicago.gov/city/en/depts/oem.html",
+      "usage_restrictions": [
+        "Search record only; item unavailable, content left unpopulated (not inferred)",
+        "Query: chicago.gov OEMC \"Central Business District Evacuation Plan\" newer version"
+      ],
+      "verification_status": "unknown"
+    }
+  ]
+}

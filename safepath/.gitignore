@@ -1,0 +1,51 @@
+# Raw source data (Req 45 / 42): never committed
+data/raw/*
+!data/raw/.gitkeep
+
+# Intermediate download-stage outputs (regenerate with scripts/download_chicago_data.py)
+data/processed/cdp_centerlines/
+data/processed/osm_*/
+# Normalized street segments (regenerate with scripts/process_streets.py)
+data/processed/streets/
+
+# Large generated artifacts (files > 50 MB are also rejected by scripts/check_large_files.py)
+*.parquet
+*.pbf
+*.gpkg
+*.shp
+*.zip
+*.tar.gz
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Python / virtualenvs
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.*
+credentials*.json
+.aws/
+
+# Local runtime state
+*.sqlite
+*.sqlite3
+.dynamodb/
+.DS_Store

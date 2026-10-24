@@ -1,0 +1,13 @@
+version: 1
+mode_factor: { walking: 1.0, wheelchair: 1.4, driving: 1.0 }
+v_max_mps:   { walking: 2.0, wheelchair: 1.5, driving: 20.0 }
+d_min_meters: 10
+uncertainty_attributes: [infrastructure_level, pedestrian_access, bridge_flag, tunnel_flag, elevation_confidence]
+uncertainty: { w_unknown_attr: 8, w_elev_low: 6, w_elev_unknown: 12, w_profile_unknown: 15, w_disputed: 10 }
+flood:      { w_tunnel: 120, w_lower: 80, w_shore: 60, w_elev: 40, E_low: 176.0, E_high: 184.0 }
+earthquake: { w_highrise_proximity: 60, proximity_meters: 50 }
+fire:       { w_smoke_report: 90, radius_meters: 100 }
+building:   { w_reported_blocked_stair: 100 }
+reports:    { w_unverified: 20, w_corroborated: 40 }
+alternatives: { inflate_factor: 1.5, max_attempts: 8, min_distinct_edges: 1 }
+uncertainty_levels: { medium_fraction: 0.05, high_fraction: 0.20 }

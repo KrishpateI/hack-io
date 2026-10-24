@@ -1,0 +1,21 @@
+{
+  "version": "v20260101-6b3896",
+  "built_at": "2026-01-01T00:00:00Z",
+  "sha256": {
+    "edges.jsonl.gz": "25d23d23cf7830a5561e6eb697a2d56df57e3149eb334866cf93bddc8e2df558",
+    "layers/buildings.geojson": "0574a0d1981f7bfd01015b1ee86ac61995d00375a64d5b6b3317a36afadd8f33",
+    "layers/extraction_boundary.geojson": "5c3c065b2b117f422b9567498e889f217616784b3d4003d37b34dbec7ed0cc28",
+    "layers/fixture_places.geojson": "bf4850270177b7440e57ff82daf68607934cd629e35e1a4a227265046ee73a53",
+    "nodes.jsonl.gz": "5dd1ddd7a46ada1760d106d035506feed1c6ae78e41c76df1a972425f5748c41"
+  },
+  "counts": {
+    "nodes": 57,
+    "edges": 190,
+    "layers": 3
+  },
+  "crs": "EPSG:4326",
+  "elevation_percentiles": {},
+  "source_record_ids": [
+    "SIMULATED-FIXTURE-GRAPH"
+  ]
+}

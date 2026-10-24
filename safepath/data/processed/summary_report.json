@@ -1,0 +1,226 @@
+{
+  "crs": "EPSG:26916",
+  "datasets": [
+    {
+      "acquisition_status": "freshly downloaded",
+      "dataset": "cdp_centerlines",
+      "errors": [],
+      "feature_count": 5972,
+      "is_street_source": true,
+      "processed": true,
+      "retrieved_at": "2026-10-24T18:39:40.750382+00:00",
+      "source_url": "https://data.cityofchicago.org/resource/pr57-gg9e.geojson?$limit=50000&$where=within_box(the_geom,41.91,-87.68,41.85,-87.6)",
+      "warnings": []
+    },
+    {
+      "acquisition_status": "freshly downloaded",
+      "dataset": "osm_streets",
+      "errors": [],
+      "feature_count": 12932,
+      "is_street_source": true,
+      "processed": true,
+      "retrieved_at": "2026-10-24T18:40:20.019828+00:00",
+      "source_url": "https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A180%5D%3B%28way%5B%22highway%22~%22%5E%28motorway%7Cmotorway_link%7Ctrunk%7Ctrunk_link%7Cprimary%7Cprimary_link%7Csecondary%7Csecondary_link%7Ctertiary%7Ctertiary_link%7Cunclassified%7Cresidential%7Cliving_street%7Cservice%29%24%22%5D%2841.85%2C-87.68%2C41.91%2C-87.6%29%3B%29%3Bout+geom%3B",
+      "warnings": []
+    },
+    {
+      "acquisition_status": "freshly downloaded",
+      "dataset": "osm_pedestrian",
+      "errors": [],
+      "feature_count": 26126,
+      "is_street_source": true,
+      "processed": true,
+      "retrieved_at": "2026-10-24T18:40:58.938116+00:00",
+      "source_url": "https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A180%5D%3B%28way%5B%22highway%22~%22%5E%28footway%7Cpedestrian%7Cpath%7Csteps%7Ccorridor%29%24%22%5D%2841.85%2C-87.68%2C41.91%2C-87.6%29%3B%29%3Bout+geom%3B",
+      "warnings": []
+    },
+    {
+      "acquisition_status": "freshly downloaded",
+      "dataset": "osm_buildings",
+      "errors": [],
+      "feature_count": 28694,
+      "is_street_source": false,
+      "processed": true,
+      "retrieved_at": "2026-10-24T18:41:31.375506+00:00",
+      "source_url": "https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A180%5D%3B%28way%5B%22building%22%5D%2841.85%2C-87.68%2C41.91%2C-87.6%29%3B%29%3Bout+geom%3B",
+      "warnings": []
+    },
+    {
+      "acquisition_status": "freshly downloaded",
+      "dataset": "cta_gtfs",
+      "errors": [],
+      "feature_count": 38,
+      "is_street_source": false,
+      "processed": true,
+      "retrieved_at": "2026-10-24T18:41:39.386640+00:00",
+      "source_url": "https://www.transitchicago.com/downloads/sch_data/google_transit.zip",
+      "warnings": []
+    }
+  ],
+  "elevation": {
+    "abort_reason": "runtime cap reached",
+    "aborted": true,
+    "cache_hits": 0,
+    "datum": "NAVD88",
+    "edge_confidence_counts": {
+      "High": 15,
+      "Low": 2446,
+      "Medium": 22858,
+      "Unknown": 17193
+    },
+    "edge_count": 42512,
+    "elevation_percentiles_m": {
+      "p5": 178.636,
+      "p95": 186.013
+    },
+    "endpoint": "https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/getSamples",
+    "errors": [
+      "attempt 3: HTTPError: HTTP Error 502: Bad Gateway",
+      "attempt 3: HTTPError: HTTP Error 502: Bad Gateway",
+      "attempt 3: HTTPError: HTTP Error 502: Bad Gateway",
+      "attempt 3: HTTPError: HTTP Error 502: Bad Gateway",
+      "attempt 3: HTTPError: HTTP Error 502: Bad Gateway"
+    ],
+    "failed_requests": 7,
+    "generated_at": "2026-10-24T19:16:48.571450+00:00",
+    "known_count": 31600,
+    "limitation": "USGS 3DEP is bare-earth terrain (NAVD 88). It does not represent bridge decks, tunnels or underground levels, and higher terrain does not guarantee flood safety.",
+    "node_count": 51604,
+    "requests": 323,
+    "source": "USGS 3DEP (3DEPElevation ImageServer getSamples)",
+    "units": "meters",
+    "unknown_count": 20004
+  },
+  "fatal_reason": null,
+  "generated_at": "2026-10-24T18:41:50.406357+00:00",
+  "stages": [
+    "check_availability",
+    "save_raw",
+    "reproject",
+    "clip",
+    "clean_geometry",
+    "normalize",
+    "build_nodes_edges",
+    "save_outputs"
+  ],
+  "status": "completed",
+  "street_processing": {
+    "conflict_count": 1264,
+    "conflicts_by_attribute": {
+      "name": 534,
+      "oneway": 730
+    },
+    "crs": "EPSG:26916",
+    "generated_at": "2026-10-24T18:53:13.210768+00:00",
+    "infrastructure_level_counts": {
+      "Unknown": 38544,
+      "bridge": 1828,
+      "elevated": 13,
+      "lower-level": 208,
+      "surface": 18,
+      "tunnel": 1901
+    },
+    "inputs": {
+      "cdp_centerlines": {
+        "available": true,
+        "river_lines": 79,
+        "street_features": 5893
+      },
+      "osm_pedestrian": {
+        "available": true,
+        "items": 26131
+      },
+      "osm_streets": {
+        "available": true,
+        "items": 12937
+      }
+    },
+    "matching": {
+      "cdp_only": 659,
+      "match_buffer_m": 12.0,
+      "matched_pairs": 5234,
+      "min_overlap_name_differs_or_missing": 0.9,
+      "min_overlap_same_name": 0.6,
+      "name_conflicts": 534,
+      "oneway_conflicts": 730,
+      "osm_pedestrian_segments": 26131,
+      "osm_street_merged_into_cdp": 2536,
+      "osm_street_only": 9852,
+      "osm_street_remainders": 636
+    },
+    "output": "data/processed/streets/segments.jsonl.gz",
+    "river_crossing_true": 84,
+    "segment_count": 42512,
+    "segments_per_source": {
+      "cdp_centerlines": 659,
+      "cdp_centerlines+osm_streets": 5234,
+      "osm_pedestrian": 26131,
+      "osm_streets": 10488
+    },
+    "unknown_counts": {
+      "bridge_flag": 40661,
+      "infrastructure_level": 38544,
+      "layer": 38798,
+      "mobility_accessibility": 40890,
+      "name": 32721,
+      "oneway": 32890,
+      "pedestrian_access": 14884,
+      "river_crossing": 42428,
+      "road_type": 0,
+      "tunnel_flag": 40601
+    },
+    "warning_count": 1274,
+    "warnings": [
+      "seg-cdp-153092: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-144679: name conflict (cdp='S DAN RYAN EXPY OB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-146489: name conflict (cdp='S DAN RYAN ROOSEVELT RD ER', osm='South Ruble Street'); retained cdp_centerlines",
+      "seg-cdp-153071: name conflict (cdp='S DAN RYAN EXPY IB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-153070: name conflict (cdp='S DAN RYAN EXPY IB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-144673: name conflict (cdp='S DAN RYAN EXPY OB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-153077: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-153081: name conflict (cdp='S CAMPUS PKWY', osm='West 15th Place'); retained cdp_centerlines",
+      "seg-cdp-148933: name conflict (cdp='S DAN RYAN ROOSEVELT ST XR', osm='South Ruble Street'); retained cdp_centerlines",
+      "seg-cdp-153063: name conflict (cdp='S DAN RYAN EXPY OB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-114691: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-115319: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-115909: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-153073: name conflict (cdp='S DAN RYAN EXPY OB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-115905: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-115808: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-144675: name conflict (cdp='S DAN RYAN EXPY IB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-119198: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-144670: name conflict (cdp='S DAN RYAN ROOSEVELT RD XR', osm='South Ruble Street'); retained cdp_centerlines",
+      "seg-cdp-115320: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-144130: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-119205: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-153064: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-114383: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-119130: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-118567: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-144678: name conflict (cdp='S DAN RYAN EXPY IB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-115906: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-153062: name conflict (cdp='S DAN RYAN EXPY OB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-148936: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-115807: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-151031: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-148932: name conflict (cdp='S DAN RYAN ROOSEVELT ST XR', osm='South Ruble Street'); retained cdp_centerlines",
+      "seg-cdp-114692: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-144685: name conflict (cdp='S DAN RYAN EXPY IB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-115908: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-114693: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-144671: name conflict (cdp='S DAN RYAN EXPY IB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-115910: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-153060: name conflict (cdp='S DAN RYAN EXPY IB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-153093: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-144672: name conflict (cdp='S DAN RYAN EXPY IB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-153065: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-144681: name conflict (cdp='S DAN RYAN EXPY OB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-153061: name conflict (cdp='S DAN RYAN EXPY IB', osm='Dan Ryan Expressway'); retained cdp_centerlines",
+      "seg-cdp-153097: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-153089: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-115907: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-114903: oneway conflict (cdp='no', osm='forward'); retained osm_streets",
+      "seg-cdp-162603: oneway conflict (cdp='no', osm='forward'); retained osm_streets"
+    ]
+  }
+}
