@@ -1,57 +1,70 @@
 {
-  "generated_at": "2026-10-24T18:44:25+00:00",
-  "region": null,
+  "generated_at": "2026-10-25T06:09:20+00:00",
+  "region": "us-east-2",
   "read_only": true,
-  "caller": null,
-  "services": {},
-  "reason": "boto3 not installed, no credentials configured, or no region set",
-  "next_steps": [
-    "Install the AWS CLI v2 (https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).",
-    "Install boto3: backend\\.venv\\Scripts\\python -m pip install -e \"backend[aws]\" (from safepath/).",
-    "Configure sandbox credentials: `aws configure` or set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY (and AWS_SESSION_TOKEN) plus AWS_DEFAULT_REGION.",
-    "Re-run: backend\\.venv\\Scripts\\python scripts\\aws_discover.py"
-  ],
-  "status": "unavailable",
+  "caller": {
+    "account": "********0117",
+    "principal_type": "assumed-role"
+  },
+  "services": {
+    "dynamodb": {
+      "required": true,
+      "state": "available"
+    },
+    "s3": {
+      "required": true,
+      "state": "available"
+    },
+    "lambda": {
+      "required": true,
+      "state": "available"
+    },
+    "apigateway": {
+      "required": true,
+      "state": "available"
+    },
+    "logs": {
+      "required": true,
+      "state": "available"
+    },
+    "appsync": {
+      "required": false,
+      "state": "available"
+    },
+    "cognito": {
+      "required": false,
+      "state": "available"
+    },
+    "cloudfront": {
+      "required": false,
+      "state": "available"
+    },
+    "bedrock": {
+      "required": false,
+      "state": "available"
+    },
+    "budgets": {
+      "required": false,
+      "state": "unknown",
+      "detail": "ParamValidationError"
+    },
+    "servicequotas": {
+      "required": false,
+      "state": "denied",
+      "detail": "AccessDeniedException"
+    }
+  },
+  "reason": null,
+  "next_steps": [],
+  "status": "ok",
   "context_flags": {
-    "useCognito": "false",
-    "realtime": "apigw-ws",
+    "useCognito": "true",
+    "realtime": "appsync",
     "enableBudget": "false",
-    "enableBedrock": "false",
-    "enableCloudFront": "false"
+    "enableBedrock": "true",
+    "enableCloudFront": "true"
   },
   "substitutions": [
-    {
-      "service": "appsync",
-      "feature": "Real-time delivery: AppSync Events",
-      "state": "unknown",
-      "substitute": "API Gateway WebSocket",
-      "flag": "realtime",
-      "value": "apigw-ws"
-    },
-    {
-      "service": "cognito",
-      "feature": "Authentication: Amazon Cognito",
-      "state": "unknown",
-      "substitute": "Backend-signed demo tokens (DemoTokenAuthProvider)",
-      "flag": "useCognito",
-      "value": "false"
-    },
-    {
-      "service": "cloudfront",
-      "feature": "Frontend CDN: CloudFront",
-      "state": "unknown",
-      "substitute": "S3 static website hosting (documented alternative)",
-      "flag": "enableCloudFront",
-      "value": "false"
-    },
-    {
-      "service": "bedrock",
-      "feature": "AI summaries: Amazon Bedrock",
-      "state": "unknown",
-      "substitute": "AI feature disabled (UI shows 'AI summaries unavailable')",
-      "flag": "enableBedrock",
-      "value": "false"
-    },
     {
       "service": "budgets",
       "feature": "Cost guard: AWS Budgets",
@@ -62,6 +75,6 @@
     }
   ],
   "blocked_core_services": [],
-  "deployable": false,
-  "cdk_context_args": "-c useCognito=false -c realtime=apigw-ws -c enableBudget=false -c enableBedrock=false -c enableCloudFront=false"
+  "deployable": true,
+  "cdk_context_args": "-c useCognito=true -c realtime=appsync -c enableBudget=false -c enableBedrock=true -c enableCloudFront=true"
 }
