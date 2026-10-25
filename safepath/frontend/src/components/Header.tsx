@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Emergency911Panel } from './Emergency911Panel';
 import { SimulatedBadge } from './SimulatedBadge';
 import { StatusIcon } from './StatusIcon';
 import { hasActiveSimulatedIncident, type ActiveIncidentLike } from '../services/labels';
@@ -30,7 +31,7 @@ function Logo() {
 export function Header({ simulatedIndicator, incidents, city = 'Chicago', demoMode = false, connectivity, profile }: HeaderProps) {
   const indicator = simulatedIndicator ?? (hasActiveSimulatedIncident(incidents) ? <SimulatedBadge /> : null);
   return (
-    <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border-subtle bg-surface px-3 py-2">
+    <header className="glass relative z-40 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border-subtle px-3 py-2">
       <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
         <div className="flex items-center gap-2">
           <Logo />
@@ -54,6 +55,7 @@ export function Header({ simulatedIndicator, incidents, city = 'Chicago', demoMo
       <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
         {connectivity}
         {profile}
+        <Emergency911Panel />
       </div>
     </header>
   );

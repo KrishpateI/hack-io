@@ -12,6 +12,10 @@ export default tseslint.config(
     languageOptions: { globals: { ...globals.node } },
   },
   {
+    files: ['public/appearance-init.js'],
+    languageOptions: { globals: { ...globals.browser } },
+  },
+  {
     files: ['public/sw.js'],
     languageOptions: { globals: { ...globals.serviceworker } },
   },

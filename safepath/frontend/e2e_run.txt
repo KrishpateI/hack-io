@@ -1,29 +1,29 @@
-[WebServer] INFO:     Started server process [14488]
+[WebServer] INFO:     Started server process [16624]
 [WebServer] INFO:     Waiting for application startup.
 [WebServer] INFO:     Application startup complete.
 [WebServer] INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 
 Running 1 test using 1 worker
 
-[page /] HTTP 503 GET http://localhost:5173/api/layers/simulated_station
-[page /] console.error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
-[WebServer] INFO:     127.0.0.1:61003 - "WebSocket /ws/incidents/sim-flood-loop" [accepted]
+[WebServer] INFO:     127.0.0.1:59837 - "WebSocket /ws/incidents/sim-flood-loop" [accepted]
 [WebServer] INFO:     connection open
 [page /] HTTP 503 GET http://localhost:5173/api/layers/cta_stations
+[page /] console.error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+[page /] HTTP 503 GET http://localhost:5173/api/layers/simulated_station
 [page /] console.error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
 [page /] HTTP 403 GET http://localhost:5173/api/demo/scenarios
 [page /] console.error: Failed to load resource: the server responded with a status of 403 (Forbidden)
-[WebServer] INFO:     127.0.0.1:54828 - "WebSocket /ws/incidents/sim-blocked-stairwell" [accepted]
+[WebServer] INFO:     127.0.0.1:63675 - "WebSocket /ws/incidents/sim-blocked-stairwell" [accepted]
 [WebServer] INFO:     connection open
-[WebServer] INFO:     127.0.0.1:60184 - "WebSocket /ws/incidents/sim-flood-loop" [accepted]
+[WebServer] INFO:     127.0.0.1:50167 - "WebSocket /ws/incidents/sim-flood-loop" [accepted]
 [WebServer] INFO:     connection open
-[WebServer] INFO:     127.0.0.1:59517 - "WebSocket /ws/incidents/sim-flood-loop" [accepted]
+[WebServer] INFO:     127.0.0.1:65166 - "WebSocket /ws/incidents/sim-flood-loop" [accepted]
 [WebServer] INFO:     connection open
 [page /] HTTP 503 GET http://localhost:5173/api/layers/cta_stations
 [page /] console.error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
 [page /] HTTP 503 GET http://localhost:5173/api/layers/simulated_station
 [page /] console.error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
-  ok 1 [chromium] › e2e\scenario1-flood.spec.ts:15:1 › Scenario 1: flood closure changes the route and the explanation within 5 s (17.2s)
+  ok 1 [chromium] › e2e\scenario1-flood.spec.ts:15:1 › Scenario 1: flood closure changes the route and the explanation within 5 s (17.5s)
 
-  1 passed (31.1s)
+  1 passed (30.7s)
 FINISHED 

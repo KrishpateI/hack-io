@@ -1,0 +1,107 @@
+
+> safepath-frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 C:/Github/HackIO/hack-io/safepath/frontend
+
+ ❯ src/styles/tokens.test.ts (0 test)
+ ❯ src/a11y.test.tsx (0 test)
+ ❯ src/App.test.tsx (0 test)
+ ❯ src/components/RootLayout.test.tsx (0 test)
+ ❯ src/components/shell/ErrorBoundary.test.tsx (0 test)
+ ❯ src/components/classification.test.tsx (0 test)
+ ❯ src/pages/SourcesLimitations.test.tsx (0 test)
+ ❯ src/components/labels.test.tsx (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/a11y.test.tsx [ src/a11y.test.tsx ]
+Error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] [0mIdentifier `button` has already been declared
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/Emergency911Panel.tsx:11:9 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m11 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0mbutton[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249mu[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mR[0m[38;5;249me[0m[38;5;249mf[0m[38;5;249m<[0m[38;5;249mH[0m[38;5;249mT[0m[38;5;249mM[0m[38;5;249mL[0m[38;5;249mB[0m[38;5;249mu[0m[38;5;249mt[0m[38;5;249mt[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mE[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249m>[0m[38;5;249m([0m[38;5;249mn[0m[38;5;249mu[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249m)[0m[38;5;249m;[0m
+ [38;5;240m   │[0m         ───┬──  
+ [38;5;240m   │[0m            ╰──── `button` has already been declared here
+ [38;5;240m   │[0m 
+ [38;5;246m13 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0mbutton[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249mu[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mR[0m[38;5;249me[0m[38;5;249mf[0m[38;5;249m<[0m[38;5;249mH[0m[38;5;249mT[0m[38;5;249mM[0m[38;5;249mL[0m[38;5;249mB[0m[38;5;249mu[0m[38;5;249mt[0m[38;5;249mt[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mE[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249m>[0m[38;5;249m([0m[38;5;249mn[0m[38;5;249mu[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249m)[0m[38;5;249m;[0m
+ [38;5;240m   │[0m         ───┬──  
+ [38;5;240m   │[0m            ╰──── It can not be redeclared here
+[38;5;246m────╯[0m
+
+  Plugin: vite:oxc
+  File: C:/Github/HackIO/hack-io/safepath/frontend/src/components/Emergency911Panel.tsx
+ ❯ transformWithOxc node_modules/vite/dist/node/chunks/node.js:7618:19
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:7690:26
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8582:51
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:20155:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/App.test.tsx [ src/App.test.tsx ]
+ FAIL  src/components/classification.test.tsx [ src/components/classification.test.tsx ]
+ FAIL  src/components/labels.test.tsx [ src/components/labels.test.tsx ]
+ FAIL  src/components/RootLayout.test.tsx [ src/components/RootLayout.test.tsx ]
+ FAIL  src/pages/SourcesLimitations.test.tsx [ src/pages/SourcesLimitations.test.tsx ]
+ FAIL  src/components/shell/ErrorBoundary.test.tsx [ src/components/shell/ErrorBoundary.test.tsx ]
+Error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] [0mIdentifier `button` has already been declared
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/Emergency911Panel.tsx:11:9 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m11 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0mbutton[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249mu[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mR[0m[38;5;249me[0m[38;5;249mf[0m[38;5;249m<[0m[38;5;249mH[0m[38;5;249mT[0m[38;5;249mM[0m[38;5;249mL[0m[38;5;249mB[0m[38;5;249mu[0m[38;5;249mt[0m[38;5;249mt[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mE[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249m>[0m[38;5;249m([0m[38;5;249mn[0m[38;5;249mu[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249m)[0m[38;5;249m;[0m
+ [38;5;240m   │[0m         ───┬──  
+ [38;5;240m   │[0m            ╰──── `button` has already been declared here
+ [38;5;240m   │[0m 
+ [38;5;246m13 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0mbutton[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249mu[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mR[0m[38;5;249me[0m[38;5;249mf[0m[38;5;249m<[0m[38;5;249mH[0m[38;5;249mT[0m[38;5;249mM[0m[38;5;249mL[0m[38;5;249mB[0m[38;5;249mu[0m[38;5;249mt[0m[38;5;249mt[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mE[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249m>[0m[38;5;249m([0m[38;5;249mn[0m[38;5;249mu[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249m)[0m[38;5;249m;[0m
+ [38;5;240m   │[0m         ───┬──  
+ [38;5;240m   │[0m            ╰──── It can not be redeclared here
+[38;5;246m────╯[0m
+
+  Plugin: vite:oxc
+  File: C:/Github/HackIO/hack-io/safepath/frontend/src/components/Emergency911Panel.tsx
+ ❯ transformWithOxc node_modules/vite/dist/node/chunks/node.js:7618:19
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:7690:26
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8582:51
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:20155:26
+ ❯ fetchModule node_modules/vite/dist/node/chunks/node.js:36298:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/styles/tokens.test.ts [ src/styles/tokens.test.ts ]
+Error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] [0mIdentifier `css` has already been declared
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/styles/tokens.test.ts:107:7 [38;5;246m][0m
+     [38;5;246m│[0m
+ [38;5;246m107 │[0m [38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0mcss[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249md[0m[38;5;249mF[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mS[0m[38;5;249my[0m[38;5;249mn[0m[38;5;249mc[0m[38;5;249m([0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ms[0m[38;5;249mo[0m[38;5;249ml[0m[38;5;249mv[0m[38;5;249me[0m[38;5;249m([0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mr[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249m'[0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249m'[0m[38;5;249m)[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249m'[0m[38;5;249mu[0m[38;5;249mt[0m[38;5;249mf[0m[38;5;249m8[0m[38;5;249m'[0m[38;5;249m)[0m[38;5;249m;[0m
+ [38;5;240m    │[0m       ─┬─  
+ [38;5;240m    │[0m        ╰─── `css` has already been declared here
+ [38;5;240m    │[0m 
+ [38;5;246m109 │[0m [38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0mcss[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249md[0m[38;5;249mF[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mS[0m[38;5;249my[0m[38;5;249mn[0m[38;5;249mc[0m[38;5;249m([0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ms[0m[38;5;249mo[0m[38;5;249ml[0m[38;5;249mv[0m[38;5;249me[0m[38;5;249m([0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mr[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249m'[0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249m'[0m[38;5;249m)[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249m'[0m[38;5;249mu[0m[38;5;249mt[0m[38;5;249mf[0m[38;5;249m8[0m[38;5;249m'[0m[38;5;249m)[0m[38;5;249m;[0m
+ [38;5;240m    │[0m       ─┬─  
+ [38;5;240m    │[0m        ╰─── It can not be redeclared here
+[38;5;246m─────╯[0m
+
+  Plugin: vite:oxc
+  File: C:/Github/HackIO/hack-io/safepath/frontend/src/styles/tokens.test.ts
+ ❯ transformWithOxc node_modules/vite/dist/node/chunks/node.js:7618:19
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:7690:26
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8582:51
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:20155:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+
+ Test Files  8 failed | 33 passed (41)
+      Tests  546 passed (546)
+   Start at  21:19:26
+   Duration  26.31s (environment 59%, tests 31%, setup 6%, import 2%, transform 2%, worker 1%)
+
+Environment  jsdom was created 41 times · 38.58s total, 59% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+FINISHED 

@@ -81,7 +81,7 @@ export function MessageChannel({ incidentId, messages, notices = [], sendMessage
           <ul className="space-y-2">
             {community.length === 0 && <li className="text-text-muted">No community messages yet.</li>}
             {community.map((m) => (
-              <li key={m.message_id} data-testid="community-message" className="space-y-1 rounded border border-border-subtle bg-surface p-2">
+              <li key={m.message_id} data-testid="community-message" className="space-y-1 rounded-[var(--radius-card)] border border-border-subtle bg-surface p-3 shadow-[var(--shadow-card)]">
                 <div className="flex flex-wrap items-center gap-1.5 text-xs">
                   <span className="inline-flex items-center gap-1 rounded border border-unverified px-1.5 py-0.5 text-unverified">
                     <StatusIcon kind="people" />

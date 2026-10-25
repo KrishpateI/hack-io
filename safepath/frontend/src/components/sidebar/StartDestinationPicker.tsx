@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { EXTRACTION_BOUNDS } from '../../maps/extractionArea';
+import { GroupedRow } from '../ios/GroupedList';
 
 export interface LatLng {
   lat: number;
@@ -32,6 +33,8 @@ export function validateCoordinates(latText: string, lngText: string): string | 
   return null;
 }
 
+const formatPoint = (p: LatLng): string => `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`;
+
 function CoordinateField({ id, legend, value, onValid }: { id: string; legend: string; value: LatLng | null; onValid: (p: LatLng) => void }) {
   const [lat, setLat] = useState(value ? String(value.lat) : '');
   const [lng, setLng] = useState(value ? String(value.lng) : '');
@@ -43,18 +46,18 @@ function CoordinateField({ id, legend, value, onValid }: { id: string; legend: s
     if (!e) onValid({ lat: Number(la), lng: Number(ln) });
   };
   return (
-    <fieldset className="mb-2 border-0 p-0">
-      <legend className="text-sm font-medium">{legend}</legend>
-      <div className="mt-1 flex gap-2">
+    <fieldset className="m-0 border-0 p-0">
+      <legend className="sr-only">{legend}</legend>
+      <div className="flex gap-2">
         <label htmlFor={`${id}-lat`} className="flex-1 text-xs">Latitude
           <input id={`${id}-lat`} inputMode="decimal" value={lat} aria-invalid={error ? true : undefined} aria-describedby={error ? `${id}-err` : undefined}
             onChange={(e) => setLat(e.target.value)} onBlur={() => commit(lat, lng)}
-            className="mt-0.5 w-full rounded border border-border-subtle bg-surface px-2 py-1 text-sm text-text-primary focus:outline-2 focus:outline-route" />
+            className="mt-0.5 min-h-[var(--target-min)] w-full rounded-[var(--radius-control)] border border-border-subtle bg-surface px-2 py-1 text-[length:var(--text-body)] text-text-primary focus:outline-2 focus:outline-route" />
         </label>
         <label htmlFor={`${id}-lng`} className="flex-1 text-xs">Longitude
           <input id={`${id}-lng`} inputMode="decimal" value={lng} aria-invalid={error ? true : undefined} aria-describedby={error ? `${id}-err` : undefined}
             onChange={(e) => setLng(e.target.value)} onBlur={() => commit(lat, lng)}
-            className="mt-0.5 w-full rounded border border-border-subtle bg-surface px-2 py-1 text-sm text-text-primary focus:outline-2 focus:outline-route" />
+            className="mt-0.5 min-h-[var(--target-min)] w-full rounded-[var(--radius-control)] border border-border-subtle bg-surface px-2 py-1 text-[length:var(--text-body)] text-text-primary focus:outline-2 focus:outline-route" />
         </label>
       </div>
       {error && <p id={`${id}-err`} role="alert" className="mt-1 text-xs text-closure">Error: {error}</p>}
@@ -74,25 +77,35 @@ interface Props {
 
 export function StartDestinationPicker({ start, destination, pickMode, onPickModeChange, onStartChange, onDestinationChange, showSamplePoints }: Props) {
   const pick = (m: 'start' | 'destination') => onPickModeChange(pickMode === m ? null : m);
+  const pickButton = (m: 'start' | 'destination', activeText: string, idleText: string) => (
+    <button type="button" aria-pressed={pickMode === m} onClick={() => pick(m)}
+      className="min-h-[var(--target-min)] shrink-0 rounded-[var(--radius-control)] border border-route px-3 text-[length:var(--text-caption)] font-semibold text-route transition-colors duration-[var(--duration-fast)] active:opacity-70 focus:outline-2 focus:outline-route aria-pressed:bg-surface-raised">
+      {pickMode === m ? activeText : idleText}
+    </button>
+  );
   return (
-    <section aria-labelledby="route-points-h" data-testid="start-destination-picker" className="p-3">
-      <h2 id="route-points-h" className="mb-2 text-sm font-semibold text-text-primary">Start and destination</h2>
-      <CoordinateField key={`s${start?.lat},${start?.lng}`} id="start" legend="Start" value={start} onValid={onStartChange} />
-      <button type="button" aria-pressed={pickMode === 'start'} onClick={() => pick('start')}
-        className="mb-3 min-h-11 rounded border border-border-subtle px-3 text-sm focus:outline-2 focus:outline-route">
-        {pickMode === 'start' ? 'Click the map to set start (active)' : 'Pick start on map'}
-      </button>
-      <CoordinateField key={`d${destination?.lat},${destination?.lng}`} id="dest" legend="Destination" value={destination} onValid={(p) => onDestinationChange({ ...p })} />
-      <button type="button" aria-pressed={pickMode === 'destination'} onClick={() => pick('destination')}
-        className="mb-2 min-h-11 rounded border border-border-subtle px-3 text-sm focus:outline-2 focus:outline-route">
-        {pickMode === 'destination' ? 'Click the map to set destination (active)' : 'Pick destination on map'}
-      </button>
+    <section aria-labelledby="route-points-h" data-testid="start-destination-picker" className="space-y-2 p-3">
+      <h2 id="route-points-h" className="px-1 text-[length:var(--text-caption)] font-medium uppercase tracking-wide text-text-muted">Start and destination</h2>
+      <ul className="m-0 list-none divide-y divide-border-subtle overflow-hidden rounded-[var(--radius-card)] border border-border-subtle bg-surface p-0">
+        <li className="m-0 p-0">
+          <GroupedRow label="Start" value={start ? formatPoint(start) : 'Not set'} trailing={pickButton('start', 'Click the map to set start (active)', 'Pick start on map')} />
+          <div className="px-4 pb-3">
+            <CoordinateField key={`s${start?.lat},${start?.lng}`} id="start" legend="Start" value={start} onValid={onStartChange} />
+          </div>
+        </li>
+        <li className="m-0 p-0">
+          <GroupedRow label="Destination" value={destination ? formatPoint(destination) : 'Not set'} trailing={pickButton('destination', 'Click the map to set destination (active)', 'Pick destination on map')} />
+          <div className="px-4 pb-3">
+            <CoordinateField key={`d${destination?.lat},${destination?.lng}`} id="dest" legend="Destination" value={destination} onValid={(p) => onDestinationChange({ ...p })} />
+          </div>
+        </li>
+      </ul>
       {destination?.simulated && (
-        <p data-testid="sim-destination-label" className="rounded border border-route-alt p-1 text-xs font-bold text-route-alt">{SIM_DESTINATION_LABEL}</p>
+        <p data-testid="sim-destination-label" className="rounded-[var(--radius-control)] border border-route-alt p-2 text-xs font-bold text-route-alt">{SIM_DESTINATION_LABEL}</p>
       )}
       {showSamplePoints && (
         <button type="button" onClick={() => { onStartChange(SAMPLE_FLOOD_POINTS.start); onDestinationChange(SAMPLE_FLOOD_POINTS.destination); }}
-          className="mt-2 min-h-11 rounded border border-route px-3 text-sm text-route focus:outline-2 focus:outline-route">
+          className="min-h-[var(--target-min)] rounded-[var(--radius-control)] border border-route px-3 text-[length:var(--text-body)] text-route active:opacity-70 focus:outline-2 focus:outline-route">
           Use sample points (flood scenario)
         </button>
       )}

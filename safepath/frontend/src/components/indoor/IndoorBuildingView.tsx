@@ -229,20 +229,20 @@ function Loaded({
         >
           <defs>
             <pattern id={`${uid}-hatch`} width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <rect width="12" height="12" fill="#1a2540" />
-              <line x1="0" y1="0" x2="0" y2="12" stroke="#fb923c" strokeWidth="5" />
+              <rect width="12" height="12" className="fill-surface-raised" />
+              <line x1="0" y1="0" x2="0" y2="12" className="stroke-unverified" strokeWidth="5" />
             </pattern>
             <pattern id={`${uid}-cross`} width="12" height="12" patternUnits="userSpaceOnUse">
-              <rect width="12" height="12" fill="#1a2540" />
-              <path d="M0 6H12M6 0V12" stroke="#fb923c" strokeWidth="3" />
+              <rect width="12" height="12" className="fill-surface-raised" />
+              <path d="M0 6H12M6 0V12" className="stroke-unverified" strokeWidth="3" />
             </pattern>
             <pattern id={`${uid}-solid`} width="12" height="12" patternUnits="userSpaceOnUse">
-              <rect width="12" height="12" fill="#7f1d1d" />
-              <circle cx="6" cy="6" r="2" fill="#f87171" />
+              <rect width="12" height="12" className="fill-closure/40" />
+              <circle cx="6" cy="6" r="2" className="fill-closure" />
             </pattern>
           </defs>
-          <rect x={0} y={0} width={W} height={D} fill="#111a2e" stroke="#2c3a5c" strokeWidth={4} />
-          <text x={8} y={-14} fontSize={26} fill="#a9b6cf">{`${floor.name} \u2014 SIMULATED`}</text>
+          <rect x={0} y={0} width={W} height={D} className="fill-surface stroke-border-subtle" strokeWidth={4} />
+          <text x={8} y={-14} fontSize={26} className="fill-text-muted">{`${floor.name} \u2014 SIMULATED`}</text>
           {building.corridors
             .filter((c) => c.level === level)
             .map((c) => (
@@ -250,14 +250,14 @@ function Loaded({
                 <polyline
                   points={c.points.map((p) => `${px(p.x)},${px(p.y)}`).join(' ')}
                   fill="none"
-                  stroke="#2c3a5c"
+                  className="stroke-border-subtle"
                   strokeWidth={22}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
                   <title>{c.name}</title>
                 </polyline>
-                <text x={px(c.points[0].x)} y={px(c.points[0].y) + (c.id.endsWith('1') ? 40 : -22)} fontSize={22} fill="#a9b6cf">
+                <text x={px(c.points[0].x)} y={px(c.points[0].y) + (c.id.endsWith('1') ? 40 : -22)} fontSize={22} className="fill-text-muted">
                   {c.name.replace('SIMULATED ', '')}
                 </text>
               </g>
@@ -266,8 +266,8 @@ function Loaded({
             .filter((z) => z.level === level)
             .map((z) => (
               <g key={z.id}>
-                <rect x={px(z.x) - 45} y={px(z.y) - 30} width={90} height={60} rx={6} fill="#1a2540" stroke="#60a5fa" strokeDasharray="6 4" strokeWidth={3} />
-                <text x={px(z.x)} y={px(z.y) + 8} fontSize={22} fill="#e6edf7" textAnchor="middle">
+                <rect x={px(z.x) - 45} y={px(z.y) - 30} width={90} height={60} rx={6} className="fill-surface-raised stroke-route-alt" strokeDasharray="6 4" strokeWidth={3} />
+                <text x={px(z.x)} y={px(z.y) + 8} fontSize={22} className="fill-text-primary" textAnchor="middle">
                   {z.name.replace('SIMULATED ', '')}
                 </text>
               </g>
@@ -278,7 +278,7 @@ function Loaded({
               data-testid="indoor-route-leg"
               points={l.points.map((p) => `${px(p.x)},${px(p.y)}`).join(' ')}
               fill="none"
-              stroke="#22d3ee"
+              className="stroke-route"
               strokeWidth={8}
               strokeLinecap="round"
               strokeDasharray="22 10"
@@ -289,7 +289,7 @@ function Loaded({
             const st = statusOf(statuses, f.featureId);
             const isSel = selected === f.featureId;
             const fill =
-              st.kind === 'reported_unverified' ? `url(#${uid}-hatch)` : st.kind === 'reported_corroborated' ? `url(#${uid}-cross)` : st.kind === 'closure_confirmed' ? `url(#${uid}-solid)` : '#111a2e';
+              st.kind === 'reported_unverified' ? `url(#${uid}-hatch)` : st.kind === 'reported_corroborated' ? `url(#${uid}-cross)` : st.kind === 'closure_confirmed' ? `url(#${uid}-solid)` : null;
             const name = `SIMULATED ${featureLabel(f)}`;
             const activate = () => setSelected(f.featureId);
             const cx = px(p.x);
@@ -311,12 +311,12 @@ function Loaded({
                   }
                 }}
               >
-                <rect x={cx - 34} y={cy - 34} width={68} height={68} rx={f.kind === 'exit' ? 4 : 18} fill={fill} stroke={isSel ? '#22d3ee' : '#e6edf7'} strokeWidth={isSel ? 8 : 4} strokeDasharray={st.kind === 'no_reports' ? '8 5' : undefined} />
-                <text x={cx} y={cy + 9} fontSize={28} fontWeight="bold" fill="#e6edf7" textAnchor="middle" stroke="#0b1220" strokeWidth={4} paintOrder="stroke">
+                <rect x={cx - 34} y={cy - 34} width={68} height={68} rx={f.kind === 'exit' ? 4 : 18} fill={fill ?? undefined} className={`${fill ? '' : 'fill-surface '}${isSel ? 'stroke-route' : 'stroke-text-primary'}`} strokeWidth={isSel ? 8 : 4} strokeDasharray={st.kind === 'no_reports' ? '8 5' : undefined} />
+                <text x={cx} y={cy + 9} fontSize={28} fontWeight="bold" className="fill-text-primary stroke-base" textAnchor="middle" strokeWidth={4} paintOrder="stroke">
                   {GLYPH[st.kind] || (f.kind === 'exit' ? '\u21E5' : f.featureId.replace(/^stair-/, ''))}
                 </text>
-                <text x={cx} y={cy - 42} fontSize={22} fill="#e6edf7" textAnchor="middle">{featureLabel(f)}</text>
-                <text x={cx} y={cy + 58} fontSize={19} fill="#e6edf7" textAnchor="middle">{SHORT[st.kind]}</text>
+                <text x={cx} y={cy - 42} fontSize={22} className="fill-text-primary" textAnchor="middle">{featureLabel(f)}</text>
+                <text x={cx} y={cy + 58} fontSize={19} className="fill-text-primary" textAnchor="middle">{SHORT[st.kind]}</text>
               </g>
             );
           })}
@@ -341,8 +341,8 @@ function Loaded({
                   }
                 }}
               >
-                <circle cx={px(s.x)} cy={px(s.y)} r={22} fill={isSel ? '#22d3ee' : '#0b1220'} stroke="#22d3ee" strokeWidth={5} />
-                <text x={px(s.x)} y={px(s.y) + 8} fontSize={24} fontWeight="bold" textAnchor="middle" fill={isSel ? '#0b1220' : '#22d3ee'}>{letter}</text>
+                <circle cx={px(s.x)} cy={px(s.y)} r={22} className={`stroke-route ${isSel ? 'fill-route' : 'fill-base'}`} strokeWidth={5} />
+                <text x={px(s.x)} y={px(s.y) + 8} fontSize={24} fontWeight="bold" textAnchor="middle" className={isSel ? 'fill-base' : 'fill-route'}>{letter}</text>
               </g>
             );
           })}

@@ -7,29 +7,20 @@ import {
   registerPmtilesProtocol,
   type PmtilesKind,
 } from './pmtiles';
+import { applyBasemapAppearance, type BasemapAppearanceMap, type BasemapKind } from './basemapAppearance';
 import { CHICAGO_CENTER, EXTRACTION_LABEL, extractionAreaFeature } from './extractionArea';
-import { LayerToggles, type LayerToggleItem } from './LayerToggles';
 import { MapLayers, type MapLike } from './layers/MapLayers';
-import { Legend } from './layers/Legend';
 import { useArtifactLayers } from './layers/layerData';
-import { DATA_LAYER_GROUPS, TOGGLES } from './layers/styles';
+import { EXTRACTION_COLOR, TOGGLES } from './layers/styles';
+import { DEFAULT_LAYER_VISIBILITY, LAYER_GROUPS } from './useLayerToggles';
 import type { MapLayerInputs } from './layers/types';
 import { attachInspector, type InspectMapLike } from '../components/inspect/attachInspector';
 import type { MapClick } from '../components/inspect/inspectModel';
+import { useReducedMotion } from '../components/ios/hooks/useReducedMotion';
+import type { Appearance } from '../styles/tokens';
 
 const SRC_EXTRACTION = 'extraction-area';
-
-/** Toggle key -> MapLibre layer ids. Later tasks append entries. */
-const LAYER_GROUPS: Record<string, string[]> = {
-  extraction: ['extraction-area-line'],
-  ...DATA_LAYER_GROUPS,
-};
-
-const INITIAL_TOGGLES: LayerToggleItem[] = [
-  { id: 'extraction', label: 'Data extraction boundary', visible: true },
-  ...TOGGLES.map((t) => ({ id: t.id, label: t.label, visible: t.defaultVisible })),
-];
-const INITIAL_VISIBLE: Record<string, boolean> = Object.fromEntries(INITIAL_TOGGLES.map((t) => [t.id, t.visible]));
+const PADDING_ANIMATION_MS = 250;
 
 function addExtractionLayers(map: maplibregl.Map, visible: Record<string, boolean>) {
   if (!map.getSource(SRC_EXTRACTION)) {
@@ -40,7 +31,7 @@ function addExtractionLayers(map: maplibregl.Map, visible: Record<string, boolea
     type: 'line',
     source: SRC_EXTRACTION,
     layout: { visibility: visible.extraction === false ? 'none' : 'visible' },
-    paint: { 'line-color': '#e879f9', 'line-width': 2, 'line-dasharray': [4, 3] },
+    paint: { 'line-color': EXTRACTION_COLOR, 'line-width': 2, 'line-dasharray': [4, 3] },
   });
 }
 
@@ -50,18 +41,50 @@ interface MapViewProps {
   layerInputs?: MapLayerInputs;
   /** Called with the features under the pointer on every map click (feature inspection, Req 35). */
   onFeatureClick?: (click: MapClick) => void;
+  /**
+   * Area (px) covered by panels. The map re-centers on the visible area through `setPadding`,
+   * so the initial center and fitBounds ignore what the Side_Panel, Inspector_Panel, or sheet hide.
+   */
+  viewPadding?: { top?: number; right?: number; bottom?: number; left?: number };
+  /**
+   * Controlled layer visibility: toggle id -> visible (see `useLayerToggles`). Missing ids use their
+   * default. Changes reach the map layers, the extraction boundary, and the artifact fetches at once.
+   */
+  layerVisibility?: Record<string, boolean>;
+  /** Resolved Appearance for the basemap and adaptive labels. Defaults to dark. */
+  appearance?: Appearance;
 }
 
-export function MapView({ className = '', layerInputs, onFeatureClick }: MapViewProps) {
+export function MapView({
+  className = '',
+  layerInputs,
+  onFeatureClick,
+  viewPadding,
+  layerVisibility,
+  appearance = 'dark',
+}: MapViewProps) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
-  const visibleRef = useRef<Record<string, boolean>>({ ...INITIAL_VISIBLE });
   const layersRef = useRef<MapLayers | null>(null);
   const inputsRef = useRef<MapLayerInputs | undefined>(layerInputs);
   const clickRef = useRef(onFeatureClick);
+  const basemapKindRef = useRef<BasemapKind>('none');
+  const paddedOnce = useRef(false);
+  const reducedMotion = useReducedMotion();
   const [manager, setManager] = useState<MapLayers | null>(null);
-  const [toggles, setToggles] = useState<LayerToggleItem[]>(INITIAL_TOGGLES);
   const [mapError, setMapError] = useState<string | null>(null);
+
+  const visibility = useMemo(
+    () => ({ ...DEFAULT_LAYER_VISIBILITY, ...layerVisibility }),
+    [layerVisibility],
+  );
+  // Refs let the one-time map setup read the latest values without re-creating the map.
+  const visibleRef = useRef(visibility);
+  const appearanceRef = useRef(appearance);
+  useEffect(() => {
+    visibleRef.current = visibility;
+    appearanceRef.current = appearance;
+  }, [visibility, appearance]);
 
   useEffect(() => {
     if (!container.current) return;
@@ -75,12 +98,16 @@ export function MapView({ className = '', layerInputs, onFeatureClick }: MapView
       registerPmtilesProtocol(maplibregl as never);
       const present = await probePmtiles(pmtilesUrl);
       if (cancelled || !container.current) return;
-      const { style } = buildBasemapStyle({
-        pmtilesUrl,
-        pmtilesKind: kind,
-        isDev: env.DEV === true,
-        pmtilesPresent: present,
-      });
+      const { style, source } = buildBasemapStyle(
+        {
+          pmtilesUrl,
+          pmtilesKind: kind,
+          isDev: env.DEV === true,
+          pmtilesPresent: present,
+        },
+        appearanceRef.current,
+      );
+      basemapKindRef.current = source === 'none' ? 'none' : source === 'pmtiles' ? kind : 'raster';
       let map: maplibregl.Map;
       try {
         map = new maplibregl.Map({
@@ -102,6 +129,7 @@ export function MapView({ className = '', layerInputs, onFeatureClick }: MapView
         addExtractionLayers(map, visibleRef.current);
         const glyphs = (env.VITE_GLYPHS_URL as string | undefined) || undefined;
         const m = new MapLayers(map as unknown as MapLike, visibleRef.current, glyphs);
+        m.setAppearance(appearanceRef.current);
         m.init();
         if (inputsRef.current) m.setInputs(inputsRef.current);
         layersRef.current = m;
@@ -115,6 +143,7 @@ export function MapView({ className = '', layerInputs, onFeatureClick }: MapView
       mapRef.current?.remove();
       mapRef.current = null;
       layersRef.current = null;
+      paddedOnce.current = false;
       setManager(null);
     };
   }, []);
@@ -128,23 +157,54 @@ export function MapView({ className = '', layerInputs, onFeatureClick }: MapView
     if (layerInputs) layersRef.current?.setInputs(layerInputs);
   }, [layerInputs, manager]);
 
-  const toggleState = useMemo(() => Object.fromEntries(toggles.map((t) => [t.id, t.visible])), [toggles]);
-  useArtifactLayers(manager, toggleState);
-
-  const onToggle = (id: string, visible: boolean) => {
-    visibleRef.current[id] = visible;
-    setToggles((prev) => prev.map((t) => (t.id === id ? { ...t, visible } : t)));
-    layersRef.current?.setVisible(id, visible);
+  // Appearance: paint-only updates, so the style source, URL, and attribution never change.
+  useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    for (const layerId of LAYER_GROUPS[id] ?? []) {
-      if (map.getLayer(layerId)) {
-        map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
+    applyBasemapAppearance(map as unknown as BasemapAppearanceMap, appearance, basemapKindRef.current);
+    layersRef.current?.setAppearance(appearance);
+  }, [appearance, manager]);
+
+  const padTop = viewPadding?.top ?? 0;
+  const padRight = viewPadding?.right ?? 0;
+  const padBottom = viewPadding?.bottom ?? 0;
+  const padLeft = viewPadding?.left ?? 0;
+  useEffect(() => {
+    const map = mapRef.current as {
+      setPadding?: (p: Record<string, number>) => void;
+      easeTo?: (o: Record<string, unknown>) => void;
+    } | null;
+    if (!map) return;
+    const padding = { top: padTop, right: padRight, bottom: padBottom, left: padLeft };
+    // The first application and reduced-motion users get an instant change; later changes ease.
+    if (!reducedMotion && paddedOnce.current && map.easeTo) {
+      map.easeTo({ padding, duration: PADDING_ANIMATION_MS });
+    } else {
+      map.setPadding?.(padding);
+    }
+    paddedOnce.current = true;
+  }, [padTop, padRight, padBottom, padLeft, manager, reducedMotion]);
+
+  // Visibility is controlled by the parent: apply every change to the map right away (Req 34.3).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map) {
+      for (const layerId of LAYER_GROUPS.extraction) {
+        if (map.getLayer(layerId)) {
+          map.setLayoutProperty(layerId, 'visibility', visibility.extraction === false ? 'none' : 'visible');
+        }
       }
     }
-  };
+    if (!manager) return;
+    for (const t of TOGGLES) {
+      const next = visibility[t.id] !== false;
+      if (manager.isVisible(t.id) !== next) manager.setVisible(t.id, next);
+    }
+  }, [visibility, manager]);
 
-  const extractionVisible = toggles.find((t) => t.id === 'extraction')?.visible !== false;
+  useArtifactLayers(manager, visibility);
+
+  const extractionVisible = visibility.extraction !== false;
 
   return (
     <div className={`relative h-full min-h-[320px] w-full ${className}`} data-testid="map-view">
@@ -155,34 +215,24 @@ export function MapView({ className = '', layerInputs, onFeatureClick }: MapView
         <p
           role="alert"
           data-testid="map-error"
-          className="absolute inset-x-2 bottom-8 z-10 rounded border-2 border-unverified bg-[#111a2e] p-2 text-sm text-[#e6edf7]"
+          className="absolute inset-x-2 bottom-8 z-10 rounded border-2 border-unverified bg-surface p-2 text-sm text-text-primary"
         >
           The map is unavailable on this device ({mapError}). Routes, reports and guidance still work in the side panels.
         </p>
       )}
-      <div className="absolute left-2 top-2 z-10 flex max-h-[calc(100%-2.5rem)] max-w-[calc(100%-4rem)] flex-col gap-2 overflow-y-auto">
-        <details className="rounded border border-[#2c3a5c] bg-[#111a2e]/95 text-sm text-[#e6edf7]" data-testid="map-panel">
-          <summary className="min-h-11 cursor-pointer px-2 py-2.5 font-semibold">Map layers and legend</summary>
-          <div className="space-y-2 p-1">
-            <LayerToggles layers={toggles} onToggle={onToggle} />
-            <Legend
-              visible={toggleState}
-              historicalLayers={layerInputs?.historicalLayers}
-            />
-          </div>
-        </details>
-        {extractionVisible && (
-          <p
-            className="max-w-xs rounded border border-dashed border-[#e879f9] bg-[#111a2e]/95 px-2 py-1 text-xs text-[#e6edf7]"
-            data-testid="extraction-label"
-          >
-            {EXTRACTION_LABEL}
-          </p>
-        )}
-      </div>
+      {extractionVisible && (
+        <p
+          className="absolute z-10 max-w-xs rounded border border-dashed border-control-border bg-glass px-2 py-1 text-xs text-text-primary"
+          style={{ left: `calc(0.5rem + ${padLeft}px)`, top: `calc(0.5rem + ${padTop}px)` }}
+          data-testid="extraction-label"
+        >
+          {EXTRACTION_LABEL}
+        </p>
+      )}
       {/* Always-present attribution, independent of the style source (Req 3.8, 46.1). */}
       <p
-        className="absolute bottom-0 right-0 z-10 bg-[#111a2e]/90 px-2 py-0.5 text-xs text-[#e6edf7]"
+        className="absolute right-0 z-10 bg-surface/90 px-2 py-0.5 text-xs text-text-primary"
+        style={{ bottom: 'var(--map-attribution-bottom, 0px)' }}
         data-testid="osm-attribution"
       >
         ©{' '}

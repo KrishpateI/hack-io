@@ -1,0 +1,39 @@
+
+
+#
+# Fatal error in , line 0
+# Check failed: allocation.
+#
+#
+#
+#FailureMessage Object: 0000009989FFBEA8
+----- Native stack trace -----
+
+
+<--- Last few GCs --->
+
+[15016:000002164C814000]     5896 ms: Scavenge (interleaved) 133.3 (201.2) -> 120.5 (234.4) MB, pooled: 0 MB, 18.22 / 0.00 ms  (average mu = 0.933, current mu = 0.894) allocation failure; 
+[15016:000002164C814000]     7227 ms: Scavenge (interleaved) 171.6 (237.4) -> 151.3 (252.9) MB, pooled: 0 MB, 447.29 / 0.00 ms  (average mu = 0.933, current mu = 0.894) allocation failure; 
+
+FATAL ERROR: MarkCompactCollector: young object promotion failed Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+
+<--- Last few GCs --->
+
+[15016:000002164C814000]     5896 ms: Scavenge (interleaved) 133.3 (201.2) -> 120.5 (234.4) MB, pooled: 0 MB, 18.22 / 0.00 ms  (average mu = 0.933, current mu = 0.894) allocation failure; 
+[15016:000002164C814000]     7227 ms: Scavenge (interleaved) 171.6 (237.4) -> 151.3 (252.9) MB, pooled: 0 MB, 447.29 / 0.00 ms  (average mu = 0.933, current mu = 0.894) allocation failure; 
+
+FATAL ERROR: MarkCompactCollector: young object promotion failed Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 00007FFC35808740 
+ 2: 00007FFC364854E4 
+
+<--- Last few GCs --->
+
+[15016:000002164C814000]     5896 ms: Scavenge (interleaved) 133.3 (201.2) -> 120.5 (234.4) MB, pooled: 0 MB, 18.22 / 0.00 ms  (average mu = 0.933, current mu = 0.894) allocation failure; 
+[15016:000002164C814000]     7227 ms: Scavenge (interleaved) 171.6 (237.4) -> 151.3 (252.9) MB, pooled: 0 MB, 447.29 / 0.00 ms  (average mu = 0.933, current mu = 0.894) allocation failure; 
+
+ 1: 00007FFC35808740 
+ 2: 00007FFC364854E4 

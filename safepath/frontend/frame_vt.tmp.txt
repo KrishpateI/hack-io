@@ -1,0 +1,31 @@
+
+ RUN  v5.0.5 C:/Github/HackIO/hack-io/safepath/frontend
+
+ ❯ src/components/ios/frame.test.tsx (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/ios/frame.test.tsx [ src/components/ios/frame.test.tsx ]
+Error: Vitest failed to find the current suite. One of the following is possible:
+- "vitest" is imported directly without running "vitest" command
+- "vitest" is imported inside "globalSetup" (to fix this, use "setupFiles" instead, because "globalSetup" runs in a different context)
+- "vitest" is imported inside Vite / Vitest config file
+- Otherwise, it might be a Vitest bug. Please report it to https://github.com/vitest-dev/vitest/issues
+
+ ❯ src/components/ios/frame.test.tsx:14:1
+     12| /** Validates: Requirements 7.3, 7.4, 7.7, 7.11, 7.12, 7.14, 13.8, 14.…
+     13|
+     14| afterEach(() => {
+       | ^
+     15|   vi.restoreAllMocks();
+     16| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  22:03:44
+   Duration  882ms (environment 80%, setup 18%, worker 1%, transform 1%)
+
+VTEXIT=1 

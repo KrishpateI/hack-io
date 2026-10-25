@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 C:/Github/HackIO/hack-io/safepath/frontend
+
+ ❯ src/components/inspect/inspect.test.tsx (16 tests | 1 failed) 7478ms
+   ❯ FeatureInspector (5)
+     × nearby list and coordinate form are keyboard reachable alternatives 5366ms
+ ❯ src/components/offline/offline.test.tsx (9 tests | 1 failed) 11032ms
+   ❯ queue item wording (Req 41.4, 41.5, 41.7) (3)
+     × shows the server reason for a rejected item with Edit and Discard, and re-queues an edit 5829ms

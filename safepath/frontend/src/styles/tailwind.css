@@ -1,17 +1,138 @@
 @import 'tailwindcss';
 
-@theme {
-  --color-base: #0b1220;
-  --color-surface: #111a2e;
-  --color-surface-raised: #1a2540;
-  --color-border-subtle: #2c3a5c;
-  --color-text-primary: #e6edf7;
-  --color-text-muted: #a9b6cf;
-  --color-route: #22d3ee;
-  --color-route-alt: #60a5fa;
-  --color-closure: #f87171;
-  --color-unverified: #fb923c;
-  --color-verified: #4ade80;
+/*
+ * Utility names are unchanged (bg-surface, text-route, border-border-subtle, ...) but now
+ * resolve to runtime variables, so Appearance switches without rebuilding (design D2).
+ */
+@theme inline {
+  --color-base: var(--c-base);
+  --color-surface: var(--c-surface);
+  --color-surface-raised: var(--c-surface-raised);
+  --color-border-subtle: var(--c-border);
+  --color-text-primary: var(--c-text);
+  --color-text-muted: var(--c-text-muted);
+  --color-route: var(--c-route);
+  --color-route-alt: var(--c-route-alt);
+  --color-closure: var(--c-closure);
+  --color-unverified: var(--c-unverified);
+  --color-verified: var(--c-verified);
+  --color-control-border: var(--c-control-border);
+  --color-glass: var(--c-glass);
+}
+
+/* Dark values (default; mirrors `palette` in tokens.ts). */
+:root {
+  color-scheme: dark;
+  --c-base: #0b1220;
+  --c-surface: #111a2e;
+  --c-surface-raised: #1a2540;
+  --c-border: #2c3a5c;
+  --c-text: #e6edf7;
+  --c-text-muted: #a9b6cf;
+  --c-route: #22d3ee;
+  --c-route-alt: #60a5fa;
+  --c-closure: #f87171;
+  --c-unverified: #fb923c;
+  --c-verified: #4ade80;
+  --c-control-border: #7d8ba8;
+  --c-glass: rgba(17, 26, 46, 0.72);
+  --glass-fallback: #111a2e;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Light values (mirrors `lightPalette` in tokens.ts). */
+:root[data-appearance='light'] {
+  color-scheme: light;
+  --c-base: #f2f2f7;
+  --c-surface: #ffffff;
+  --c-surface-raised: #f9f9fb;
+  --c-border: #c6c6cc;
+  --c-text: #1c1c1e;
+  --c-text-muted: #55596a;
+  --c-route: #0369a1;
+  --c-route-alt: #1d4ed8;
+  --c-closure: #b91c1c;
+  --c-unverified: #b45309;
+  --c-verified: #13773a;
+  --c-control-border: #85858a;
+  --c-glass: rgba(255, 255, 255, 0.72);
+  --glass-fallback: #ffffff;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Dark is explicit: keep the dark color-scheme even when the OS prefers light. */
+:root[data-appearance='dark'] {
+  color-scheme: dark;
+}
+
+/* No-script fallback: System users still get the correct first paint (design D3). */
+@media (prefers-color-scheme: light) {
+  :root:not([data-appearance]) {
+    color-scheme: light;
+    --c-base: #f2f2f7;
+    --c-surface: #ffffff;
+    --c-surface-raised: #f9f9fb;
+    --c-border: #c6c6cc;
+    --c-text: #1c1c1e;
+    --c-text-muted: #55596a;
+    --c-route: #0369a1;
+    --c-route-alt: #1d4ed8;
+    --c-closure: #b91c1c;
+    --c-unverified: #b45309;
+    --c-verified: #13773a;
+    --c-control-border: #85858a;
+    --c-glass: rgba(255, 255, 255, 0.72);
+    --glass-fallback: #ffffff;
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Non-color tokens (mirrored in tokens.ts). */
+:root {
+  --radius-card: 14px;
+  --radius-control: 12px;
+  --blur-glass: 20px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --text-large-title: 28px;
+  --text-title: 20px;
+  --text-headline: 17px;
+  --text-body: 15px;
+  --text-caption: 12px;
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 350ms;
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --target-min: 32px;
+}
+
+@media (pointer: coarse) {
+  :root {
+    --target-min: 44px;
+  }
+}
+
+@media (pointer: fine) {
+  :root {
+    --target-min: 32px;
+  }
+}
+
+/* Glass: the base rule is the opaque fallback; blur only where supported. */
+.glass {
+  background-color: var(--glass-fallback);
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .glass {
+    background-color: var(--c-glass);
+    -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(1.4);
+    backdrop-filter: blur(var(--blur-glass)) saturate(1.4);
+  }
 }
 
 html,
@@ -22,15 +143,36 @@ body,
 
 body {
   margin: 0;
-  background-color: var(--color-base);
-  color: var(--color-text-primary);
+  background-color: var(--c-base);
+  color: var(--c-text);
   overflow-x: hidden;
 }
 
-/* Visible keyboard focus everywhere (Req 36.2). High-contrast ring on the dark theme. */
+/* Visible keyboard focus everywhere (Req 36.2). 3px ring, 2px offset, >= 3:1 in both Appearances. */
 :focus-visible {
-  outline: 3px solid var(--color-route);
+  outline: 3px solid var(--c-route);
   outline-offset: 2px;
+}
+
+/*
+ * MapLibre navigation control (Req 9.1, 9.8, 12.3, 16.8). maplibre-gl.css is unlayered and sets 29 px buttons and a
+ * blue 2 px glow on focus, so the overrides below use higher-specificity selectors. Colors come from the tokens, and
+ * the black icons are inverted in Dark so they stay visible on the Dark surface.
+ */
+.maplibregl-ctrl.maplibregl-ctrl-group {
+  background: var(--c-surface);
+}
+.maplibregl-ctrl.maplibregl-ctrl-group button {
+  width: var(--target-min);
+  height: var(--target-min);
+}
+:root:not([data-appearance='light']) .maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+.maplibregl-ctrl.maplibregl-ctrl-group button:focus:focus-visible {
+  outline: 3px solid var(--c-route);
+  outline-offset: -3px;
+  box-shadow: none;
 }
 
 /* Skip link: off-screen until focused. */
@@ -40,14 +182,28 @@ body {
   top: -4rem;
   z-index: 100;
   padding: 0.75rem 1rem;
-  background: var(--color-base);
-  color: var(--color-text-primary);
-  border: 2px solid var(--color-route);
+  background: var(--c-base);
+  color: var(--c-text);
+  border: 2px solid var(--c-route);
   border-radius: 0.375rem;
   font-weight: 600;
 }
 .skip-link:focus {
   top: 0.5rem;
+}
+
+/* Hover affordance for precise pointers only; never reveals content. */
+@media (hover: hover) and (pointer: fine) {
+  button:not(:disabled):hover,
+  [role='button']:not([aria-disabled='true']):hover,
+  a[href]:hover {
+    filter: brightness(1.08);
+  }
+  :root[data-appearance='light'] button:not(:disabled):hover,
+  :root[data-appearance='light'] [role='button']:not([aria-disabled='true']):hover,
+  :root[data-appearance='light'] a[href]:hover {
+    filter: brightness(0.96);
+  }
 }
 
 /* Respect reduced motion: no animation or smooth scrolling (Req 36). */
@@ -66,5 +222,11 @@ body {
 @media (forced-colors: active) {
   :focus-visible {
     outline-color: Highlight;
+  }
+  .glass {
+    background-color: Canvas;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border: 1px solid CanvasText;
   }
 }

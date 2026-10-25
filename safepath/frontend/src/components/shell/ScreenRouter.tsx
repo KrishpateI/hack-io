@@ -1,4 +1,4 @@
-import type { ComponentProps } from 'react';
+import { useMemo, type ComponentProps } from 'react';
 import { CommunityCommunicationsScreen } from '../../pages/CommunityCommunicationsScreen';
 import { DataSourcesScreen } from '../../pages/DataSourcesScreen';
 import { DisasterSelectionScreen } from '../../pages/DisasterSelectionScreen';
@@ -14,6 +14,7 @@ import { useCommunityFeed } from '../community/useCommunityFeed';
 import type { RoutePanelProps } from '../route/RoutePanel';
 import type { IncidentType } from '../sidebar/disasters';
 import { ScreenFrame } from './ScreenFrame';
+import { ScreenBackContext } from './screenBack';
 import { screenTitle, type ScreenId } from './screens';
 
 export interface ScreenRouterProps {
@@ -32,6 +33,10 @@ export interface ScreenRouterProps {
   onClearLocation: () => void;
   onSelectType: (t: IncidentType) => void;
   onSelectIncident: (i: Incident) => void;
+  /** Goes back one step. With `backLabel`, each screen shows `Back to <backLabel>` (Req 6.6). */
+  onBack?: () => void;
+  /** Title of the previous tab or screen. */
+  backLabel?: string;
 }
 
 /** Needs an incident id; community data is incident-scoped (Req 23, 27). */
@@ -73,7 +78,16 @@ function CheckInContainer({
   return <SafetyCheckInScreen incidentId={incidentId} location={location} checkins={feed.checkins} onClose={onClose} />;
 }
 
-export function ScreenRouter(p: ScreenRouterProps) {
+export function ScreenRouter({ onBack, backLabel, ...p }: ScreenRouterProps) {
+  const back = useMemo(() => ({ backTitle: backLabel, onBack }), [backLabel, onBack]);
+  return (
+    <ScreenBackContext.Provider value={back}>
+      <ScreenRouterContent {...p} />
+    </ScreenBackContext.Provider>
+  );
+}
+
+function ScreenRouterContent(p: Omit<ScreenRouterProps, 'onBack' | 'backLabel'>) {
   const id = p.incident?.incident_id ?? null;
   switch (p.screen) {
     case 'disaster-selection':

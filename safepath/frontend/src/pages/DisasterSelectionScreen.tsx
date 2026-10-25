@@ -1,4 +1,5 @@
-﻿import type { Incident } from '../services/api';
+import { Card } from '../components/ios/Card';
+import type { Incident } from '../services/api';
 import { DISASTERS, type IncidentType } from '../components/sidebar/disasters';
 import { DisasterSelector } from '../components/sidebar/DisasterSelector';
 import { SimulatedBadge } from '../components/SimulatedBadge';
@@ -27,16 +28,16 @@ export function DisasterSelectionScreen({ onClose, ...selector }: DisasterSelect
         <h2 id="disaster-descriptions-h" className="mb-2 text-base font-semibold">How each disaster changes routing</h2>
         <dl className="space-y-2">
           {DISASTERS.map((d) => (
-            <div key={d.type} className="rounded border border-border-subtle p-2">
+            <Card key={d.type} className="p-3">
               <dt className="font-semibold">{d.label}</dt>
               <dd className="text-sm text-text-muted">{d.routing}</dd>
-            </div>
+            </Card>
           ))}
         </dl>
       </section>
-      <div className="rounded border border-border-subtle">
+      <Card className="p-0">
         <DisasterSelector {...selector} />
-      </div>
+      </Card>
     </ScreenFrame>
   );
 }

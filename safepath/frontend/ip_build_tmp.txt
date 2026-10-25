@@ -1,0 +1,8 @@
+
+> safepath-frontend@0.1.0 build
+> tsc --noEmit && vite build
+
+src/components/route/RoutePanel.tsx(259,5): error TS2657: JSX expressions must have one parent element.
+src/components/route/RoutePanel.tsx(275,5): error TS1005: ')' expected.
+src/components/route/RoutePanel.tsx(276,3): error TS1109: Expression expected.
+done  

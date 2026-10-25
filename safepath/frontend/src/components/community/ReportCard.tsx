@@ -9,7 +9,7 @@ export type VoteHandler = (reportId: string, kind: VoteKind) => Promise<unknown>
 const defaultVote: VoteHandler = (id, kind) => (kind === 'corroborate' ? corroborateReport(id) : disputeReport(id));
 
 const BTN =
-  'rounded border border-border-subtle px-3 py-1.5 text-sm text-text-primary hover:bg-surface-raised focus:outline-none focus-visible:ring-2 focus-visible:ring-route disabled:cursor-not-allowed disabled:opacity-60';
+  'min-h-[var(--target-min)] rounded-[var(--radius-control)] border border-border-subtle px-4 py-1.5 text-sm text-text-primary hover:bg-surface-raised focus:outline-none focus-visible:ring-2 focus-visible:ring-route disabled:cursor-not-allowed disabled:opacity-60';
 
 interface Pending {
   confirmations: number;
@@ -72,7 +72,7 @@ export function ReportCard({ report, isOwn = false, onVote = defaultVote }: Repo
     <article
       aria-labelledby={headingId}
       data-testid="report-card"
-      className="space-y-2 rounded-lg border border-border-subtle bg-surface p-3 text-sm text-text-primary"
+      className="space-y-2 rounded-[var(--radius-card)] border border-border-subtle bg-surface p-4 text-sm text-text-primary shadow-[var(--shadow-card)]"
     >
       <header className="flex flex-wrap items-center justify-between gap-2">
         <h3 id={headingId} className="font-semibold capitalize">{report.category}</h3>

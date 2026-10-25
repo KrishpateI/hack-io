@@ -1,24 +1,37 @@
-import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode } from 'react';
+import { useContext, useEffect, useId, useRef, type ReactNode } from 'react';
+import { useDismissibleLayer } from '../ios/hooks/useDismissibleLayer';
+import { PageHeader } from '../ios/PageHeader';
+import { ScreenBackContext } from './screenBack';
 
 export interface ScreenFrameProps {
   title: string;
   onClose: () => void;
   children: ReactNode;
   testId?: string;
+  /** Title of the previous screen. With `onBack`, shows a back control named `Back to <title>`. */
+  backTitle?: string;
+  onBack?: () => void;
 }
-
-const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])';
 
 /**
  * Screen shown in the main content area. It is rendered in normal flow below the persistent
  * disclaimer banner and header, so the disclaimer, SIMULATED indicator and 911 guidance stay
- * visible on every screen (Req 1.1, 1.2). On open it moves focus to the heading, Escape closes
- * it, Tab is kept inside, and focus returns to the opener on close (Req 36).
+ * visible on every screen (Req 1.1, 1.2). It is a non-modal dialog: on open focus moves to the
+ * heading, Escape closes it through the shared layer stack, Tab is not trapped, and focus
+ * returns to the opener on close (Req 6.6, 6.7, 16.7).
+ *
+ * The heading is a Large_Title that collapses into a compact inline title in the sticky bar once
+ * it scrolls away. Text width is capped at 720 px above 1600 px (Req 9.6).
  */
-export function ScreenFrame({ title, onClose, children, testId }: ScreenFrameProps) {
+export function ScreenFrame({ title, onClose, children, testId, backTitle: backTitleProp, onBack: onBackProp }: ScreenFrameProps) {
+  const inherited = useContext(ScreenBackContext);
+  const backTitle = backTitleProp ?? inherited.backTitle;
+  const onBack = onBackProp ?? inherited.onBack;
   const headingId = useId();
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const rootRef = useRef<HTMLDivElement>(null);
+
+  // Registered before the focus effect so the layer records the opener, not the heading.
+  useDismissibleLayer(true, onClose);
 
   useEffect(() => {
     const opener = document.activeElement as HTMLElement | null;
@@ -28,50 +41,36 @@ export function ScreenFrame({ title, onClose, children, testId }: ScreenFramePro
     };
   }, []);
 
-  function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
-    if (e.key === 'Escape') {
-      e.stopPropagation();
-      onClose();
-      return;
-    }
-    if (e.key !== 'Tab' || !rootRef.current) return;
-    const items = [...rootRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)];
-    if (items.length === 0) return;
-    const first = items[0];
-    const last = items[items.length - 1];
-    const active = document.activeElement;
-    if (e.shiftKey && (active === first || active === headingRef.current)) {
-      e.preventDefault();
-      last.focus();
-    } else if (!e.shiftKey && active === last) {
-      e.preventDefault();
-      first.focus();
-    }
-  }
-
   return (
     <div
-      ref={rootRef}
       role="dialog"
+      aria-modal="false"
       aria-labelledby={headingId}
       data-testid={testId ?? 'screen-frame'}
-      onKeyDown={onKeyDown}
       className="relative flex min-h-[60vh] min-w-0 flex-col bg-base pb-24 text-text-primary"
     >
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-subtle bg-surface px-3 py-2">
-        <h2 id={headingId} ref={headingRef} tabIndex={-1} className="text-lg font-bold focus:outline-2 focus:outline-route">
-          {title}
-        </h2>
-        <button
-          type="button"
-          onClick={onClose}
-          className="min-h-11 min-w-11 rounded border border-route px-3 text-sm font-semibold text-route focus:outline-2 focus:outline-route"
-        >
-          Close<span className="sr-only"> {title}</span>
-        </button>
-      </div>
+      <PageHeader
+        title={title}
+        headingId={headingId}
+        headingRef={headingRef}
+        headingLevel={2}
+        backLabel={backTitle && onBack ? backTitle : undefined}
+        backAriaLabel={backTitle && onBack ? `Back to ${backTitle}` : undefined}
+        onBack={backTitle && onBack ? onBack : undefined}
+        trailing={
+          <button
+            type="button"
+            onClick={onClose}
+            className="min-h-[var(--target-min)] min-w-[var(--target-min)] rounded-[var(--radius-control)] px-3 text-[length:var(--text-body)] font-semibold text-route focus:outline-2 focus:outline-route active:opacity-50"
+          >
+            Close<span className="sr-only"> {title}</span>
+          </button>
+        }
+        titleWrapClassName="mx-auto w-full max-w-3xl min-[1601px]:max-w-[720px]"
+        className="contents"
+      />
       <div className="min-w-0 flex-1 p-3">
-        <div className="mx-auto w-full max-w-3xl space-y-4">{children}</div>
+        <div className="mx-auto w-full max-w-3xl space-y-4 min-[1601px]:max-w-[720px]">{children}</div>
       </div>
     </div>
   );

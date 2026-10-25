@@ -73,16 +73,25 @@ function setViewport(width: number) {
   window.dispatchEvent(new Event('resize'));
 }
 
+type AppearanceName = 'light' | 'dark';
+
+/** Applies an Appearance the way `applyAppearance` does: the attribute on the root element. */
+function setAppearance(appearance: AppearanceName) {
+  document.documentElement.setAttribute('data-appearance', appearance);
+}
+
 beforeEach(() => {
   h.incidents = [incident()];
   h.snapshot = snapshot();
   window.location.hash = '';
+  setViewport(1024);
   vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 404, json: async () => ({}), text: async () => '' })));
 });
 
 afterEach(() => {
   vi.unstubAllGlobals();
   window.location.hash = '';
+  document.documentElement.removeAttribute('data-appearance');
 });
 
 /** Every page the user can land on: the map, each screen, and the demo console. */
@@ -163,7 +172,7 @@ async function axeViolations(root: Element) {
 
 // ---------------------------------------------------------------- every page
 describe.each(PAGES)('page: $name', ({ hash, ready }) => {
-  it.each([320, 2560])('at %i px shows the verbatim disclaimer, SIMULATED header, no dismiss control, and no forced overflow', async (width) => {
+  it.each([320, 768, 1280, 2560])('at %i px shows the verbatim disclaimer, SIMULATED header, no dismiss control, and no forced overflow', async (width) => {
     setViewport(width);
     const { container } = await renderPage(hash, ready);
     const banner = screen.getByTestId('disclaimer-banner');
@@ -186,9 +195,18 @@ describe.each(PAGES)('page: $name', ({ hash, ready }) => {
     expect(screen.getByRole('main')).not.toContainElement(panel);
   });
 
-  it('has no axe-core violations', async () => {
-    const { container } = await renderPage(hash, ready);
-    expect(await axeViolations(container)).toEqual([]);
+  // Compact, Wide, and Desktop widths in both Appearances (Requirements 14.7, 12.6).
+  describe.each(['light', 'dark'] as const)('%s appearance', (appearance) => {
+    it.each([320, 1024, 1440])('has no axe-core violations at %i px', async (width) => {
+      setAppearance(appearance);
+      setViewport(width);
+      const { container } = await renderPage(hash, ready);
+      expect(document.documentElement).toHaveAttribute('data-appearance', appearance);
+      // The skip link stays, and the page has a single main landmark (Requirement 12.6).
+      expect(screen.getByRole('link', { name: /skip to main content/i })).toBeInTheDocument();
+      expect(screen.getAllByRole('main')).toHaveLength(1);
+      expect(await axeViolations(container)).toEqual([]);
+    });
   });
 });
 
@@ -200,10 +218,15 @@ describe('keyboard operation', () => {
 
     // The first Tab stop is the skip link to the main landmark.
     await user.tab();
-    expect(screen.getByRole('link', { name: /skip to main content/i })).toHaveFocus();
+    const skip = screen.getByRole('link', { name: /skip to main content/i });
+    expect(skip).toHaveFocus();
 
-    // Tab forward until the "Incident overview" screen link has focus, then activate with Enter.
-    const link = screen.getByRole('link', { name: 'Incident overview' });
+    // Reach the More tab with the keyboard shortcut "g" then "5" (Requirement 16.1).
+    await user.keyboard('g5');
+    const more = await screen.findByTestId('more-tab');
+
+    // Tab forward until the "Incident overview" row link has focus, then activate with Enter.
+    const link = within(more).getByRole('link', { name: 'Incident overview' });
     for (let i = 0; i < 60 && document.activeElement !== link; i++) await user.tab();
     expect(link).toHaveFocus();
     await user.keyboard('{Enter}');
@@ -211,12 +234,21 @@ describe('keyboard operation', () => {
     await user.keyboard('{Escape}');
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
 
-    // The 911 button is the last tab stop on every page (Shift+Tab from the document start
-    // wraps to it) and toggles with Enter and Space.
+    // The 911 control lives in the header, outside main. From the document start it is reachable
+    // within the first ten Tab stops after the skip link, and it toggles with Enter and Space.
     const call = screen.getByRole('button', { name: /emergency: call 911/i });
+    expect(screen.getByRole('main')).not.toContainElement(call);
+    expect(screen.getByRole('banner')).toContainElement(call);
     (document.activeElement as HTMLElement | null)?.blur();
-    await user.tab({ shift: true });
+    await user.tab();
+    expect(skip).toHaveFocus();
+    let stops = 0;
+    while (stops < 10 && document.activeElement !== call) {
+      await user.tab();
+      stops++;
+    }
     expect(call).toHaveFocus();
+    expect(stops).toBeLessThanOrEqual(10);
     await user.keyboard('{Enter}');
     expect(call).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getByTestId('emergency-911-body')).toBeInTheDocument();
@@ -232,6 +264,9 @@ describe('keyboard operation', () => {
       if (el.id === 'main-content') continue; // programmatic skip-link target (tabindex -1)
       if (el.hasAttribute('disabled')) continue;
       expect(el).toHaveAccessibleName();
+      // Programmatic focus targets (the Map area region, tab headings) are focused by code and by
+      // pointer only, so they are not tab stops; they still need an accessible name (checked above).
+      if (el.hasAttribute('data-focus-target')) continue;
       // Roving tabindex: inactive tabs are reached with the arrow keys (WAI-ARIA tabs pattern).
       if (el.getAttribute('role') === 'tab' && el.getAttribute('aria-selected') !== 'true') continue;
       expect(el.tabIndex, el.outerHTML.slice(0, 120)).toBeGreaterThanOrEqual(0);

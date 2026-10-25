@@ -1,0 +1,30 @@
+
+ RUN  v5.0.5 C:/Github/HackIO/hack-io/safepath/frontend
+
+ ❯ src/components/inspect/inspect.test.tsx (16 tests | 2 failed) 19540ms
+   ❯ FeatureInspector (5)
+     × road: attributes, caveat, closure causes with SIMULATED, reports, source and Escape to close 5449ms
+     × nearby list and coordinate form are keyboard reachable alternatives 5302ms
+ ❯ src/components/sidebar/sidebar.test.tsx (6 tests | 1 failed) 16992ms
+   ❯ LeftSidebar (5)
+     × lists incidents of the selected type with SIMULATED scenario label and routing description 7670ms
+ ❯ src/components/shell/tabs/SafetyTab.test.tsx (3 tests | 1 failed) 7045ms
+   ❯ SafetyTab (3)
+     × renders the four rows first and calls the matching callbacks 6010ms
+
+<--- Last few GCs --->
+
+[17188:000001BBCB825000]     5330 ms: Scavenge (interleaved) 37.0 (54.8) -> 28.1 (56.7) MB, pooled: 0 MB, 7.77 / 0.00 ms  (average mu = 0.852, current mu = 0.852) allocation failure; 
+
+FATAL ERROR: Zone Allocation failed - process out of memory
+----- Native stack trace -----
+
+
+<--- Last few GCs --->
+
+[18424:0000025B1282D000]    78831 ms: Scavenge 31.3 (34.6) -> 30.2 (33.6) MB, pooled: 5 MB, 2.15 / 0.00 ms  (average mu = 0.993, current mu = 0.988) allocation failure; 
+[18424:0000025B1282D000]    86302 ms: Mark-Compact 31.3 (33.9) -> 27.9 (31.4) MB, pooled: 6 MB, 85.07 / 0.00 ms  (average mu = 0.999, current mu = 0.999) external memory pressure; GC in old space requested
+
+FATAL ERROR: Zone Allocation failed - process out of memory
+----- Native stack trace -----
+

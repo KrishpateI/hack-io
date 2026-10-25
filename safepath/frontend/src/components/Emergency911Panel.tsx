@@ -1,23 +1,27 @@
-import { useState } from 'react';
+import { useId, useRef, useState } from 'react';
+import { useDismissibleLayer } from './ios/hooks/useDismissibleLayer';
+import { Emergency911Guidance } from './Emergency911Guidance';
 
 /**
- * Persistent 911 guidance, visually separate from app content. One click from
- * any screen (rendered in RootLayout). Guidance only: SafePath does not
- * dispatch or notify 911 (Req 1.3, 1.4).
+ * Persistent 911 control, rendered inside the Header (outside `main`) so it is one
+ * interaction away from every screen. The popover is a `section` and closes with
+ * Escape, returning focus to the button. Guidance only: SafePath does not dispatch
+ * or notify 911 (Req 3.4, 10.3, 10.6).
  */
 export function Emergency911Panel() {
   const [open, setOpen] = useState(false);
+  const button = useRef<HTMLButtonElement>(null);
+  const popoverId = useId();
+  useDismissibleLayer(open, () => setOpen(false), button);
   return (
-    <aside
-      aria-label="Emergency 911 guidance"
-      data-testid="emergency-911"
-      className="fixed bottom-3 right-3 z-50 max-w-[calc(100vw-1.5rem)] rounded-lg sm:max-w-xs border-2 border-closure bg-base p-2 text-sm text-text-primary shadow-lg"
-    >
+    <div data-testid="emergency-911" className="relative">
       <button
+        ref={button}
         type="button"
         aria-expanded={open}
+        aria-controls={open ? popoverId : undefined}
         onClick={() => setOpen((o) => !o)}
-        className="w-full rounded bg-closure px-3 py-1.5 font-bold text-base"
+        className="min-h-[var(--target-min)] rounded-full bg-closure px-3 py-1.5 text-sm font-bold text-base"
       >
         <span className="inline-flex items-center justify-center gap-1.5">
           <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -27,13 +31,16 @@ export function Emergency911Panel() {
         </span>
       </button>
       {open && (
-        <div data-testid="emergency-911-body" className="mt-2 space-y-1">
-          <p>If you are in immediate danger, call 911 from your phone now.</p>
-          <p className="text-text-muted">
-            SafePath does not call, dispatch, or notify 911 or any emergency service. You must place the call yourself.
-          </p>
-        </div>
+        <section
+          id={popoverId}
+          aria-label="Emergency 911 guidance"
+          className="absolute right-0 top-full z-50 mt-2 w-[min(20rem,calc(100vw-1.5rem))] rounded-[var(--radius-card)] border-2 border-closure bg-surface p-3 shadow-[var(--shadow-card)]"
+        >
+          <div data-testid="emergency-911-body">
+            <Emergency911Guidance />
+          </div>
+        </section>
       )}
-    </aside>
+    </div>
   );
 }

@@ -1,0 +1,32 @@
+
+ RUN  v5.0.5 C:/Github/HackIO/hack-io/safepath/frontend
+
+ ❯ src/components/shell/useNavigation.test.tsx (7 tests | 1 failed) 7132ms
+   ❯ Escape layers (1)
+     × closes the profile menu, then the 911 panel, then the pushed screen 5628ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/shell/useNavigation.test.tsx > Escape layers > closes the profile menu, then the 911 panel, then the pushed screen
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/shell/useNavigation.test.tsx:104:3
+    102|   }
+    103|
+    104|   it('closes the profile menu, then the 911 panel, then the pushed scr…
+       |   ^
+    105|     const user = userEvent.setup();
+    106|     const onScreenClose = vi.fn();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 8 passed (9)
+      Tests  1 failed | 38 passed (39)
+   Start at  21:45:27
+   Duration  35.76s (environment 57%, tests 34%, setup 4%, worker 3%, import 1%, transform 1%)
+
+Environment  jsdom was created 9 times · 43.92s total, 57% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

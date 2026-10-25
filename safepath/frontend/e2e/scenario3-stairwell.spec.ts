@@ -9,9 +9,13 @@
  * corroborates, the status reads "not officially verified" (39.3); the moderator confirms and B's
  * indoor view shows the confirmed closure and an updated indoor route within 5 s (39.4, 46.5);
  * the presenter's A/B/C route boxes name the new closure (39.4); two windows throughout (39.6).
+ *
+ * Only one tab is mounted at a time, so window 2 switches tabs: Map for the indoor view, Community for
+ * the report card and corroboration, and back to Map before the moderator confirms so the 5 s closure
+ * timing is measured against a mounted indoor view.
  */
 import { expect, test } from '@playwright/test';
-import { LIVE_UPDATE_MS, newWindow, openApp, openConsoleAsModerator, resetAll } from './helpers';
+import { LIVE_UPDATE_MS, newWindow, openApp, openConsoleAsModerator, openTab, resetAll } from './helpers';
 
 const INCIDENT = 'sim-blocked-stairwell';
 const CORROBORATED = 'Corroborated by community \u2014 not officially verified';
@@ -39,6 +43,7 @@ test('Scenario 3: report, corroborate, moderator confirm and indoor reroute acro
     await expect(indoor.getByRole('tab')).toHaveText(['L1', 'L2', 'L3']);
     const stairA = indoor.getByTestId('indoor-status-list').locator('li', { hasText: 'Stairwell A:' });
     await expect(stairA).toContainText('No reports');
+    await openTab(b, 'Community');
     const reports = b.getByTestId('right-sidebar').getByTestId('panel-reports');
     await expect(reports).toContainText('No community reports yet.');
 
@@ -59,10 +64,12 @@ test('Scenario 3: report, corroborate, moderator confirm and indoor reroute acro
     await expect(actors.getByTestId('result-a-report')).toContainText('Unverified');
     await expect(reportCard).toContainText('Unverified');
     await expect(reportCard).toContainText('SIMULATED');
+    await openTab(b, 'Map');
     await expect(stairA).toContainText('Unverified', { timeout: LIVE_UPDATE_MS });
     await expect(b).toHaveURL(/demoUser=B/); // no reload happened
 
     // ---------------------------------------------------------------- B and C corroborate
+    await openTab(b, 'Community');
     await reportCard.getByRole('button', { name: 'Corroborate', exact: true }).click();
     await expect(reportCard).toContainText('Your response was recorded.');
     await actors.getByRole('button', { name: 'C corroborates the report' }).click();
@@ -72,6 +79,7 @@ test('Scenario 3: report, corroborate, moderator confirm and indoor reroute acro
     await expect(reportCard).not.toContainText('Official/Moderator-confirmed');
 
     // ---------------------------------------------------------------- moderator confirms; indoor reroute within 5 s
+    await openTab(b, 'Map');
     const steps = indoor.getByTestId('indoor-route');
     await expect(steps.locator('li').first()).toBeVisible({ timeout: LIVE_UPDATE_MS });
     const stepsBefore = await steps.locator('ol').innerText();

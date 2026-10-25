@@ -109,6 +109,19 @@ describe('ScreenFrame', () => {
     rerender(<button>opener</button>);
     expect(screen.getByText('opener')).toHaveFocus();
   });
+
+  it('names the back control "Back to <title>" and calls onBack', async () => {
+    const user = userEvent.setup();
+    const onBack = vi.fn();
+    render(<ScreenFrame title="Demo" onClose={vi.fn()} backTitle="Route" onBack={onBack}><p>body</p></ScreenFrame>);
+    await user.click(screen.getByRole('button', { name: 'Back to Route' }));
+    expect(onBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('omits the back control without backTitle', () => {
+    render(<ScreenFrame title="Demo" onClose={vi.fn()}><p>body</p></ScreenFrame>);
+    expect(screen.queryByRole('button', { name: /^Back to/ })).not.toBeInTheDocument();
+  });
 });
 
 describe('screens', () => {

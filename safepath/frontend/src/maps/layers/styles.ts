@@ -23,6 +23,9 @@ export function normalizeHeightClass(value: unknown): HeightClass {
   return typeof value === 'string' && value in HEIGHT_CLASS_COLORS ? (value as HeightClass) : 'Unknown';
 }
 
+/** Extraction-area boundary line color (map layer color, so it lives with the other layer colors). */
+export const EXTRACTION_COLOR = '#e879f9';
+
 export const HAZARD_COLORS = {
   debris: '#d6a56a',
   fire: '#f43f5e',

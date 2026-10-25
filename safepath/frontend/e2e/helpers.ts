@@ -12,8 +12,20 @@ export async function openApp(page: Page, path = '/'): Promise<void> {
   await expect(page.getByTestId('session-status')).toHaveCount(0);
 }
 
+/**
+ * Switch to a primary tab (Map, Route, Community, Safety, More) through the Tab_List or Tab_Bar.
+ * Only one of the two is rendered at a time; both are `navigation "Primary"` with one button per tab.
+ * The name is anchored at the start because a tab can carry a badge ("Route Updated").
+ */
+export async function openTab(page: Page, name: string): Promise<void> {
+  const tab = page.getByRole('navigation', { name: 'Primary' }).getByRole('button', { name: new RegExp(`^${name}\\b`) });
+  await tab.click();
+  await expect(tab).toHaveAttribute('aria-current', 'page');
+}
+
 /** Open the Demo console in this page, take a moderator demo session and reset every scenario. */
 export async function openConsoleAsModerator(page: Page): Promise<void> {
+  await openTab(page, 'More');
   await page.getByRole('link', { name: 'Demo console' }).click();
   await expect(page.getByTestId('demo-route')).toBeVisible();
   await page.getByRole('button', { name: 'Get a moderator demo session' }).click();

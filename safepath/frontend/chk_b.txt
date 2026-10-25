@@ -1,0 +1,18 @@
+
+> safepath-frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 C:/Github/HackIO/hack-io/safepath/frontend
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ Test Files  43 passed (43)
+      Tests  754 passed (754)
+   Start at  21:30:32
+   Duration  31.94s (environment 51%, tests 36%, setup 6%, transform 4%, import 3%, worker 1%)
+
+Environment  jsdom was created 43 times · 42.49s total, 51% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

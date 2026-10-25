@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 C:/Github/HackIO/hack-io/safepath/frontend
+
+
+ Test Files  3 passed (3)
+      Tests  78 passed (78)
+   Start at  20:36:01
+   Duration  38.25s (environment 81%, tests 8%, setup 7%, import 2%, transform 1%)
+

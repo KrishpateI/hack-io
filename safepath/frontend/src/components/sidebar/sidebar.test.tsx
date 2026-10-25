@@ -2,10 +2,14 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import type { Incident, RouteResponse } from '../../services/api';
-import { LeftSidebar } from './LeftSidebar';
-import { validateCoordinates, SIM_DESTINATION_LABEL, type Destination, type LatLng } from './StartDestinationPicker';
+import { ActiveIncident } from './ActiveIncident';
+import { DisasterSelector } from './DisasterSelector';
+import { BottomSheet } from '../ios/BottomSheet';
+import { detentHeights, type Detent } from '../ios/layout';
+import { OfficialLinks } from '../OfficialLinks';
+import { StartDestinationPicker, validateCoordinates, SIM_DESTINATION_LABEL, type Destination, type LatLng } from './StartDestinationPicker';
 import { RouteUncertaintySummary } from './RouteUncertaintySummary';
-import { OFFICIAL_GUIDANCE } from './OfficialGuidance';
+import { OFFICIAL_GUIDANCE, OfficialGuidance } from './OfficialGuidance';
 
 const inc = (id: string, type: Incident['incident_type'], sim: boolean): Incident => ({
   incident_id: id, incident_type: type, simulation_flag: sim, status: 'active', source: 's',
@@ -20,13 +24,18 @@ function Harness({ onStart, onDest }: { onStart?: (p: LatLng) => void; onDest?: 
   const [dest, setDest] = useState<Destination | null>(null);
   const [pick, setPick] = useState<'start' | 'destination' | null>(null);
   return (
-    <LeftSidebar incident={sel} incidents={incidents} disasterType={type} start={start} destination={dest} pickMode={pick}
-      routeResponse={null} onSelectType={setType} onSelectIncident={setSel}
-      onStartChange={(p) => { setStart(p); onStart?.(p); }} onDestinationChange={(p) => { setDest(p); onDest?.(p); }} onPickModeChange={setPick} />
+    <div>
+      <ActiveIncident incident={sel} />
+      <DisasterSelector selectedType={type} incidents={incidents} selectedIncidentId={sel?.incident_id ?? null}
+        onSelectType={setType} onSelectIncident={setSel} />
+      <StartDestinationPicker start={start} destination={dest} pickMode={pick} onPickModeChange={setPick}
+        onStartChange={(p) => { setStart(p); onStart?.(p); }} onDestinationChange={(p) => { setDest(p); onDest?.(p); }}
+        showSamplePoints={type === 'flood'} />
+    </div>
   );
 }
 
-describe('LeftSidebar', () => {
+describe('Incident and route setup', () => {
   it('lists incidents of the selected type with SIMULATED scenario label and routing description', async () => {
     const u = userEvent.setup();
     render(<Harness />);
@@ -64,19 +73,38 @@ describe('LeftSidebar', () => {
   });
 
   it('shows official links, static guidance disclaimer and source/date', () => {
-    render(<Harness />);
+    render(<><OfficialLinks /><OfficialGuidance hazard={null} /></>);
     expect(screen.getByRole('link', { name: /Chicago OEMC/ })).toBeInTheDocument();
     expect(screen.getByTestId('official-guidance')).toHaveTextContent('Static guidance, not a live order');
     expect(screen.getByTestId('official-guidance')).toHaveTextContent(/Retrieved \d{4}-\d{2}-\d{2}/);
     expect(OFFICIAL_GUIDANCE.guidance.length).toBeGreaterThan(0);
   });
 
-  it('collapses on small screens via the toggle', async () => {
+  it('hosts the setup content in the Bottom_Sheet and reaches every Detent from the grabber', async () => {
     const u = userEvent.setup();
-    render(<Harness />);
-    const t = screen.getByRole('button', { name: /Hide incident and route setup/ });
-    await u.click(t);
-    expect(t).toHaveAttribute('aria-expanded', 'false');
+    function SheetHarness() {
+      const [detent, setDetent] = useState<Detent>('collapsed');
+      return (
+        <BottomSheet detent={detent} onDetentChange={setDetent} available={640}>
+          <Harness />
+        </BottomSheet>
+      );
+    }
+    render(<SheetHarness />);
+    const region = screen.getByRole('region', { name: 'SafePath panel' });
+    const heights = detentHeights(640);
+    expect(region).toHaveAttribute('data-detent', 'collapsed');
+    expect(region).toHaveStyle({ height: `${heights.collapsed}px` });
+    await u.click(screen.getByRole('button', { name: /^Resize panel, collapsed/ }));
+    expect(region).toHaveAttribute('data-detent', 'half');
+    expect(region).toHaveStyle({ height: `${heights.half}px` });
+    await u.click(screen.getByRole('button', { name: /^Resize panel, half/ }));
+    expect(region).toHaveAttribute('data-detent', 'full');
+    expect(region).toHaveStyle({ height: `${heights.full}px` });
+    expect(heights.collapsed).toBeLessThan(heights.half);
+    expect(heights.half).toBeLessThan(heights.full);
+    // The setup content stays reachable inside the sheet at Full.
+    expect(screen.getByTestId('active-incident')).toBeInTheDocument();
   });
 });
 

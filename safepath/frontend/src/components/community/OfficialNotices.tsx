@@ -1,3 +1,5 @@
+import { Card } from '../ios/Card';
+import { TabIcon } from '../ios/icons';
 import { SimulatedBadge } from '../SimulatedBadge';
 import { StatusIcon } from '../StatusIcon';
 import { formatTime, type OfficialNoticeItem } from './types';
@@ -8,12 +10,14 @@ import { formatTime, type OfficialNoticeItem } from './types';
  */
 export function OfficialNotices({ notices }: { notices: readonly OfficialNoticeItem[] }) {
   return (
-    <section
-      aria-labelledby="official-notices-heading"
-      data-testid="official-notices"
-      className="space-y-2 rounded-lg border-2 border-verified bg-surface-raised p-3"
-    >
-      <h3 id="official-notices-heading" className="text-sm font-semibold text-text-primary">Official notices</h3>
+    <Card tone="success" className="bg-surface-raised">
+    <section aria-labelledby="official-notices-heading" data-testid="official-notices" className="space-y-2">
+      <h3 id="official-notices-heading" className="flex items-center gap-1.5 text-[length:var(--text-body)] font-semibold text-text-primary">
+        <span aria-hidden="true" className="flex shrink-0 items-center text-verified">
+          <TabIcon name="safety" size={18} />
+        </span>
+        Official notices
+      </h3>
       <div aria-live="polite" aria-relevant="additions" className="space-y-2">
         {notices.length === 0 && <p className="text-sm text-text-muted">No official notices.</p>}
         {notices.map((n) => (
@@ -47,5 +51,6 @@ export function OfficialNotices({ notices }: { notices: readonly OfficialNoticeI
         ))}
       </div>
     </section>
+    </Card>
   );
 }

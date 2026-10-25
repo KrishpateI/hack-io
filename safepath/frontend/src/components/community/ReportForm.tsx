@@ -46,7 +46,7 @@ export interface ReportFormProps {
 }
 
 const FIELD =
-  'w-full rounded border border-border-subtle bg-base px-2 py-1.5 text-sm text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-route';
+  'min-h-11 w-full rounded-[var(--radius-control)] border border-border-subtle bg-base px-3 py-2 text-base text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-route';
 
 export function ReportForm({
   incidentId,
@@ -155,7 +155,7 @@ export function ReportForm({
   const err = (k: string) => errors[k];
   const count = description.length;
   return (
-    <form onSubmit={(e) => void onSubmit(e)} noValidate aria-labelledby={`${uid}-h`} className="space-y-3 text-sm text-text-primary">
+    <form onSubmit={(e) => void onSubmit(e)} noValidate aria-labelledby={`${uid}-h`} className="flex min-h-[70vh] flex-col gap-4 rounded-[var(--radius-card)] bg-surface p-4 text-sm text-text-primary">
       <h2 id={`${uid}-h`} className="text-base font-semibold">Report a hazard</h2>
 
       <div>
@@ -191,7 +191,7 @@ export function ReportForm({
         {err('description') && <p id={`${uid}-desc-err`} className="text-xs text-closure">{err('description')}</p>}
       </div>
 
-      <fieldset className="rounded border border-border-subtle p-2">
+      <fieldset className="rounded-[var(--radius-control)] border border-border-subtle p-3">
         <legend className="px-1 font-medium">Location</legend>
         {location ? (
           <p>
@@ -239,7 +239,7 @@ export function ReportForm({
       <button
         type="submit"
         disabled={busy}
-        className="rounded bg-route px-4 py-2 font-semibold text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-text-primary disabled:opacity-60"
+        className="mt-auto min-h-11 w-full rounded-[var(--radius-control)] bg-route px-4 py-2 font-semibold text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-text-primary disabled:opacity-60"
       >
         {status === 'uploading' ? 'Uploading photo\u2026' : status === 'submitting' ? 'Submitting\u2026' : 'Submit report'}
       </button>

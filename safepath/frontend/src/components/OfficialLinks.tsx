@@ -18,7 +18,7 @@ export function OfficialLinks() {
               href={l.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-route underline focus:outline-2 focus:outline-route"
+              className="inline-flex min-h-[var(--target-min)] items-center gap-1 text-sm text-route underline focus:outline-2 focus:outline-route"
             >
               <StatusIcon kind="building" />
               <span>{l.name}</span>

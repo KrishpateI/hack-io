@@ -22,7 +22,7 @@ export function OfficialGuidance({ hazard }: { hazard?: string | null }) {
       <p className="mb-2 text-xs font-semibold text-unverified">Static guidance, not a live order. {OFFICIAL_GUIDANCE.disclaimer}</p>
       {entries.map((g) => (
         <details key={g.guidance_id} className="mb-1 rounded border border-border-subtle p-2 text-sm">
-          <summary className="cursor-pointer focus:outline-2 focus:outline-route">{g.title}</summary>
+          <summary className="min-h-[var(--target-min)] cursor-pointer py-1.5 focus:outline-2 focus:outline-route">{g.title}</summary>
           <ul className="mt-1 list-disc pl-5">{g.notes.map((n) => <li key={n}>{n}</li>)}</ul>
           <p className="mt-1 text-xs text-text-muted">
             Source: <a href={g.source_url} target="_blank" rel="noopener noreferrer" className="text-route underline">{g.source_url}<span className="sr-only"> (opens in a new tab)</span></a>

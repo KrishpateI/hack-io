@@ -1,7 +1,9 @@
-import { useState, type ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { ApiError, type RouteResponse } from '../../services/api';
 import type { RouteRecalcSnapshot } from '../../services/routeRecalc';
 import type { SourceRecord } from '../../services/sources';
+import { Card } from '../ios/Card';
+import { CheckGlyph, Chevron } from '../ios/icons';
 import { SimulatedBadge } from '../SimulatedBadge';
 import { SourceRecordPopup } from '../SourceRecordPopup';
 import { StatusIcon, type IconKind } from '../StatusIcon';
@@ -68,14 +70,41 @@ export interface RoutePanelProps {
   onRecalculate?: () => void;
   /** Source_Record lookup by id for popups. */
   sourceRecords?: Record<string, SourceRecord> | SourceRecord[];
+  /** Render the selected route's details as a disclosure Grouped_List (Route details screen). */
+  disclosure?: boolean;
 }
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="space-y-1">
-      <h5 className="text-xs font-semibold uppercase tracking-wide text-text-muted">{title}</h5>
+      <h5 className="text-[length:var(--text-caption)] font-semibold uppercase tracking-wide text-text-muted">{title}</h5>
       {children}
     </section>
+  );
+}
+
+/** One disclosure row of an inset grouped list; open by default so content stays visible. */
+function DisclosureSection({ title, children }: { title: string; children: ReactNode }) {
+  const [open, setOpen] = useState(true);
+  const bodyId = useId();
+  return (
+    <li className="m-0 p-0">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={bodyId}
+        onClick={() => setOpen((o) => !o)}
+        className="flex min-h-[var(--target-min)] w-full items-center gap-3 px-4 py-2.5 text-left text-[length:var(--text-body)] font-semibold text-text-primary focus:outline-2 focus:outline-route"
+      >
+        <span className="flex-1">{title}</span>
+        <span aria-hidden="true" className="text-text-muted">
+          <Chevron direction={open ? 'down' : 'right'} />
+        </span>
+      </button>
+      <div id={bodyId} hidden={!open} className="space-y-1 px-4 pb-3">
+        {children}
+      </div>
+    </li>
   );
 }
 
@@ -87,17 +116,33 @@ function SourceButton({ id, onOpen }: { id: string; onOpen: (id: string) => void
   );
 }
 
-export function RouteDetails({ route, onOpen, outdated }: { route: RouteT; onOpen: (id: string) => void; outdated: boolean }) {
+function DisclosureList({ children }: { children: ReactNode }) {
   return (
-    <div data-testid="route-details" className="space-y-3 border-t border-border-subtle pt-2 text-sm">
+    <ul className="m-0 list-none divide-y divide-border-subtle overflow-hidden rounded-[var(--radius-card)] border border-border-subtle bg-surface p-0">
+      {children}
+    </ul>
+  );
+}
+function Passthrough({ children }: { children: ReactNode }) {
+  return <>{children}</>;
+}
+
+export function RouteDetails({
+  route, onOpen, outdated, disclosure = false,
+}: { route: RouteT; onOpen: (id: string) => void; outdated: boolean; disclosure?: boolean }) {
+  const Sec = disclosure ? DisclosureSection : Section;
+  const Wrap = disclosure ? DisclosureList : Passthrough;
+  return (
+    <div data-testid="route-details" className="space-y-3 border-t border-border-subtle pt-2 text-[length:var(--text-body)]">
       {outdated && <p className="text-unverified">This route may be outdated.</p>}
       <p>
         {formatDistance(route.distance_meters)} · {formatDuration(route.estimated_duration_seconds)}
       </p>
-      <Section title="Why chosen over alternatives">
+      <Wrap>
+      <Sec title="Why chosen over alternatives">
         <p>{route.reason_summary || 'No comparison with alternatives was provided.'}</p>
-      </Section>
-      <Section title="Restrictions considered">
+      </Sec>
+      <Sec title="Restrictions considered">
         {route.restrictions_considered.length === 0 ? (
           <p>No restrictions were considered for this route.</p>
         ) : (
@@ -112,8 +157,8 @@ export function RouteDetails({ route, onOpen, outdated }: { route: RouteT; onOpe
           </ul>
         )}
         <p>Excluded edges: {route.excluded_edges_count}</p>
-      </Section>
-      <Section title="Confidence limitations">
+      </Sec>
+      <Sec title="Confidence limitations">
         {route.confidence_limitations.length === 0 ? (
           <p>No specific limitations were reported. Conditions can still differ from the data.</p>
         ) : (
@@ -123,8 +168,8 @@ export function RouteDetails({ route, onOpen, outdated }: { route: RouteT; onOpe
             ))}
           </ul>
         )}
-      </Section>
-      <Section title="Sources">
+      </Sec>
+      <Sec title="Sources">
         {route.sources.length === 0 ? (
           <p>Source: Unknown</p>
         ) : (
@@ -136,38 +181,46 @@ export function RouteDetails({ route, onOpen, outdated }: { route: RouteT; onOpe
             ))}
           </ul>
         )}
-      </Section>
+      </Sec>
+      </Wrap>
     </div>
   );
 }
 
 function RouteList({
-  response, selectedId, onSelect, onOpen, outdated,
+  response, selectedId, onSelect, onOpen, outdated, disclosure,
 }: {
   response: RouteResponse;
   selectedId: string | null;
   onSelect: (id: string) => void;
   onOpen: (id: string) => void;
   outdated: boolean;
+  disclosure: boolean;
 }) {
   return (
     <div className="space-y-2">
       <p className="text-xs text-text-muted">
         Flood information is modeled. A route with lower modeled exposure can still be impassable.
       </p>
-      <ul className="space-y-2" aria-label="Route options">
+      <ul className="m-0 list-none space-y-2 p-0" aria-label="Route options">
         {response.routes.map((r, i) => {
           const selected = r.route_id === selectedId;
           return (
-            <li key={r.route_id} data-testid="route-item" className="rounded border border-border-subtle bg-surface-raised p-2">
+            <li key={r.route_id} data-testid="route-item" className="m-0 p-0">
+              <Card tone={selected ? 'info' : 'default'} className="p-3">
               <button
                 type="button"
                 aria-pressed={selected}
                 aria-expanded={selected}
                 onClick={() => onSelect(r.route_id)}
-                className={`w-full rounded p-1 text-left focus:outline-2 focus:outline-route ${selected ? 'border-l-4 border-route pl-2' : ''}`}
+                className="min-h-[var(--target-min)] w-full rounded text-left focus:outline-2 focus:outline-route"
               >
                 <span className="flex flex-wrap items-center gap-2">
+                  {selected && (
+                    <span aria-hidden="true" className="text-route">
+                      <CheckGlyph size={16} />
+                    </span>
+                  )}
                   <span className="font-semibold">
                     {i === 0 ? 'Route' : `Alternative ${i}`} ({r.route_type})
                   </span>
@@ -191,7 +244,8 @@ function RouteList({
                   </span>
                 )}
               </button>
-              {selected && <RouteDetails route={r} onOpen={onOpen} outdated={outdated} />}
+              {selected && <RouteDetails route={r} onOpen={onOpen} outdated={outdated} disclosure={disclosure} />}
+              </Card>
             </li>
           );
         })}
@@ -202,7 +256,8 @@ function RouteList({
 
 function NoticeCard({ notice, onOpen }: { notice: Notice; onOpen: (id: string) => void }) {
   return (
-    <li data-testid="notice" className="space-y-1 rounded border border-border-subtle bg-surface-raised p-2 text-sm">
+    <li data-testid="notice" className="m-0 list-none p-0">
+      <Card tone="success" className="space-y-1 p-3 text-sm">
       <div className="flex flex-wrap items-center gap-2">
         <span className="inline-flex items-center gap-1 rounded border border-verified px-1.5 py-0.5 text-xs text-verified">
           <StatusIcon kind="check" />
@@ -218,6 +273,7 @@ function NoticeCard({ notice, onOpen }: { notice: Notice; onOpen: (id: string) =
         </a>{' '}
         · Retrieved {fmt(notice.retrieved_at)} · <SourceButton id={notice.source_record_id} onOpen={onOpen} />
       </p>
+      </Card>
     </li>
   );
 }
@@ -237,20 +293,21 @@ function MissingData({ items }: { items: string[] }) {
 
 function Call911() {
   return (
-    <p data-testid="call-911" className="rounded border-2 border-closure p-2 text-sm font-semibold">
+    <Card tone="danger" data-testid="call-911" className="p-3 text-sm font-semibold">
       {CALL_911_TEXT}
-    </p>
+    </Card>
   );
 }
 
 function OutcomeBody({
-  response, selectedId, onSelect, onOpen, outdated,
+  response, selectedId, onSelect, onOpen, outdated, disclosure,
 }: {
   response: RouteResponse;
   selectedId: string | null;
   onSelect: (id: string) => void;
   onOpen: (id: string) => void;
   outdated: boolean;
+  disclosure: boolean;
 }) {
   const notices = response.notices;
   switch (response.policy_outcome) {
@@ -258,14 +315,14 @@ function OutcomeBody({
       return (
         <>
           <p className="text-sm">{response.explanation}</p>
-          <RouteList response={response} selectedId={selectedId} onSelect={onSelect} onOpen={onOpen} outdated={outdated} />
+          <RouteList response={response} selectedId={selectedId} onSelect={onSelect} onOpen={onOpen} outdated={outdated} disclosure={disclosure} />
         </>
       );
     case 'SHELTER_IN_PLACE': {
       const shelter = notices.filter((n) => n.notice_type === 'shelter_in_place');
       const shown = shelter.length > 0 ? shelter : notices;
       return (
-        <div data-testid="shelter-in-place" className="space-y-3 rounded-lg border-2 border-closure p-3">
+        <Card tone="danger" data-testid="shelter-in-place" className="space-y-3">
           <h4 className="text-lg font-bold">Shelter in place</h4>
           <p className="text-sm">{response.explanation}</p>
           {shown.length > 0 ? (
@@ -287,12 +344,12 @@ function OutcomeBody({
             </p>
           </Section>
           <Call911 />
-        </div>
+        </Card>
       );
     }
     case 'FOLLOW_OFFICIAL_INSTRUCTIONS':
       return (
-        <div data-testid="follow-instructions" className="space-y-3 rounded-lg border-2 border-unverified p-3">
+        <Card tone="warning" data-testid="follow-instructions" className="space-y-3">
           <h4 className="text-lg font-bold">Follow official instructions</h4>
           <p className="text-sm">{response.explanation}</p>
           {notices.length > 0 && (
@@ -303,11 +360,11 @@ function OutcomeBody({
             </ul>
           )}
           <Call911 />
-        </div>
+        </Card>
       );
     case 'NO_VERIFIED_ROUTE_AVAILABLE':
       return (
-        <div data-testid="no-verified-route" className="space-y-3 rounded-lg border-2 border-closure p-3">
+        <Card tone="danger" data-testid="no-verified-route" className="space-y-3">
           <h4 className="text-lg font-bold">{NO_ROUTE_TITLE}</h4>
           <p className="text-sm">{response.explanation}</p>
           <MissingData items={response.missing_data} />
@@ -319,11 +376,11 @@ function OutcomeBody({
             </ul>
           )}
           <Call911 />
-        </div>
+        </Card>
       );
     case 'INSUFFICIENT_DATA':
       return (
-        <div data-testid="insufficient-data" className="space-y-3 rounded-lg border-2 border-unverified p-3">
+        <Card tone="warning" data-testid="insufficient-data" className="space-y-3">
           <h4 className="text-lg font-bold">Insufficient data</h4>
           <p className="text-sm">{response.explanation}</p>
           {response.missing_data.length > 0 ? (
@@ -332,14 +389,14 @@ function OutcomeBody({
             <p className="text-sm">The missing data was not specified.</p>
           )}
           <Call911 />
-        </div>
+        </Card>
       );
   }
 }
 
 /** Route results and policy outcome display (Req 15, 19, 34, 35, 36, 1.7, 17.7). */
 export function RoutePanel({
-  response, loading = false, error = null, recalc = null, selectedRouteId, onSelectRoute, onRecalculate, sourceRecords,
+  response, loading = false, error = null, recalc = null, selectedRouteId, onSelectRoute, onRecalculate, sourceRecords, disclosure = false,
 }: RoutePanelProps) {
   const [localSel, setLocalSel] = useState<string | null>(null);
   const [popupId, setPopupId] = useState<string | null>(null);
@@ -366,10 +423,10 @@ export function RoutePanel({
         <p role="status" data-testid="route-loading" className="text-sm">Calculating route…</p>
       )}
       {!!error && !loading && (
-        <p role="alert" data-testid="route-error" className="flex items-start gap-2 rounded border border-closure p-2 text-sm text-closure">
+        <Card tone="danger" role="alert" data-testid="route-error" className="flex items-start gap-2 p-3 text-sm text-closure">
           <StatusIcon kind="cross" />
           <span>{errorMessage(error)}</span>
-        </p>
+        </Card>
       )}
 
       <div aria-live="polite" data-testid="route-outcome" className="space-y-3">
@@ -380,7 +437,7 @@ export function RoutePanel({
               <span className="rounded border border-border-subtle px-1.5 py-0.5">{response.label || ALGORITHM_LABEL}</span>
               <span data-testid="last-update">Last information update: {fmt(response.data_timestamp)}</span>
             </p>
-            <OutcomeBody response={response} selectedId={selectedId} onSelect={select} onOpen={setPopupId} outdated={outdated} />
+            <OutcomeBody response={response} selectedId={selectedId} onSelect={select} onOpen={setPopupId} outdated={outdated} disclosure={disclosure} />
             {response.sources.length > 0 && response.policy_outcome !== 'ROUTE_OPTIONS_AVAILABLE' && (
               <Section title="Sources">
                 <ul className="flex flex-wrap gap-3 text-sm">

@@ -419,7 +419,7 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - [ ] 13.9 Write frontend component and accessibility tests
     - Disclaimer on every page, SIMULATED indicator, historical label, 911 within one interaction, Corroborated text, stale banner, status chips with text and icon, keyboard operation, `axe-core` checks, layout at 320 and 2560
     - _Requirements: 1.1, 1.2, 8.10, 24.8, 25.5, 34.7, 36.2, 36.3, 36.4_
-  - [ ] 13.10 Write Playwright end-to-end demo tests
+  - [x] 13.10 Write Playwright end-to-end demo tests
     - Scenario 1 (flood, route change explanation within 5 s) and Scenario 3 (two browser contexts: report, corroborate, moderator confirm, indoor reroute) following the demo script
     - _Requirements: 37.5, 39.2, 39.3, 39.4, 39.6, 44.11, 46.4, 46.5_
 

@@ -27,7 +27,7 @@ export default function serviceWorkerManifest() {
       const file = path.resolve(root, outDir, 'sw.js');
       if (!existsSync(file)) return;
       const urls = ['/', '/index.html', ...emitted.sort()];
-      const publicExtras = ['/manifest.webmanifest', '/favicon.svg'].filter((u) => existsSync(path.resolve(root, outDir, u.slice(1))));
+      const publicExtras = ['/manifest.webmanifest', '/favicon.svg', '/appearance-init.js'].filter((u) => existsSync(path.resolve(root, outDir, u.slice(1))));
       const list = [...new Set([...urls, ...publicExtras])];
       const id = createHash('sha256').update(list.join('\n')).digest('hex').slice(0, 12);
       let src = readFileSync(file, 'utf8');

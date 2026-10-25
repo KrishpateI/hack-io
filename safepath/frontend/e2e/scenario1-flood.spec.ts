@@ -7,7 +7,7 @@
  * explanation within 5 s (Req 37.5, 44.11, 46.5).
  */
 import { expect, test } from '@playwright/test';
-import { LIVE_UPDATE_MS, newWindow, openApp, openConsoleAsModerator, resetAll, timeUntilVisible } from './helpers';
+import { LIVE_UPDATE_MS, newWindow, openApp, openConsoleAsModerator, openTab, resetAll, timeUntilVisible } from './helpers';
 
 const ORIGIN = { lat: '41.8882', lng: '-87.628' }; // SIMULATED start near the Riverwalk (scenarios.json)
 const DESTINATION = { lat: '41.8827', lng: '-87.6233' }; // SIMULATION destination, not an official shelter
@@ -45,7 +45,8 @@ test('Scenario 1: flood closure changes the route and the explanation within 5 s
   try {
     const v = viewer.page;
     await openApp(v);
-    await expect(v.getByTestId('left-sidebar')).toContainText('sim-flood-loop');
+    await expect(v.getByTestId('disaster-selector')).toContainText('sim-flood-loop');
+    await openTab(v, 'Route');
     await v.locator('#start-lat').fill(ORIGIN.lat);
     await v.locator('#start-lng').fill(ORIGIN.lng);
     await v.locator('#start-lng').blur();
@@ -72,7 +73,7 @@ test('Scenario 1: flood closure changes the route and the explanation within 5 s
     await expect(comparison).toContainText(/1 restriction considered/);
     test.info().annotations.push({ type: 'console reroute explanation (ms)', description: String(rerouteMs) });
 
-    await page.getByRole('link', { name: 'Back to the map' }).click();
+    await page.getByRole('button', { name: 'Back to More' }).click();
     await expect(page.getByTestId('dashboard')).toBeVisible();
   } finally {
     await viewer.context.close();

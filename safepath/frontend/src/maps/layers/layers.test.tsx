@@ -7,7 +7,7 @@ import {
 import { renderIcon } from './icons';
 import { Legend } from './Legend';
 import { clearLayerCache, layerUrl, loadLayer, setOfflineLayerStore } from './layerData';
-import { MapLayers, type MapLike } from './MapLayers';
+import { APPEARANCE_LABEL_LAYERS, MapLayers, type MapLike } from './MapLayers';
 import {
   DATA_LAYER_GROUPS, ICONS, LAYER_DEFS, LEGEND_ENTRIES, SIMULATION_DESTINATION_LABEL, TOGGLES,
   normalizeHeightClass, reportSymbol, visibleLegend,
@@ -167,6 +167,7 @@ function fakeMap() {
     addLayer: vi.fn((l: { id: string }) => { layers.set(l.id, l as unknown as Record<string, unknown>); }),
     getLayer: (id: string) => layers.get(id),
     setLayoutProperty: vi.fn(),
+    setPaintProperty: vi.fn(),
     addImage: vi.fn((id: string) => { images.add(id); }),
     hasImage: (id: string) => images.has(id),
     setGlyphs: vi.fn(),
@@ -226,6 +227,40 @@ describe('MapLayers manager', () => {
   });
 });
 
+describe('MapLayers.setAppearance', () => {
+  it('repaints only default-color labels, without adding or removing layers', () => {
+    const f = fakeMap();
+    const m = new MapLayers(f.map);
+    m.init();
+    const added = f.map.addLayer.mock.calls.length;
+    f.map.setPaintProperty.mockClear();
+    m.setAppearance('light');
+    const calls = f.map.setPaintProperty.mock.calls;
+    expect(calls).toHaveLength(APPEARANCE_LABEL_LAYERS.length * 2);
+    expect(new Set(calls.map((c) => c[0]))).toEqual(new Set(APPEARANCE_LABEL_LAYERS));
+    expect(calls.every((c) => c[1] === 'text-color' || c[1] === 'text-halo-color')).toBe(true);
+    const light = calls.find((c) => c[0] === 'fire-label' && c[1] === 'text-color')![2];
+    m.setAppearance('dark');
+    const dark = f.map.setPaintProperty.mock.calls.filter((c) => c[0] === 'fire-label' && c[1] === 'text-color').pop()![2];
+    expect(light).not.toBe(dark);
+    expect(f.map.addLayer).toHaveBeenCalledTimes(added);
+    expect(calls.some((c) => c[0] === 'routes-primary' || c[0] === 'reports-symbol' || c[0] === 'incidents-label')).toBe(false);
+  });
+
+  it('applies a pre-init appearance at init and tolerates maps without setPaintProperty', () => {
+    const f = fakeMap();
+    const m = new MapLayers(f.map);
+    m.setAppearance('light');
+    expect(f.map.setPaintProperty).not.toHaveBeenCalled();
+    m.init();
+    expect(f.map.setPaintProperty).toHaveBeenCalledWith('elevation-label', 'text-color', expect.any(String));
+    const bare = fakeMap();
+    delete (bare.map as { setPaintProperty?: unknown }).setPaintProperty;
+    const m2 = new MapLayers(bare.map);
+    m2.init();
+    expect(() => m2.setAppearance('light')).not.toThrow();
+  });
+});
 describe('layer data loading', () => {
   const data = fc(pt({ name: 'A' }));
   beforeEach(() => clearLayerCache());

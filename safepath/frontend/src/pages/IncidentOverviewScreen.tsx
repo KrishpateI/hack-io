@@ -1,4 +1,5 @@
-﻿import { OfficialNotices } from '../components/community/OfficialNotices';
+import { Card } from '../components/ios/Card';
+import { OfficialNotices } from '../components/community/OfficialNotices';
 import { ReportStatusBadge } from '../components/community/ReportStatusBadge';
 import type { CommunityReport, OfficialNoticeItem } from '../components/community/types';
 import { HistoricalLabel } from '../components/HistoricalLabel';
@@ -35,7 +36,7 @@ export function IncidentOverviewScreen({ incident, reports, notices, activeRestr
       {!incident ? (
         <p className="text-sm text-text-muted">No incident selected.</p>
       ) : (
-        <section aria-labelledby="ov-incident-h" className="space-y-1 rounded border border-border-subtle bg-surface-raised p-3 text-sm">
+        <Card role="region" aria-labelledby="ov-incident-h" className="space-y-1 text-sm">
           <h2 id="ov-incident-h" className="text-base font-semibold">{disasterLabel(incident.incident_type)} incident</h2>
           {incident.simulation_flag && (
             <p className="flex flex-wrap items-center gap-2"><SimulatedBadge /><span>This is a simulated scenario, not a real event.</span></p>
@@ -45,7 +46,7 @@ export function IncidentOverviewScreen({ incident, reports, notices, activeRestr
           <p className="text-xs text-text-muted">Incident areas are not official evacuation boundaries.</p>
           <p>Source: {incident.source}</p>
           <p data-testid="restriction-count">Active restrictions: {activeRestrictionCount}</p>
-        </section>
+        </Card>
       )}
       <OfficialNotices notices={notices} />
       <section aria-labelledby="ov-reports-h" data-testid="report-counts" className="space-y-1">
@@ -60,10 +61,10 @@ export function IncidentOverviewScreen({ incident, reports, notices, activeRestr
         </ul>
       </section>
       {showCbdReference && (
-        <section aria-labelledby="ov-cbd-h" className="space-y-1 rounded border border-unverified p-3 text-sm">
+        <Card role="region" tone="warning" aria-labelledby="ov-cbd-h" className="space-y-1 text-sm">
           <h2 id="ov-cbd-h" className="text-base font-semibold">Central Business District reference</h2>
           <HistoricalLabel />
-        </section>
+        </Card>
       )}
     </ScreenFrame>
   );

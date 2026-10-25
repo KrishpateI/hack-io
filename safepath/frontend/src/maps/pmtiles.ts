@@ -11,6 +11,8 @@
  */
 import { Protocol } from 'pmtiles';
 import type { StyleSpecification } from 'maplibre-gl';
+import type { Appearance } from '../styles/tokens';
+import { basemapPaint } from './basemapAppearance';
 
 export const OSM_ATTRIBUTION =
   '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors';
@@ -36,7 +38,6 @@ export interface BasemapResult {
   source: BasemapSource;
 }
 
-const BACKGROUND = { id: 'background', type: 'background', paint: { 'background-color': '#0b1220' } } as const;
 
 let protocol: Protocol | null = null;
 
@@ -65,7 +66,18 @@ export async function probePmtiles(url: string | undefined, fetchFn: typeof fetc
   }
 }
 
-export function buildBasemapStyle(cfg: BasemapConfig): BasemapResult {
+export function buildBasemapStyle(cfg: BasemapConfig, appearance: Appearance = 'dark'): BasemapResult {
+  const light = appearance === 'light';
+  const bg = basemapPaint(appearance, 'none').background as { 'background-color': string };
+  const BACKGROUND = { id: 'background', type: 'background', paint: bg } as const;
+  // Dark reproduces the original raster layer (no paint); Light adds the paint.
+  const rasterLayer = (): StyleSpecification['layers'][number] => ({
+    id: 'basemap',
+    type: 'raster',
+    source: 'basemap',
+    ...(light ? { paint: basemapPaint(appearance, 'raster').basemap } : {}),
+  });
+  const vp = basemapPaint(appearance, 'vector');
   if (cfg.pmtilesUrl && cfg.pmtilesPresent) {
     const url = `pmtiles://${cfg.pmtilesUrl}`;
     if (cfg.pmtilesKind === 'vector') {
@@ -76,8 +88,8 @@ export function buildBasemapStyle(cfg: BasemapConfig): BasemapResult {
           sources: { basemap: { type: 'vector', url, attribution: OSM_ATTRIBUTION } },
           layers: [
             BACKGROUND,
-            { id: 'water', type: 'fill', source: 'basemap', 'source-layer': 'water', paint: { 'fill-color': '#16324f' } },
-            { id: 'roads', type: 'line', source: 'basemap', 'source-layer': 'roads', paint: { 'line-color': '#3a4a6e', 'line-width': 1 } },
+            { id: 'water', type: 'fill', source: 'basemap', 'source-layer': 'water', paint: { ...vp.water, } },
+            { id: 'roads', type: 'line', source: 'basemap', 'source-layer': 'roads', paint: { ...vp.roads, 'line-width': 1 } },
           ],
         },
       };
@@ -87,7 +99,7 @@ export function buildBasemapStyle(cfg: BasemapConfig): BasemapResult {
       style: {
         version: 8,
         sources: { basemap: { type: 'raster', url, tileSize: 256, attribution: OSM_ATTRIBUTION } },
-        layers: [BACKGROUND, { id: 'basemap', type: 'raster', source: 'basemap' }],
+        layers: [BACKGROUND, rasterLayer()],
       },
     };
   }
@@ -99,7 +111,7 @@ export function buildBasemapStyle(cfg: BasemapConfig): BasemapResult {
         sources: {
           basemap: { type: 'raster', tiles: OSM_RASTER_TILES, tileSize: 256, maxzoom: 19, attribution: OSM_ATTRIBUTION },
         },
-        layers: [BACKGROUND, { id: 'basemap', type: 'raster', source: 'basemap' }],
+        layers: [BACKGROUND, rasterLayer()],
       },
     };
   }

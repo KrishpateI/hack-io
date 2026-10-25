@@ -16,6 +16,7 @@ import {
   buildStations,
   buildVerified,
 } from './data';
+import type { Appearance } from '../../styles/tokens';
 import { renderIcon } from './icons';
 import { ICONS, LAYER_DEFS, TEXT_FONT, TOGGLES } from './styles';
 import { EMPTY_FC, SOURCE_IDS, type FC, type MapLayerInputs, type SourceId } from './types';
@@ -30,6 +31,7 @@ export interface MapLike {
   addLayer(layer: unknown): void;
   getLayer(id: string): unknown;
   setLayoutProperty(layerId: string, prop: string, value: unknown): void;
+  setPaintProperty?(layerId: string, prop: string, value: unknown): void;
   addImage(id: string, image: unknown, options?: unknown): void;
   hasImage(id: string): boolean;
   setGlyphs?(url: string): void;
@@ -43,10 +45,19 @@ const ARTIFACT_SOURCE: Record<ArtifactLayerName, SourceId> = {
   buildings: 'buildings',
 };
 
+/** Default-color label layers whose text/halo follow the Appearance (Req 5.6-5.8). */
+export const APPEARANCE_LABEL_LAYERS = ['elevation-label', 'hazards-label', 'fire-label', 'flood-label', 'cta-stations-label'] as const;
+
+export const LABEL_PAINT: Record<Appearance, { text: string; halo: string }> = {
+  light: { text: '#1c1c1e', halo: '#ffffff' },
+  dark: { text: '#f2f2f7', halo: '#1c1c1e' },
+};
+
 export class MapLayers {
   private visible: Record<string, boolean> = {};
   private initialized = false;
   private inputs: MapLayerInputs = {};
+  private appearance: Appearance = 'dark';
 
   constructor(private readonly map: MapLike, initialVisible: Record<string, boolean> = {}, glyphsUrl?: string) {
     for (const t of TOGGLES) this.visible[t.id] = initialVisible[t.id] ?? t.defaultVisible;
@@ -71,6 +82,19 @@ export class MapLayers {
       });
     }
     this.setInputs(this.inputs);
+    this.setAppearance(this.appearance);
+  }
+
+  /** Repaint default-color labels for the Appearance; paint-only, no layer is removed or re-added. */
+  setAppearance(appearance: Appearance): void {
+    this.appearance = appearance;
+    if (!this.initialized || !this.map.setPaintProperty) return;
+    const { text, halo } = LABEL_PAINT[appearance];
+    for (const id of APPEARANCE_LABEL_LAYERS) {
+      if (!this.map.getLayer(id)) continue;
+      this.map.setPaintProperty(id, 'text-color', text);
+      this.map.setPaintProperty(id, 'text-halo-color', halo);
+    }
   }
 
   get fontStack(): string[] {

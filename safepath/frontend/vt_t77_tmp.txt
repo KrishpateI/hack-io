@@ -1,0 +1,414 @@
+
+ RUN  v5.0.5 C:/Github/HackIO/hack-io/safepath/frontend
+
+ ❯ src/components/shell/useNavigation.test.tsx (7 tests | 1 failed) 444ms
+   ❯ Escape layers (1)
+     × closes the profile menu, then the 911 panel, then the pushed screen 7ms
+ ❯ src/components/shell/shell.test.tsx (13 tests | 8 failed) 632ms
+   ❯ ScreenFrame (3)
+     × focuses the heading, closes on Escape and restores focus 7ms
+     × names the back control "Back to <title>" and calls onBack 1ms
+     × omits the back control without backTitle 1ms
+   ❯ screens (5)
+     × SafetyCheckIn shows separate 911 guidance and never claims dispatch 2ms
+     × IncidentOverview shows counts, restrictions, notices and the historical label 3ms
+     × OfficialGuidance says it is not a live order and lists sources 2ms
+     × DisasterSelection labels scenarios SIMULATED and selects a type 2ms
+     × CommunityCommunications separates official notices from community content 2ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+stderr | src/pages/SourcesLimitations.test.tsx > App navigation > reaches the Sources screen via hash link
+ReferenceError: PageHeader is not defined
+    at ScreenFrame (C:/Github/HackIO/hack-io/safepath/frontend/src/components/shell/ScreenFrame.tsx:47:8)
+    at Object.react_stack_bottom_frame (C:\Github\HackIO\hack-io\safepath\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:28571:20)
+    at renderWithHooks (C:\Github\HackIO\hack-io\safepath\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:8030:22)
+    at updateFunctionComponent (C:\Github\HackIO\hack-io\safepath\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:10569:19)
+    at beginWork (C:\Github\HackIO\hack-io\safepath\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:12205:18)
+    at runWithFiberInDEV (C:\Github\HackIO\hack-io\safepath\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:1048:13)
+    at performUnitOfWork (C:\Github\HackIO\hack-io\safepath\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:19176:22)
+    at workLoopSync (C:\Github\HackIO\hack-io\safepath\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:19004:41)
+    at renderRootSync (C:\Github\HackIO\hack-io\safepath\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:18985:11)
+    at performWorkOnRoot (C:\Github\HackIO\hack-io\safepath\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:18094:35) {
+  [stack]: [Getter/Setter],
+  [message]: 'PageHeader is not defined'
+}
+
+The above error occurred in the <ScreenFrame> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary.
+
+
+ ❯ src/pages/SourcesLimitations.test.tsx (8 tests | 1 failed) 1426ms
+   ❯ App navigation (1)
+     × reaches the Sources screen via hash link 1152ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/SourcesLimitations.test.tsx > App navigation > reaches the Sources screen via hash link
+TestingLibraryElementError: Unable to find role="heading" and name `/data sources and limitations/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-h-screen min-w-[320px] max-w-full flex-col overflow-x-clip bg-base text-text-primary"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"skip-link"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0mSkip to main content[0m
+      [36m</a>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Disclaimer"[39m
+        [33mclass[39m=[32m"w-full break-words border-b border-unverified bg-surface-raised px-3 py-2 text-xs text-text-primary sm:text-sm"[39m
+        [33mdata-testid[39m=[32m"disclaimer-banner"[39m
+        [33mrole[39m=[32m"note"[39m
+      [36m>[39m
+        [0mSafePath is an experimental prototype. Simulated scenarios and community reports are not official emergency guidance. Follow local authorities and call 911 for immediate emergencies.[0m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mdata-testid[39m=[32m"offline-status"[39m
+      [36m/>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"glass relative z-40 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border-subtle px-3 py-2"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"shrink-0 text-route"[39m
+              [33mfocusable[39m=[32m"false"[39m
+              [33mheight[39m=[32m"28"[39m
+              [33mviewBox[39m=[32m"0 0 28 28"[39m
+              [33mwidth[39m=[32m"28"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M14 2 4 6v7c0 6.2 4.2 10.7 10 13 5.8-2.3 10-6.8 10-13V6L14 2Z"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 17c3-1 4-5 6-5s3 3 6 2"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"text-lg font-semibold text-route"[39m
+            [36m>[39m
+              [0mSafePath[0m
+            [36m</h1>[39m
+          [36m</div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-text-primary"[39m
+            [33mdata-testid[39m=[32m"header-city"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0mCurrent city: [0m
+            [36m</span>[39m
+            [0mChicago[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mdata-testid[39m=[32m"simulated-indicator-slot"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-xs"[39m
+            [33mdata-testid[39m=[32m"connectivity"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-live[39m=[32m"polite"[39m
+              [33mclass[39m=[32m"inline-flex items-center gap-1 rounded border px-1.5 py-0.5 border-border-subtle text-text-muted"[39m
+              [33mdata-testid[39m=[32m"connectivity-status"[39m
+              [33mrole[39m=[32m"status"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"12"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.6"[39m
+                [33mviewBox[39m=[32m"0 0 12 12"[39m
+                [33mwidth[39m=[32m"12"[39m
+              [36m>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"6"[39m
+                  [33mcy[39m=[32m"6"[39m
+                  [33mr[39m=[32m"4.5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M4.7 4.8a1.4 1.4 0 1 1 2 1.2c-.5.3-.7.6-.7 1.1M6 8.8v.1"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span>[39m
+                [0mNo live channel[0m
+              [36m</span>[39m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-text-muted"[39m
+              [33mdata-testid[39m=[32m"last-synced"[39m
+            [36m>[39m
+              [0mLast synced: [0m
+              [0mnot yet[0m
+            [36m</span>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative"[39m
+            [33mdata-testid[39m=[32m"profile-menu"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33mclass[39m=[32m"inline-flex min-h-11 items-center gap-2 rounded border border-border-subtle px-3 text-sm text-text-primary"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"16"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"16"[39m
+              [36m>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"8"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7H4Z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span>[39m
+                [0mProfile[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative"[39m
+            [33mdata-testid[39m=[32m"emergency-911"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33mclass[39m=[32m"min-h-[var(--target-min)] rounded-full bg-closure px-3 py-1.5 text-sm font-bold text-base"[39...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex min-h-screen min-w-[320px] max-w-full flex-col overflow-x-clip bg-base text-text-primary"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"skip-link"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0mSkip to main content[0m
+      [36m</a>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Disclaimer"[39m
+        [33mclass[39m=[32m"w-full break-words border-b border-unverified bg-surface-raised px-3 py-2 text-xs text-text-primary sm:text-sm"[39m
+        [33mdata-testid[39m=[32m"disclaimer-banner"[39m
+        [33mrole[39m=[32m"note"[39m
+      [36m>[39m
+        [0mSafePath is an experimental prototype. Simulated scenarios and community reports are not official emergency guidance. Follow local authorities and call 911 for immediate emergencies.[0m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mdata-testid[39m=[32m"offline-status"[39m
+      [36m/>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"glass relative z-40 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border-subtle px-3 py-2"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"shrink-0 text-route"[39m
+              [33mfocusable[39m=[32m"false"[39m
+              [33mheight[39m=[32m"28"[39m
+              [33mviewBox[39m=[32m"0 0 28 28"[39m
+              [33mwidth[39m=[32m"28"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M14 2 4 6v7c0 6.2 4.2 10.7 10 13 5.8-2.3 10-6.8 10-13V6L14 2Z"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 17c3-1 4-5 6-5s3 3 6 2"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"text-lg font-semibold text-route"[39m
+            [36m>[39m
+              [0mSafePath[0m
+            [36m</h1>[39m
+          [36m</div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-text-primary"[39m
+            [33mdata-testid[39m=[32m"header-city"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0mCurrent city: [0m
+            [36m</span>[39m
+            [0mChicago[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mdata-testid[39m=[32m"simulated-indicator-slot"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-xs"[39m
+            [33mdata-testid[39m=[32m"connectivity"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-live[39m=[32m"polite"[39m
+              [33mclass[39m=[32m"inline-flex items-center gap-1 rounded border px-1.5 py-0.5 border-border-subtle text-text-muted"[39m
+              [33mdata-testid[39m=[32m"connectivity-status"[39m
+              [33mrole[39m=[32m"status"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"12"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.6"[39m
+                [33mviewBox[39m=[32m"0 0 12 12"[39m
+                [33mwidth[39m=[32m"12"[39m
+              [36m>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"6"[39m
+                  [33mcy[39m=[32m"6"[39m
+                  [33mr[39m=[32m"4.5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M4.7 4.8a1.4 1.4 0 1 1 2 1.2c-.5.3-.7.6-.7 1.1M6 8.8v.1"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span>[39m
+                [0mNo live channel[0m
+              [36m</span>[39m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-text-muted"[39m
+              [33mdata-testid[39m=[32m"last-synced"[39m
+            [36m>[39m
+              [0mLast synced: [0m
+              [0mnot yet[0m
+            [36m</span>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative"[39m
+            [33mdata-testid[39m=[32m"profile-menu"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33mclass[39m=[32m"inline-flex min-h-11 items-center gap-2 rounded border border-border-subtle px-3 text-sm text-text-primary"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"16"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"16"[39m
+              [36m>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"8"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7H4Z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span>[39m
+                [0mProfile[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative"[39m
+            [33mdata-testid[39m=[32m"emergency-911"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33mclass[39m=[32m"min-h-[var(--target-min)] rounded-full bg-closure px-3 py-1.5 text-sm font-bold text-base"[39...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/pages/SourcesLimitations.test.tsx:98:25
+     96|     render(<App />);
+     97|     await userEvent.click(screen.getByRole('link', { name: /data sourc…
+     98|     expect(await screen.findByRole('heading', { name: /data sources an…
+       |                         ^
+     99|   });
+    100| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  src/components/shell/shell.test.tsx > ScreenFrame > focuses the heading, closes on Escape and restores focus
+ FAIL  src/components/shell/shell.test.tsx > ScreenFrame > names the back control "Back to <title>" and calls onBack
+ FAIL  src/components/shell/shell.test.tsx > ScreenFrame > omits the back control without backTitle
+ FAIL  src/components/shell/shell.test.tsx > screens > SafetyCheckIn shows separate 911 guidance and never claims dispatch
+ FAIL  src/components/shell/shell.test.tsx > screens > IncidentOverview shows counts, restrictions, notices and the historical label
+ FAIL  src/components/shell/shell.test.tsx > screens > OfficialGuidance says it is not a live order and lists sources
+ FAIL  src/components/shell/shell.test.tsx > screens > DisasterSelection labels scenarios SIMULATED and selects a type
+ FAIL  src/components/shell/shell.test.tsx > screens > CommunityCommunications separates official notices from community content
+ FAIL  src/components/shell/useNavigation.test.tsx > Escape layers > closes the profile menu, then the 911 panel, then the pushed screen
+ReferenceError: PageHeader is not defined
+ ❯ ScreenFrame src/components/shell/ScreenFrame.tsx:47:8
+     45|       className="relative flex min-h-[60vh] min-w-0 flex-col bg-base p…
+     46|     >
+     47|       <PageHeader
+       |        ^
+     48|         title={title}
+     49|         headingId={headingId}
+ ❯ Object.react_stack_bottom_frame node_modules/react-dom/cjs/react-dom-client.development.js:28571:20
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom-client.development.js:8030:22
+ ❯ updateFunctionComponent node_modules/react-dom/cjs/react-dom-client.development.js:10569:19
+ ❯ beginWork node_modules/react-dom/cjs/react-dom-client.development.js:12205:18
+ ❯ runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:1048:13
+ ❯ performUnitOfWork node_modules/react-dom/cjs/react-dom-client.development.js:19176:22
+ ❯ workLoopSync node_modules/react-dom/cjs/react-dom-client.development.js:19004:41
+ ❯ renderRootSync node_modules/react-dom/cjs/react-dom-client.development.js:18985:11
+ ❯ performWorkOnRoot node_modules/react-dom/cjs/react-dom-client.development.js:18094:35
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+
+ Test Files  3 failed | 3 passed (6)
+      Tests  10 failed | 72 passed (82)
+   Start at  22:18:38
+   Duration  5.89s (tests 46%, environment 36%, transform 6%, setup 6%, import 5%, worker 1%)
+
+Environment  jsdom was created 6 times · 4.84s total, 36% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

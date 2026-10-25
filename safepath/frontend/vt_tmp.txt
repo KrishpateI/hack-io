@@ -1,0 +1,13 @@
+
+ RUN  v5.0.5 C:/Github/HackIO/hack-io/safepath/frontend
+
+
+ Test Files  9 passed (9)
+      Tests  39 passed (39)
+   Start at  21:46:33
+   Duration  9.18s (environment 59%, tests 29%, setup 6%, import 3%, transform 2%, worker 1%)
+
+Environment  jsdom was created 9 times · 13.53s total, 59% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

@@ -1,0 +1,48 @@
+
+ RUN  v5.0.5 C:/Github/HackIO/hack-io/safepath/frontend
+
+ ❯ src/components/shell/tabs/RouteTab.test.tsx (2 tests | 1 failed) 5806ms
+   ❯ RouteTab (2)
+     × renders setup controls and keeps coordinate ids 5115ms
+ ❯ src/components/shell/useNavigation.test.tsx (7 tests | 1 failed) 7144ms
+   ❯ Escape layers (1)
+     × closes the profile menu, then the 911 panel, then the pushed screen 5783ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/shell/useNavigation.test.tsx > Escape layers > closes the profile menu, then the 911 panel, then the pushed screen
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/shell/useNavigation.test.tsx:104:3
+    102|   }
+    103|
+    104|   it('closes the profile menu, then the 911 panel, then the pushed scr…
+       |   ^
+    105|     const user = userEvent.setup();
+    106|     const onScreenClose = vi.fn();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/components/shell/tabs/RouteTab.test.tsx > RouteTab > renders setup controls and keeps coordinate ids
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/shell/tabs/RouteTab.test.tsx:23:3
+     21|
+     22| describe('RouteTab', () => {
+     23|   it('renders setup controls and keeps coordinate ids', async () => {
+       |   ^
+     24|     const onMode = vi.fn();
+     25|     const onStep = vi.fn();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 25 passed (27)
+      Tests  2 failed | 376 passed (378)
+   Start at  21:43:29
+   Duration  99.59s (environment 52%, tests 38%, setup 6%, import 2%, transform 2%, worker 1%)
+
+Environment  jsdom was created 27 times · 124.68s total, 52% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

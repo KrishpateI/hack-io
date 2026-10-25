@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
+import { useDismissibleLayer } from '../ios/hooks/useDismissibleLayer';
 import type { MeInfo } from '../../services/api';
 
 export interface ProfileMenuProps {
@@ -12,12 +13,31 @@ export function accountKind(me: MeInfo | null): string {
   return me.is_guest ? 'Guest' : 'Registered user';
 }
 
+/** Account, role, alias, and session expiry list; shared by the profile popover and the More tab. */
+export function ProfileDetails({ me }: { me: MeInfo }) {
+  const alias = me.display_name?.trim() || 'Unknown';
+  return (
+    <dl className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1">
+      <dt className="text-text-muted">Account</dt>
+      <dd>{accountKind(me)}</dd>
+      <dt className="text-text-muted">Role</dt>
+      <dd>{me.role}</dd>
+      <dt className="text-text-muted">Display alias</dt>
+      <dd className="break-words">{alias}</dd>
+      <dt className="text-text-muted">Session expires</dt>
+      <dd>{me.expires_at ? new Date(me.expires_at).toLocaleString() : 'Unknown'}</dd>
+    </dl>
+  );
+}
+
 /** Profile control: role, display alias, guest or user, and session info (Req 22, 34.1). */
 export function ProfileMenu({ me, loading = false, error = null }: ProfileMenuProps) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const button = useRef<HTMLButtonElement>(null);
   const root = useRef<HTMLDivElement>(null);
+
+  useDismissibleLayer(open, () => setOpen(false), button);
 
   useEffect(() => {
     if (!open) return;
@@ -61,19 +81,10 @@ export function ProfileMenu({ me, loading = false, error = null }: ProfileMenuPr
           data-testid="profile-panel"
           className="absolute right-0 z-30 mt-1 w-64 max-w-[calc(100vw-1.5rem)] rounded border border-border-subtle bg-surface-raised p-3 text-sm shadow-lg"
         >
-          {loading && <p role="status">Loading profile…</p>}
+          {loading && <p role="status">Loading profileâ€¦</p>}
           {error && <p role="alert" className="text-closure">Could not load the profile: {error}</p>}
           {me && (
-            <dl className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1">
-              <dt className="text-text-muted">Account</dt>
-              <dd>{accountKind(me)}</dd>
-              <dt className="text-text-muted">Role</dt>
-              <dd>{me.role}</dd>
-              <dt className="text-text-muted">Display alias</dt>
-              <dd className="break-words">{alias}</dd>
-              <dt className="text-text-muted">Session expires</dt>
-              <dd>{me.expires_at ? new Date(me.expires_at).toLocaleString() : 'Unknown'}</dd>
-            </dl>
+            <ProfileDetails me={me} />
           )}
           <p className="mt-2 text-xs text-text-muted">Other people see only your alias, never your account details.</p>
         </div>

@@ -1,4 +1,5 @@
 import type { RouteRecalcSnapshot } from '../../services/routeRecalc';
+import { Card } from '../ios/Card';
 import { StatusIcon } from '../StatusIcon';
 
 export const STALE_MESSAGE = 'Road conditions may be out of date';
@@ -13,6 +14,7 @@ function fmtMinutes(s: number): string {
 /**
  * Recalculation feedback (Req 16, 34): updating state with the old route flagged as possibly outdated,
  * change explanation with previous vs new distance/time, failure message, and the stale-data warning.
+ * Each state is an iOS Card with an icon and text (never color alone).
  */
 export function RouteChangeBanner({ recalc }: { recalc: RouteRecalcSnapshot | null | undefined }) {
   if (!recalc) return null;
@@ -22,35 +24,31 @@ export function RouteChangeBanner({ recalc }: { recalc: RouteRecalcSnapshot | nu
   return (
     <div data-testid="route-change-banner" className="space-y-2" aria-live="polite">
       {stale && (
-        <p
-          data-testid="stale-warning"
-          role="alert"
-          className="flex items-start gap-2 rounded border border-unverified p-2 text-sm text-unverified"
-        >
+        <Card tone="warning" data-testid="stale-warning" role="alert" className="flex items-start gap-2 p-3 text-sm text-unverified">
           <StatusIcon kind="warning" />
           <span>{STALE_MESSAGE}</span>
-        </p>
+        </Card>
       )}
       {updating && (
-        <p data-testid="route-updating" role="status" className="flex items-start gap-2 rounded border border-route p-2 text-sm text-route">
+        <Card tone="info" data-testid="route-updating" role="status" className="flex items-start gap-2 p-3 text-sm text-route">
           <StatusIcon kind="question" />
           <span>Updating… The route shown below may be outdated until the new result arrives.</span>
-        </p>
+        </Card>
       )}
       {status === 'failed' && message && (
-        <p data-testid="route-recalc-failed" role="alert" className="flex items-start gap-2 rounded border border-closure p-2 text-sm text-closure">
+        <Card tone="danger" data-testid="route-recalc-failed" role="alert" className="flex items-start gap-2 p-3 text-sm text-closure">
           <StatusIcon kind="cross" />
           <span>{message}</span>
-        </p>
+        </Card>
       )}
       {status === 'no_route' && message && (
-        <p data-testid="route-invalid" role="alert" className="flex items-start gap-2 rounded border border-closure p-2 text-sm text-closure">
+        <Card tone="danger" data-testid="route-invalid" role="alert" className="flex items-start gap-2 p-3 text-sm text-closure">
           <StatusIcon kind="cross" />
           <span>{message}</span>
-        </p>
+        </Card>
       )}
       {!updating && change && (
-        <section data-testid="route-change" aria-label="Route change" className="rounded border border-border-subtle bg-surface-raised p-2 text-sm">
+        <Card tone="default" data-testid="route-change" aria-label="Route change" role="region" className="p-3 text-sm">
           <h3 className="font-semibold">Route updated</h3>
           <p>{change}</p>
           {showCompare && route && previousRoute && (
@@ -66,7 +64,7 @@ export function RouteChangeBanner({ recalc }: { recalc: RouteRecalcSnapshot | nu
               <dd>{fmtMinutes(route.estimated_duration_seconds)}</dd>
             </dl>
           )}
-        </section>
+        </Card>
       )}
     </div>
   );

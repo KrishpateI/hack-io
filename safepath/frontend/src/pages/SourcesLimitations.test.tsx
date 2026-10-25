@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import App from '../App';
@@ -94,7 +94,10 @@ describe('App navigation', () => {
   it('reaches the Sources screen via hash link', async () => {
     stubFetch(async () => ({ ok: true, json: async () => [] }));
     render(<App />);
-    await userEvent.click(screen.getByRole('link', { name: /data sources and limitations/i }));
+    // The row now lives on the More tab (the old "Screens" nav was retired).
+    const primary = await screen.findByRole('navigation', { name: 'Primary' });
+    await userEvent.click(within(primary).getByRole('button', { name: /^More\b/ }));
+    await userEvent.click(await screen.findByRole('link', { name: /data sources and limitations/i }));
     expect(await screen.findByRole('heading', { name: /data sources and limitations/i, level: 2 })).toBeInTheDocument();
   });
 });

@@ -1,5 +1,18 @@
-﻿playwright.config.ts(1,18): error TS2307: Cannot find module 'node:path' or its corresponding type declarations.
+
+ RUN  v5.0.5 C:/Github/HackIO/hack-io/safepath/frontend
+
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  21:07:38
+   Duration  792ms (environment 84%, setup 12%, transform 2%, worker 1%, tests 1%, import 1%)
+
+
+> safepath-frontend@0.1.0 build
+> tsc --noEmit && vite build
+
+playwright.config.ts(1,18): error TS2307: Cannot find module 'node:path' or its corresponding type declarations.
 playwright.config.ts(2,31): error TS2307: Cannot find module 'node:url' or its corresponding type declarations.
 playwright.config.ts(15,47): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
 playwright.config.ts(16,15): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
-TSC_EXIT 2
+FINISHED 

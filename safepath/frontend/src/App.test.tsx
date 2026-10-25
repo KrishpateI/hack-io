@@ -123,7 +123,14 @@ async function loaded() {
   await waitFor(() => expect(screen.queryByText('Loading incidents…')).toBeNull());
 }
 
+/** Opens a tab through the Tab_List (wide) or Tab_Bar (compact); jsdom's default width renders the Tab_List. */
+async function openTab(name: 'Map' | 'Route' | 'Community' | 'Safety' | 'More') {
+  const primary = await screen.findByRole('navigation', { name: 'Primary' });
+  await userEvent.click(within(primary).getByRole('button', { name: new RegExp(`^${name}\\b`) }));
+}
+
 async function useSamplePoints() {
+  await openTab('Route');
   await userEvent.click(await screen.findByRole('button', { name: /use sample points/i }));
 }
 
@@ -168,7 +175,8 @@ describe('App shell', () => {
     h.incidents = [incident({ incident_id: 'sim-flood-loop', simulation_flag: true })];
     await loaded();
     expect(within(screen.getByRole('banner')).getByTestId('simulated-badge')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('link', { name: 'Route details' }));
+    await openTab('Route');
+    await userEvent.click(screen.getByRole('button', { name: 'Route details' }));
     expect(await screen.findByRole('dialog', { name: 'Route details' })).toBeInTheDocument();
     expect(within(screen.getByRole('banner')).getByTestId('simulated-badge')).toBeInTheDocument();
     expect(screen.getByTestId('disclaimer-banner')).toBeVisible();
@@ -185,7 +193,20 @@ describe('App shell', () => {
     const active = await screen.findByTestId('active-incident');
     await waitFor(() => expect(within(active).getByText('Flood')).toBeInTheDocument());
     expect(within(active).getByTestId('simulated-badge')).toBeInTheDocument();
+    await openTab('More');
     expect(screen.getByRole('link', { name: 'Demo console' })).toHaveAttribute('href', '#/demo');
+  });
+
+  it('opens the demo console from More with a "Back to More" control that returns to More', async () => {
+    h.demoMode = true;
+    render(<App />);
+    await screen.findByTestId('demo-mode-indicator');
+    await openTab('More');
+    await userEvent.click(await screen.findByRole('link', { name: 'Demo console' }));
+    expect(await screen.findByTestId('demo-route')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Back to More' }));
+    await waitFor(() => expect(window.location.hash).toBe('#/tab/more'));
+    expect(screen.queryByTestId('demo-route')).toBeNull();
   });
 
   it('selects the first active incident outside demo mode', async () => {
@@ -248,14 +269,27 @@ describe('App shell', () => {
   it('opens a screen from the screens navigation and closes it with Escape', async () => {
     await loaded();
     const dashboard = screen.getByTestId('dashboard');
+    await openTab('More');
     await userEvent.click(screen.getByRole('link', { name: 'Incident overview' }));
     const dialog = await screen.findByRole('dialog', { name: 'Incident overview' });
-    expect(dashboard).not.toBeVisible();
+    // The screen is pushed inside the frame: the Tab_List and the Disclaimer_Banner stay visible.
+    expect(screen.getByRole('navigation', { name: 'Primary' })).toBeVisible();
     expect(screen.getByTestId('disclaimer-banner')).toBeVisible();
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     expect(dialog).not.toBeInTheDocument();
     expect(dashboard).toBeVisible();
+    expect(screen.getByRole('navigation', { name: 'Primary' })).toBeVisible();
+  });
+
+  it('shows "Back to More" on a screen opened from More and returns to More', async () => {
+    await loaded();
+    await openTab('More');
+    await userEvent.click(screen.getByRole('link', { name: 'Data sources and limitations' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Data sources and limitations' });
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Back to More' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(window.location.hash).toBe('#/tab/more');
   });
 
   it('opens screens from the bottom controls', async () => {
@@ -287,15 +321,18 @@ describe('App accessibility structure', () => {
     expect(screen.getAllByRole('main')).toHaveLength(1);
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     for (const nav of screen.getAllByRole('navigation')) expect(nav).toHaveAccessibleName();
-    const complementary = screen.getAllByRole('complementary');
-    expect(complementary.length).toBeGreaterThanOrEqual(3);
-    for (const aside of complementary) expect(aside).toHaveAccessibleName();
+    // The panel and the map area are named regions; the old complementary landmarks are gone.
+    expect(screen.getByRole('region', { name: 'SafePath panel' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Map area' })).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: 'Primary' })).toBeInTheDocument();
+    for (const region of screen.getAllByRole('region')) expect(region).toHaveAccessibleName();
     for (const el of [
       ...screen.getAllByRole('button'),
       ...screen.getAllByRole('link'),
-      ...screen.getAllByRole('textbox'),
-      ...screen.getAllByRole('combobox'),
-      ...screen.getAllByRole('checkbox'),
+      ...screen.queryAllByRole('textbox'),
+      ...screen.queryAllByRole('combobox'),
+      ...screen.queryAllByRole('checkbox'),
+      ...screen.queryAllByRole('switch'),
     ]) {
       expect(el).toHaveAccessibleName();
     }

@@ -44,9 +44,9 @@ export function Legend({ visible, historicalLayers }: Props) {
     <section
       aria-label="Map legend"
       data-testid="map-legend"
-      className="max-h-64 max-w-xs overflow-y-auto rounded border border-[#2c3a5c] bg-[#111a2e]/95 p-2 text-xs text-[#e6edf7]"
+      className="max-h-64 overflow-y-auto rounded-[var(--radius-card)] border border-border-subtle bg-surface p-3 text-xs text-text-primary"
     >
-      <h2 className="mb-1 text-xs font-semibold text-[#a9b6cf]">Legend</h2>
+      <h2 className="mb-1 text-xs font-semibold text-text-muted">Legend</h2>
       <ul className="space-y-1">
         {entries.map((e) => (
           <li key={e.id} className="flex items-center gap-2" data-testid={`legend-${e.id}`}>
@@ -56,12 +56,12 @@ export function Legend({ visible, historicalLayers }: Props) {
         ))}
       </ul>
       {showCached && (
-        <p className="mt-1 text-[#fbbf24]" data-testid="legend-cached">
+        <p className="mt-1 text-unverified" data-testid="legend-cached">
           Cached map data, last synced {formatStamp(off.cachedLayersAt ?? off.lastSyncAt)}
         </p>
       )}
       {historicalLayers && historicalLayers.length > 0 && (
-        <p className="mt-1 text-[#fb923c]" data-testid="legend-historical">
+        <p className="mt-1 text-unverified" data-testid="legend-historical">
           {HISTORICAL_LAYER_LABEL}
         </p>
       )}

@@ -1,0 +1,6 @@
+
+> safepath-frontend@0.1.0 build
+> tsc --noEmit && vite build
+
+src/components/shell/RightSidebar.tsx(69,13): error TS2322: Type 'readonly { id: RightSidebarTab; label: string; }[]' is not assignable to type 'readonly SegmentedOption<RightSidebarTab>[]'.
+  Property 'value' is missing in type '{ id: RightSidebarTab; label: string; }' but required in type 'SegmentedOption<RightSidebarTab>'.

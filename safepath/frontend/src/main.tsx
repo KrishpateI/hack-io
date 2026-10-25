@@ -5,8 +5,10 @@ import { bootstrapDemoUser } from './components/demo/demoSession';
 import { installOfflineLayerCache } from './services/offlineLayers';
 import { getOfflineManager } from './services/offline';
 import { registerServiceWorker } from './sw/register';
+import { initAppearance } from './styles/appearance';
 import './styles/tailwind.css';
 
+initAppearance();
 installOfflineLayerCache(getOfflineManager());
 registerServiceWorker();
 

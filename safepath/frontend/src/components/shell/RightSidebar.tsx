@@ -1,5 +1,6 @@
-import { useId, useState, type KeyboardEvent } from 'react';
+import { useId, useState } from 'react';
 import type { EventStoreState } from '../../services/eventStore';
+import { SegmentedControl } from '../ios/SegmentedControl';
 import { AssistanceRequest } from '../community/AssistanceRequest';
 import { CheckInPanel } from '../community/CheckInPanel';
 import { MessageChannel } from '../community/MessageChannel';
@@ -21,10 +22,10 @@ export interface CommunityFeed {
 
 export type RightSidebarTab = 'reports' | 'messages' | 'checkins';
 
-const TABS: readonly { id: RightSidebarTab; label: string }[] = [
-  { id: 'reports', label: 'Reports' },
-  { id: 'messages', label: 'Messages & notices' },
-  { id: 'checkins', label: 'Check-ins & assistance' },
+const TABS: readonly { value: RightSidebarTab; label: string }[] = [
+  { value: 'reports', label: 'Reports' },
+  { value: 'messages', label: 'Messages & notices' },
+  { value: 'checkins', label: 'Check-ins & assistance' },
 ];
 
 export interface RightSidebarViewProps {
@@ -44,15 +45,6 @@ export function RightSidebarView({ incidentId, feed, location, initialTab = 'rep
   const officialCount = feed.messages.filter((m) => m.is_official).length;
   const communityCount = feed.messages.length - officialCount;
 
-  function onKey(e: KeyboardEvent<HTMLButtonElement>, i: number) {
-    const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-    if (!dir) return;
-    e.preventDefault();
-    const next = TABS[(i + dir + TABS.length) % TABS.length];
-    setTab(next.id);
-    document.getElementById(`${uid}-tab-${next.id}`)?.focus();
-  }
-
   return (
     <aside aria-label="Community and official updates" data-testid="right-sidebar" className="w-full bg-surface text-text-primary md:w-96">
       <button
@@ -60,7 +52,7 @@ export function RightSidebarView({ incidentId, feed, location, initialTab = 'rep
         aria-expanded={open}
         aria-controls={`${uid}-body`}
         onClick={() => setOpen((o) => !o)}
-        className="min-h-11 w-full border-b border-border-subtle px-3 text-left text-sm font-semibold focus:outline-2 focus:outline-route md:hidden"
+        className="min-h-[var(--target-min)] w-full border-b border-border-subtle px-4 text-left text-[length:var(--text-body)] font-semibold focus:outline-2 focus:outline-route md:hidden"
       >
         {open ? 'Hide' : 'Show'} reports, messages and check-ins
       </button>
@@ -69,26 +61,15 @@ export function RightSidebarView({ incidentId, feed, location, initialTab = 'rep
           {feed.reports.length} community reports, {communityCount} community messages, {officialCount} official notices,{' '}
           {feed.checkins.length} check-ins.
         </div>
-        <div role="tablist" aria-label="Community and official updates" className="flex flex-wrap border-b border-border-subtle">
-          {TABS.map((t, i) => (
-            <button
-              key={t.id}
-              id={`${uid}-tab-${t.id}`}
-              type="button"
-              role="tab"
-              aria-selected={tab === t.id}
-              aria-controls={`${uid}-panel-${t.id}`}
-              tabIndex={tab === t.id ? 0 : -1}
-              onClick={() => setTab(t.id)}
-              onKeyDown={(e) => onKey(e, i)}
-              className={`min-h-11 flex-1 basis-24 border-b-4 px-2 text-sm focus:outline-2 focus:outline-route ${
-                tab === t.id ? 'border-route font-bold text-route' : 'border-transparent text-text-primary'
-              }`}
-            >
-              {tab === t.id ? '● ' : ''}
-              {t.label}
-            </button>
-          ))}
+        <div className="p-3 pb-0">
+          <SegmentedControl<RightSidebarTab>
+            variant="tabs"
+            label="Community and official updates"
+            idPrefix={uid}
+            options={TABS}
+            value={tab}
+            onChange={setTab}
+          />
         </div>
         <div
           id={`${uid}-panel-${tab}`}
@@ -101,7 +82,7 @@ export function RightSidebarView({ incidentId, feed, location, initialTab = 'rep
           {tab === 'messages' && (
             <>
               <p className="text-xs text-text-muted">
-                Official notices appear in the green-bordered panel and carry a source. Everything else here is from other SafePath users.
+                Official notices appear in the Official card with a shield icon and carry a source. Everything else here is from other SafePath users.
               </p>
               <MessageChannel incidentId={incidentId} messages={feed.messages} />
             </>
@@ -110,12 +91,12 @@ export function RightSidebarView({ incidentId, feed, location, initialTab = 'rep
             <>
               <CheckInPanel incidentId={incidentId} location={location} checkins={feed.checkins} />
               <section aria-labelledby={`${uid}-assist-h`} data-testid="assistance-requests" className="space-y-2">
-                <h3 id={`${uid}-assist-h`} className="text-sm font-semibold">Assistance requests from the community</h3>
+                <h3 id={`${uid}-assist-h`} className="text-[length:var(--text-body)] font-semibold">Assistance requests from the community</h3>
                 <p className="text-xs text-text-muted">These are messages from other users. They are not sent to emergency services.</p>
                 <div aria-live="polite" aria-relevant="additions" className="space-y-1">
                   {assistance.length === 0 && <p className="text-sm text-text-muted">No assistance requests.</p>}
                   {assistance.map((m) => (
-                    <p key={m.message_id} className="break-words rounded border border-border-subtle p-2 text-sm">
+                    <p key={m.message_id} className="break-words rounded-[var(--radius-card)] border border-border-subtle bg-surface p-3 text-sm shadow-[var(--shadow-card)]">
                       <span className="text-xs text-text-muted">{m.alias ?? 'Anonymous'} · {formatTime(m.created_at)}</span>
                       <br />
                       {m.content}

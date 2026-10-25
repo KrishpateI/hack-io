@@ -1,22 +1,30 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { IndoorBuildingView } from './components/indoor/IndoorBuildingView';
+﻿import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { fetchIndoorBuilding } from './components/indoor/indoorService';
 import type { IndoorGeoJson } from './components/indoor/indoorModel';
 import { FeatureInspector, useFeatureInspector } from './components/inspect';
 import type { MapClick } from './components/inspect/inspectModel';
 import type { EdgeReport } from './components/inspect/edgeService';
+import { useViewportTier } from './components/ios/hooks';
 import { RootLayout } from './components/RootLayout';
-import { RoutePanel, type RoutePanelProps } from './components/route/RoutePanel';
-import { BottomControls } from './components/shell/BottomControls';
+import type { RoutePanelProps } from './components/route/RoutePanel';
+import { AppFrame } from './components/shell/AppFrame';
 import { ConnectivityStatus, type ConnectivityState } from './components/shell/ConnectivityStatus';
 import { ErrorBoundary } from './components/shell/ErrorBoundary';
 import { ProfileMenu } from './components/shell/ProfileMenu';
-import { RightSidebar } from './components/shell/RightSidebar';
+import { ScreenFrame } from './components/shell/ScreenFrame';
 import { ScreenRouter } from './components/shell/ScreenRouter';
-import { SCREEN_TITLES, screenHash, type ScreenId } from './components/shell/screens';
-import { useScreenNav } from './components/shell/useScreenNav';
+import { CommunityTab } from './components/shell/tabs/CommunityTab';
+import { MapTab } from './components/shell/tabs/MapTab';
+import { MoreTab } from './components/shell/tabs/MoreTab';
+import { RouteTab, type TravelMode } from './components/shell/tabs/RouteTab';
+import { SafetyTab } from './components/shell/tabs/SafetyTab';
+import { TabHeading } from './components/shell/TabHeading';
+import { useKeyboardShortcuts } from './components/shell/useKeyboardShortcuts';
+import { useNavigation } from './components/shell/useNavigation';
+import type { TabId } from './components/shell/navigation';
+import { useCommunityFeed } from './components/community/useCommunityFeed';
+import { readShortcuts, writeShortcuts } from './components/ios/preferences';
 import type { IncidentType } from './components/sidebar/disasters';
-import { LeftSidebar } from './components/sidebar/LeftSidebar';
 import type { Destination, LatLng } from './components/sidebar/StartDestinationPicker';
 import { useActiveRestrictions, useEdgeCoordinates } from './hooks/useActiveRestrictions';
 import { useActiveRoute } from './hooks/useActiveRoute';
@@ -26,10 +34,11 @@ import { useOffline, useOfflineLifecycle } from './hooks/useOffline';
 import { OfflineStatus } from './components/offline/OfflineStatus';
 import { useRealtime } from './hooks/useRealtime';
 import { useDemoStatus, useMe } from './hooks/useSessionInfo';
-import { MapView } from './maps/MapView';
 import type { MapLayerInputs } from './maps/layers/types';
+import { useLayerToggles } from './maps/useLayerToggles';
+import { useAppearance } from './styles/appearance';
 import { corroborateReport, disputeReport, listReports, type Incident, type JsonObject } from './services/api';
-import type { RealtimeEvent } from './services/eventStore';
+import type { EventStoreState, RealtimeEvent } from './services/eventStore';
 import {
   closureFeatures,
   destinationInput,
@@ -48,12 +57,6 @@ type Raw = Record<string, unknown>;
 type PickMode = 'start' | 'destination' | null;
 
 // ------------------------------------------------------------------ small hooks
-const subscribeHash = (fn: () => void) => {
-  window.addEventListener('hashchange', fn);
-  return () => window.removeEventListener('hashchange', fn);
-};
-const getHash = () => window.location.hash;
-
 /** One shared request for the SIMULATED building so the view and the routing flow do not fetch twice. */
 let sharedBuilding: Promise<IndoorGeoJson> | null = null;
 const loadBuildingShared: typeof fetchIndoorBuilding = () => {
@@ -97,24 +100,82 @@ function useFetchedReports(incidentId: string | null, ready: boolean): Raw[] {
   return state.id === incidentId ? state.rows : [];
 }
 
-const SCREEN_LINKS: readonly ScreenId[] = ['disaster-selection', 'route-details', 'incident-overview', 'community', 'data-sources'];
+/** The Community tab reads the REST + realtime feed; the hook needs an incident id, so it lives here. */
+function CommunityTabContainer({
+  incidentId,
+  store,
+  location,
+  ownAlias,
+  onOpenCommunications,
+}: {
+  incidentId: string | null;
+  store: EventStoreState | undefined;
+  location: { latitude: number; longitude: number } | null;
+  ownAlias: string | null;
+  onOpenCommunications: () => void;
+}) {
+  if (!incidentId) {
+    return (
+      <p data-testid="community-no-incident" className="p-3 text-sm text-text-muted">
+        Select an incident to see reports, messages and check-ins.
+      </p>
+    );
+  }
+  return (
+    <CommunityTabWithFeed
+      incidentId={incidentId}
+      store={store}
+      location={location}
+      ownAlias={ownAlias}
+      onOpenCommunications={onOpenCommunications}
+    />
+  );
+}
 
-const MODES = [
-  { value: 'walking', label: 'Walking' },
-  { value: 'wheelchair', label: 'Wheelchair' },
-  { value: 'driving', label: 'Driving' },
-] as const;
+function CommunityTabWithFeed({
+  incidentId,
+  store,
+  location,
+  ownAlias,
+  onOpenCommunications,
+}: {
+  incidentId: string;
+  store: EventStoreState | undefined;
+  location: { latitude: number; longitude: number } | null;
+  ownAlias: string | null;
+  onOpenCommunications: () => void;
+}) {
+  const feed = useCommunityFeed(incidentId, store);
+  return (
+    <CommunityTab
+      incidentId={incidentId}
+      feed={feed}
+      location={location}
+      ownAlias={ownAlias}
+      onOpenCommunications={onOpenCommunications}
+    />
+  );
+}
 
 // ------------------------------------------------------------------ shell
-/** The real application: header, sidebars, map, routing flow, indoor mode and screens (Req 34). */
+/** The real application: header, map stage with the iOS-style frame, routing flow, indoor mode and screens (Req 34). */
 export function AppShell() {
   const auth = useAuth();
   const demo = useDemoStatus();
   const { me, loading: meLoading, error: meError } = useMe(auth.ready);
   const inc = useIncident();
-  const nav = useScreenNav();
-  const hash = useSyncExternalStore(subscribeHash, getHash, () => '');
-  const demoRoute = hash === '#/demo';
+  const nav = useNavigation();
+  const tier = useViewportTier();
+  const appearance = useAppearance();
+  const layerToggles = useLayerToggles();
+  // The setting lives in state (initialised from storage) so toggling it registers or removes the
+  // global handler immediately; `onShortcutsChange` also persists it (Req 16.4, 16.5).
+  const [shortcutsEnabled, setShortcutsEnabled] = useState(readShortcuts);
+  const shortcuts = useKeyboardShortcuts({
+    enabled: shortcutsEnabled,
+    onSelectTab: nav.openTab,
+    contentSelector: '[data-panel-body]',
+  });
 
   // ---- incident selection (default: first active incident; demo mode: the flood scenario)
   const defaultIncident = useMemo(
@@ -131,7 +192,7 @@ export function AppShell() {
   const [start, setStart] = useState<LatLng | null>(null);
   const [destination, setDestination] = useState<Destination | null>(null);
   const [pickMode, setPickMode] = useState<PickMode>(null);
-  const [travelMode, setTravelMode] = useState<(typeof MODES)[number]['value']>('walking');
+  const [travelMode, setTravelMode] = useState<TravelMode>('walking');
   const [stepFree, setStepFree] = useState(false);
   const [indoorStartId, setIndoorStartId] = useState<string | null>(null);
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
@@ -245,7 +306,6 @@ export function AppShell() {
     onSelectRoute: setSelectedRouteId,
     onRecalculate: route.recalculate,
   };
-  const recalculating = route.loading || route.recalc.updating;
   const location = start ? { latitude: start.lat, longitude: start.lng } : null;
 
   // ---- header
@@ -258,185 +318,225 @@ export function AppShell() {
   };
 
   const shelter = route.response?.policy_outcome === 'SHELTER_IN_PLACE';
-  const screenOpen = nav.screen !== null || demoRoute;
+  // True while a RouteChangeBanner renders (same condition as the banner), so the Route tab can show "Updated".
+  const rc = route.recalc;
+  const routeChanged = !!rc && (rc.stale || rc.updating || !!rc.change || !!rc.message || rc.status !== 'idle');
+
+  const reportHazard = () => {
+    setIndoorReportFeature(null);
+    nav.openScreen('submit-report');
+  };
+  const onShortcutsChange = (enabled: boolean) => {
+    setShortcutsEnabled(enabled);
+    writeShortcuts(enabled);
+  };
+
+  const disasterSelector = {
+    selectedType: disasterType,
+    incidents: inc.incidents,
+    selectedIncidentId: incidentId,
+    loading: inc.loading || !demo.loaded,
+    error: inc.error,
+    onSelectType: setTypeOverride,
+    onSelectIncident: selectIncident,
+  };
+  const inspectorProps = {
+    inspector,
+    reports: reportRows as unknown as EdgeReport[],
+    routes: route.response?.routes,
+  };
+
+  const tabContent = {
+    map: () => (
+      <ErrorBoundary>
+        <MapTab
+          tier={tier}
+          incident={incident}
+          onReportHazard={reportHazard}
+          onRequestAssistance={() => nav.openScreen('community')}
+          onMarkSafe={() => nav.openScreen('safety-check-in')}
+          onViewGuidance={() => nav.openScreen('official-guidance')}
+          disasterSelector={disasterSelector}
+          onOpenScreen={nav.openScreen}
+          layerControls={layerToggles.controls}
+          inspector={inspectorProps}
+          indoor={indoor}
+          indoorProps={{
+            loadBuilding: loadBuildingShared,
+            reports: reportRows,
+            restrictions: Object.values(activeRestrictions) as unknown as Raw[],
+            route: route.response,
+            selectedStartId: indoorStart?.startId ?? null,
+            onSelectStart: setIndoorStartId,
+            onReport: (featureId: string) => {
+              setIndoorReportFeature(featureId);
+              nav.openScreen('submit-report');
+            },
+            onCorroborate: (id: string) => corroborateReport(id),
+            onDispute: (id: string) => disputeReport(id),
+          }}
+        />
+        {tier === 'desktop' && (
+          // At Desktop the inspector lives in the Inspector_Panel, which unmounts when closed;
+          // keep the announcement in a live region that stays mounted.
+          <div role="status" aria-live="polite" className="sr-only" data-testid="inspect-live-desktop">
+            {inspector.announcement}
+          </div>
+        )}
+      </ErrorBoundary>
+    ),
+    route: () => (
+      <ErrorBoundary>
+        <RouteTab
+          start={start}
+          destination={destination}
+          pickMode={pickMode}
+          onPickModeChange={setPickMode}
+          onStartChange={(p) => setStart(p)}
+          onDestinationChange={(p) => setDestination(p)}
+          showSamplePoints={disasterType === 'flood'}
+          travelMode={travelMode}
+          onTravelModeChange={setTravelMode}
+          stepFree={stepFree}
+          onStepFreeChange={setStepFree}
+          indoor={indoor}
+          shelter={shelter}
+          routePanel={routePanel}
+          onOpenRouteDetails={() => nav.openScreen('route-details')}
+        />
+      </ErrorBoundary>
+    ),
+    community: () => (
+      <ErrorBoundary>
+        <CommunityTabContainer
+          incidentId={incidentId}
+          store={rt.store}
+          location={location}
+          ownAlias={me?.display_name ?? null}
+          onOpenCommunications={() => nav.openScreen('community')}
+        />
+      </ErrorBoundary>
+    ),
+    safety: () => (
+      <ErrorBoundary>
+        <SafetyTab
+          onReportHazard={reportHazard}
+          onRequestAssistance={() => nav.openScreen('community')}
+          onMarkSafe={() => nav.openScreen('safety-check-in')}
+          onViewGuidance={() => nav.openScreen('official-guidance')}
+          hazard={disasterType}
+        />
+      </ErrorBoundary>
+    ),
+    more: () => (
+      <ErrorBoundary>
+        <MoreTab
+          demoMode={demo.demoMode}
+          me={me}
+          meLoading={meLoading}
+          meError={meError}
+          appearanceSetting={appearance.setting}
+          onAppearanceChange={appearance.setSetting}
+          shortcutsEnabled={shortcutsEnabled}
+          onShortcutsChange={onShortcutsChange}
+        />
+      </ErrorBoundary>
+    ),
+  };
+
+  // Each tab starts with a hidden heading that shortcut navigation can focus (Req 16.10).
+  const renderTab = Object.fromEntries(
+    (Object.keys(tabContent) as TabId[]).map((id) => [
+      id,
+      () => (
+        <>
+          <TabHeading tab={id} />
+          {tabContent[id]()}
+        </>
+      ),
+    ]),
+  ) as Record<TabId, () => ReactNode>;
 
   return (
     <RootLayout incidents={incident ? [incident] : []} headerProps={headerProps} banner={<OfflineStatus />}>
-      {demoRoute && (
-        <div className="p-3" data-testid="demo-route">
-          <a href="#/" className="mb-3 inline-flex min-h-11 items-center rounded border border-route px-3 text-sm font-semibold text-route">
-            Back to the map
-          </a>
-          <ErrorBoundary>
-            <DemoAdmin />
-          </ErrorBoundary>
-        </div>
+      {(auth.error || !auth.ready) && (
+        <p
+          role={auth.error ? 'alert' : 'status'}
+          data-testid="session-status"
+          className="border-b border-border-subtle bg-surface px-3 py-2 text-sm"
+        >
+          {auth.error ? `Could not start a session: ${auth.error}. Data may be unavailable.` : 'Starting a guest session…'}
+        </p>
       )}
-      {nav.screen && !demoRoute && (
-        <ErrorBoundary>
-          <ScreenRouter
-            screen={nav.screen}
-            onClose={nav.close}
-            incident={incident}
-            incidents={inc.incidents}
-            incidentsLoading={inc.loading}
-            incidentsError={inc.error}
-            disasterType={disasterType}
-            store={rt.store}
-            routePanel={routePanel}
-            activeRestrictionCount={Object.keys(activeRestrictions).length}
-            location={location}
-            indoorFeatureId={indoorReportFeature}
-            onClearLocation={() => {
-              setStart(null);
-              setIndoorReportFeature(null);
-            }}
-            onSelectType={setTypeOverride}
-            onSelectIncident={selectIncident}
-          />
-        </ErrorBoundary>
-      )}
-      <div hidden={screenOpen} data-testid="dashboard" className="pb-24">
-        <ErrorBoundary>
-          {(auth.error || !auth.ready) && (
-            <p
-              role={auth.error ? 'alert' : 'status'}
-              data-testid="session-status"
-              className="border-b border-border-subtle bg-surface px-3 py-2 text-sm"
-            >
-              {auth.error ? `Could not start a session: ${auth.error}. Data may be unavailable.` : 'Starting a guest session…'}
-            </p>
-          )}
-          <div className="grid min-w-0 grid-cols-1 lg:grid-cols-[20rem_minmax(0,1fr)_24rem]">
-            <div className="order-3 min-w-0 border-t border-border-subtle lg:order-1 lg:border-r lg:border-t-0 [&>aside]:w-full!">
-              <LeftSidebar
+      <AppFrame
+        mapProps={{
+          layerInputs,
+          onFeatureClick: handleFeatureClick,
+          layerVisibility: layerToggles.layerVisibility,
+          appearance: appearance.appearance,
+        }}
+        pickMode={pickMode}
+        onCancelPick={() => setPickMode(null)}
+        routeReady={route.response !== null}
+        routeChanged={routeChanged}
+        inspector={{
+          open: inspector.open,
+          title: inspector.selected?.title ?? 'Map feature details',
+          onClose: inspector.close,
+          content: (
+            <ErrorBoundary>
+              <FeatureInspector {...inspectorProps} />
+            </ErrorBoundary>
+          ),
+        }}
+        renderTab={renderTab}
+        renderScreen={(ctx) => {
+          if (ctx.demo) {
+            return (
+              <ScreenFrame
+                title="Demo console"
+                onClose={ctx.onClose}
+                testId="demo-route"
+                backTitle={ctx.backLabel}
+                onBack={ctx.onBack}
+              >
+                <ErrorBoundary>
+                  <DemoAdmin />
+                </ErrorBoundary>
+              </ScreenFrame>
+            );
+          }
+          if (!ctx.screen) return null;
+          return (
+            <ErrorBoundary>
+              <ScreenRouter
+                screen={ctx.screen}
+                onClose={ctx.onClose}
                 incident={incident}
                 incidents={inc.incidents}
-                incidentsLoading={inc.loading || !demo.loaded}
+                incidentsLoading={inc.loading}
                 incidentsError={inc.error}
                 disasterType={disasterType}
-                start={start}
-                destination={destination}
-                pickMode={pickMode}
-                routeResponse={route.response}
+                store={rt.store}
+                routePanel={routePanel}
+                activeRestrictionCount={Object.keys(activeRestrictions).length}
+                location={location}
+                indoorFeatureId={indoorReportFeature}
+                onClearLocation={() => {
+                  setStart(null);
+                  setIndoorReportFeature(null);
+                }}
                 onSelectType={setTypeOverride}
                 onSelectIncident={selectIncident}
-                onStartChange={(p) => setStart(p)}
-                onDestinationChange={(p) => setDestination(p)}
-                onPickModeChange={setPickMode}
+                onBack={ctx.onBack}
+                backLabel={ctx.backLabel}
               />
-            </div>
-
-            <section aria-label="Map and route" className="order-1 min-w-0 lg:order-2">
-              <nav aria-label="Screens" className="flex flex-wrap gap-2 border-b border-border-subtle bg-surface p-2">
-                {SCREEN_LINKS.map((id) => (
-                  <a
-                    key={id}
-                    href={screenHash(id)}
-                    className="inline-flex min-h-11 items-center rounded border border-border-subtle px-3 text-sm text-text-primary underline"
-                  >
-                    {SCREEN_TITLES[id]}
-                  </a>
-                ))}
-                {demo.demoMode && (
-                  <a
-                    href="#/demo"
-                    className="inline-flex min-h-11 items-center rounded border border-unverified px-3 text-sm text-unverified"
-                  >
-                    Demo console
-                  </a>
-                )}
-              </nav>
-
-              {!indoor && (
-                <fieldset className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-border-subtle px-3 py-2 text-sm">
-                  <legend className="sr-only">Route options</legend>
-                  <label className="flex items-center gap-2">
-                    Travel mode
-                    <select
-                      value={travelMode}
-                      onChange={(e) => setTravelMode(e.target.value as typeof travelMode)}
-                      className="min-h-11 rounded border border-border-subtle bg-surface px-2 text-text-primary"
-                    >
-                      {MODES.map((m) => (
-                        <option key={m.value} value={m.value}>{m.label}</option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="flex min-h-11 items-center gap-2">
-                    <input type="checkbox" checked={stepFree} onChange={(e) => setStepFree(e.target.checked)} />
-                    Step-free route
-                  </label>
-                </fieldset>
-              )}
-
-              {pickMode && (
-                <p role="status" data-testid="pick-hint" className="border-b border-route bg-surface-raised px-3 py-2 text-sm text-route">
-                  Click the map to set the {pickMode}. Press the pick button again to cancel.
-                </p>
-              )}
-              {shelter && (
-                <p role="status" data-testid="shelter-note" className="border-b border-closure px-3 py-2 text-sm font-semibold">
-                  Shelter in place: no route is shown. Follow the guidance below.
-                </p>
-              )}
-
-              {indoor ? (
-                <div className="p-2" data-testid="indoor-area">
-                  <IndoorBuildingView
-                    loadBuilding={loadBuildingShared}
-                    reports={reportRows}
-                    restrictions={Object.values(activeRestrictions) as unknown as Raw[]}
-                    route={route.response}
-                    selectedStartId={indoorStart?.startId ?? null}
-                    onSelectStart={setIndoorStartId}
-                    onReport={(featureId) => {
-                      setIndoorReportFeature(featureId);
-                      nav.open('submit-report');
-                    }}
-                    onCorroborate={(id) => corroborateReport(id)}
-                    onDispute={(id) => disputeReport(id)}
-                  />
-                </div>
-              ) : (
-                <div className="relative h-[60vh] min-h-[320px] w-full lg:h-[68vh] lg:min-h-[480px]" data-testid="map-area">
-                  <MapView layerInputs={layerInputs} onFeatureClick={handleFeatureClick} />
-                </div>
-              )}
-
-              <FeatureInspector
-                inspector={inspector}
-                reports={reportRows as unknown as EdgeReport[]}
-                routes={route.response?.routes}
-              />
-              <RoutePanel {...routePanel} />
-            </section>
-
-            <div className="order-4 min-w-0 border-t border-border-subtle lg:order-3 lg:border-l lg:border-t-0 [&>aside]:w-full!">
-              {incidentId ? (
-                <RightSidebar incidentId={incidentId} store={rt.store} location={location} ownAlias={me?.display_name ?? null} />
-              ) : (
-                <aside aria-label="Community and official updates" className="bg-surface p-3 text-sm text-text-muted">
-                  Select an incident to see reports, messages and check-ins.
-                </aside>
-              )}
-            </div>
-
-            <div className="order-2 min-w-0 lg:order-5 lg:col-span-3">
-              <BottomControls
-                onReportHazard={() => {
-                  setIndoorReportFeature(null);
-                  nav.open('submit-report');
-                }}
-                onRequestAssistance={() => nav.open('community')}
-                onMarkSafe={() => nav.open('safety-check-in')}
-                onViewGuidance={() => nav.open('official-guidance')}
-                onRecalculate={route.recalculate}
-                recalculating={recalculating}
-              />
-            </div>
-          </div>
-        </ErrorBoundary>
+            </ErrorBoundary>
+          );
+        }}
+      />
+      <div aria-live="polite" className="sr-only" data-testid="shortcut-announcer">
+        {shortcuts.announcement}
       </div>
     </RootLayout>
   );

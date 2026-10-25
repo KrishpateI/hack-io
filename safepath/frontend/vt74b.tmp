@@ -1,0 +1,80 @@
+
+ RUN  v5.0.5 C:/Github/HackIO/hack-io/safepath/frontend
+
+ ❯ src/components/shell/shell.test.tsx (13 tests | 1 failed) 10630ms
+   ❯ RightSidebar (2)
+     × switches tabs and keeps official notices apart from community content 5929ms
+ ❯ src/App.test.tsx (16 tests | 1 failed) 29709ms
+   ❯ App shell (14)
+     × renders the disclaimer, 911 guidance, and the Chicago header 8636ms
+ ❯ src/components/inspect/inspect.test.tsx (16 tests | 1 failed) 13943ms
+   ❯ FeatureInspector (5)
+     × road: attributes, caveat, closure causes with SIMULATED, reports, source and Escape to close 5887ms
+ ❯ src/components/sidebar/sidebar.test.tsx (6 tests | 1 failed) 13223ms
+   ❯ LeftSidebar (5)
+     × lists incidents of the selected type with SIMULATED scenario label and routing description 5616ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/App.test.tsx > App shell > renders the disclaimer, 911 guidance, and the Chicago header
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/App.test.tsx:132:3
+    130| // ---------------------------------------------------------------- te…
+    131| describe('App shell', () => {
+    132|   it('renders the disclaimer, 911 guidance, and the Chicago header', a…
+       |   ^
+    133|     await loaded();
+    134|     expect(screen.getByTestId('disclaimer-banner')).toBeInTheDocument(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/components/inspect/inspect.test.tsx > FeatureInspector > road: attributes, caveat, closure causes with SIMULATED, reports, source and Escape to close
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/inspect/inspect.test.tsx:216:3
+    214|
+    215| describe('FeatureInspector', () => {
+    216|   it('road: attributes, caveat, closure causes with SIMULATED, reports…
+       |   ^
+    217|     const user = userEvent.setup();
+    218|     render(<Harness edges={[EDGE]} extra={{ sources: [SOURCE] }} />);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/components/shell/shell.test.tsx > RightSidebar > switches tabs and keeps official notices apart from community content
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/shell/shell.test.tsx:50:3
+     48|
+     49| describe('RightSidebar', () => {
+     50|   it('switches tabs and keeps official notices apart from community co…
+       |   ^
+     51|     const user = userEvent.setup();
+     52|     render(<RightSidebarView incidentId="flood-1" feed={feed} />);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/components/sidebar/sidebar.test.tsx > LeftSidebar > lists incidents of the selected type with SIMULATED scenario label and routing description
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/sidebar/sidebar.test.tsx:30:3
+     28|
+     29| describe('LeftSidebar', () => {
+     30|   it('lists incidents of the selected type with SIMULATED scenario lab…
+       |   ^
+     31|     const u = userEvent.setup();
+     32|     render(<Harness />);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  4 failed | 24 passed (28)
+      Tests  4 failed | 379 passed (383)
+   Start at  21:44:13
+   Duration  123.48s (tests 62%, environment 32%, transform 2%, setup 2%, import 1%, worker 1%)
+
+Environment  jsdom was created 28 times · 100.12s total, 32% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
