@@ -1,0 +1,4 @@
+# Python virtual environments and bytecode (machine-specific; recreate with `python -m venv .venv`)
+.venv/
+__pycache__/
+*.pyc
