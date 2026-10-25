@@ -34,7 +34,10 @@ param(
     [switch]$Bootstrap,
     [switch]$Yes,
     [string]$ConfirmPrefix,
-    [string]$RealtimeMode = 'sse',
+    # Empty = derive from the deployed realtime flag (appsync -> appsync, apigw-ws -> websocket).
+    # 'sse' only works with a long-lived backend: CloudFront has no /sse route and Lambda cannot stream it.
+    [ValidateSet('', 'appsync', 'websocket', 'sse')]
+    [string]$RealtimeMode = '',
     [switch]$SkipFrontend
 )
 
@@ -102,6 +105,11 @@ try {
         if ($doIt) { exit 1 }
         Write-Info '(dry run: continuing; -Execute would stop here)'
     }
+
+    if (-not $RealtimeMode) {
+        $RealtimeMode = if ($disc.context_flags.realtime -eq 'appsync') { 'appsync' } else { 'websocket' }
+    }
+    Write-Info "frontend realtime mode: $RealtimeMode"
 
     # context flags
     $ctxArgs = @('context-args', '--discovery', $script:DiscoveryFile, '--prefix', $Prefix, '--region', $Region)
