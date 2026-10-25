@@ -1,0 +1,20 @@
+{
+  "bbox": {
+    "north": 41.91,
+    "south": 41.85,
+    "west": -87.68,
+    "east": -87.6
+  },
+  "shape": [
+    760,
+    900
+  ],
+  "units": "metres",
+  "vertical_datum": "NAVD88 (per USGS 3DEP product documentation)",
+  "min": 171.87600708007812,
+  "max": 194.38388061523438,
+  "mean": 179.8008270263672,
+  "nodata_fraction": 0.0,
+  "retrieved_at": "2026-10-24T17:31:40+00:00",
+  "url": "https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage"
+}

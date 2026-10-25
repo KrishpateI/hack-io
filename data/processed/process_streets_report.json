@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-10-24T17:33:37+00:00",
+  "counts": {
+    "buildings": 28694,
+    "buildings_with_height_tag": 340,
+    "buildings_with_levels_tag": 14104,
+    "buildings_class_unknown": 14555,
+    "buildings_invalid_repaired": 0,
+    "buildings_dropped": 0,
+    "water_features": 86,
+    "subway_lines": 275,
+    "osm_stations": 99,
+    "cta_gtfs_parent_stations": 38,
+    "stations_total": 137,
+    "portal_centerline_features": 5972,
+    "portal_invalid_dropped": 1,
+    "portal_status_not_open": 174
+  },
+  "warnings": []
+}

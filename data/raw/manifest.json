@@ -1,0 +1,125 @@
+{
+  "datasets": {
+    "osm:osm_roads.json": {
+      "title": "OpenStreetMap extract: highways, footways, bridges, tunnels, one-ways",
+      "organization": "OpenStreetMap contributors",
+      "url": "https://overpass.private.coffee/api/interpreter",
+      "license": "ODbL 1.0 - attribution required: (c) OpenStreetMap contributors",
+      "retrieved_at": "2026-10-24T17:26:57+00:00",
+      "bbox": {
+        "north": 41.91,
+        "south": 41.85,
+        "west": -87.68,
+        "east": -87.6
+      },
+      "file": "osm_roads.json",
+      "element_count": 37740,
+      "osm_base": "2026-05-31T22:37:44Z",
+      "status": "ok"
+    },
+    "osm:osm_buildings.json": {
+      "title": "OpenStreetMap extract: building footprints (height/levels where tagged)",
+      "organization": "OpenStreetMap contributors",
+      "url": "https://overpass-api.de/api/interpreter",
+      "license": "ODbL 1.0 - attribution required: (c) OpenStreetMap contributors",
+      "retrieved_at": "2026-10-24T17:27:30+00:00",
+      "bbox": {
+        "north": 41.91,
+        "south": 41.85,
+        "west": -87.68,
+        "east": -87.6
+      },
+      "file": "osm_buildings.json",
+      "element_count": 28694,
+      "osm_base": "2026-10-24T17:26:05Z",
+      "status": "ok"
+    },
+    "osm:osm_water_transit.json": {
+      "title": "OpenStreetMap extract: waterways, water bodies, subway lines, stations",
+      "organization": "OpenStreetMap contributors",
+      "url": "https://overpass-api.de/api/interpreter",
+      "license": "ODbL 1.0 - attribution required: (c) OpenStreetMap contributors",
+      "retrieved_at": "2026-10-24T17:28:05+00:00",
+      "bbox": {
+        "north": 41.91,
+        "south": 41.85,
+        "west": -87.68,
+        "east": -87.6
+      },
+      "file": "osm_water_transit.json",
+      "element_count": 460,
+      "osm_base": "2026-10-24T17:27:03Z",
+      "status": "ok"
+    },
+    "portal:street_centerlines": {
+      "status": "ok",
+      "error": "HTTP 400 from https://data.cityofchicago.org/resource/6imu-meau.geojson: {\"message\":\"Query coordinator error: query.soql.no-such-column; No such column: the_geom; position: Map(row -> 1, column -> 35, line -> \\\"SELECT |> SELECT WHERE within_box(`the_geom`, 41.91, -87.68, 4",
+      "attempted_at": "2026-10-24T17:28:24+00:00",
+      "title": "Street Center Lines (map asset 6imu-meau; queried table pr57-gg9e 'transportation')",
+      "organization": "City of Chicago",
+      "url": "https://data.cityofchicago.org/d/6imu-meau",
+      "table_url": "https://data.cityofchicago.org/d/pr57-gg9e",
+      "api_url": "https://data.cityofchicago.org/resource/pr57-gg9e.geojson",
+      "retrieved_at": "2026-10-24T17:30:48+00:00",
+      "bbox": {
+        "north": 41.91,
+        "south": 41.85,
+        "west": -87.68,
+        "east": -87.6
+      },
+      "file": "chicago_street_centerlines.geojson",
+      "feature_count": 5973,
+      "license": "City of Chicago Data Portal terms of use (open data)"
+    },
+    "cta:gtfs": {
+      "title": "CTA GTFS static feed",
+      "organization": "Chicago Transit Authority",
+      "url": "https://www.transitchicago.com/developers/gtfs/",
+      "api_url": "https://www.transitchicago.com/downloads/sch_data/google_transit.zip",
+      "retrieved_at": "2026-10-24T17:28:29+00:00",
+      "file": "cta_gtfs.zip",
+      "bytes": 68738293,
+      "license": "CTA Developer License Agreement - see https://www.transitchicago.com/developers/",
+      "status": "ok"
+    },
+    "usgs:3dep_dem": {
+      "title": "USGS 3DEP bare-earth DEM (ImageServer export, resampled)",
+      "organization": "U.S. Geological Survey",
+      "url": "https://www.usgs.gov/3d-elevation-program",
+      "api_url": "https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage",
+      "retrieved_at": "2026-10-24T17:31:40+00:00",
+      "file": "dem_3dep.npy",
+      "license": "US Government work - public domain (USGS attribution requested)",
+      "status": "ok",
+      "shape": [
+        760,
+        900
+      ],
+      "units": "metres",
+      "vertical_datum": "NAVD88 (per USGS 3DEP product documentation)",
+      "min": 171.87600708007812,
+      "max": 194.38388061523438,
+      "nodata_fraction": 0.0
+    },
+    "processed:layers": {
+      "generated_at": "2026-10-24T17:33:37+00:00",
+      "counts": {
+        "buildings": 28694,
+        "buildings_with_height_tag": 340,
+        "buildings_with_levels_tag": 14104,
+        "buildings_class_unknown": 14555,
+        "buildings_invalid_repaired": 0,
+        "buildings_dropped": 0,
+        "water_features": 86,
+        "subway_lines": 275,
+        "osm_stations": 99,
+        "cta_gtfs_parent_stations": 38,
+        "stations_total": 137,
+        "portal_centerline_features": 5972,
+        "portal_invalid_dropped": 1,
+        "portal_status_not_open": 174
+      }
+    }
+  },
+  "updated_at": "2026-10-24T17:33:37+00:00"
+}
