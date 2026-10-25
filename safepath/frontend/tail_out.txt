@@ -1,0 +1,40 @@
+﻿
+âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯[1/3]âŽ¯
+
+ FAIL  src/components/indoor/IndoorBuildingView.test.tsx > IndoorBuildingView > opens the panel on keyboard activation and fires callbacks
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ â¯ src/components/indoor/IndoorBuildingView.test.tsx:38:3
+     36|   });
+     37|
+     38|   it('opens the panel on keyboard activation and fires callbacks', asyâ€¦
+       |   ^
+     39|     const user = userEvent.setup();
+     40|     const onReport = vi.fn();
+
+âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯[2/3]âŽ¯
+
+ FAIL  src/components/offline/offline.test.tsx > queue item wording (Req 41.4, 41.5, 41.7) > shows the server reason for a rejected item with Edit and Discard, and re-queues an edit
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ â¯ src/components/offline/offline.test.tsx:78:3
+     76|   });
+     77|
+     78|   it('shows the server reason for a rejected item with Edit and Discarâ€¦
+       |   ^
+     79|     let reject = true;
+     80|     const m = setup(async () => {
+
+âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯[3/3]âŽ¯
+
+
+ Test Files  3 failed | 28 passed (31)
+      Tests  3 failed | 588 passed (591)
+   Start at  20:30:23
+   Duration  78.00s (environment 47%, tests 43%, setup 4%, import 2%, transform 2%, worker 1%)
+
+Environment  jsdom was created 31 times Â· 92.41s total, 47% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+FINISHED 

@@ -1,0 +1,9 @@
+﻿.\.venv\Scripts\python.exe : C:\Users\raidenagboh\AppData\Local\Programs\Python\Python312-arm64\python.exe: 
+can't open file 'C:\\Github\\HackIO\\hack-io\\safepath\\tests\\backend\\_tmp_p40_dbg.py': [Errno 2] No such 
+file or directory
+At line:1 char:50
++ ... \backend" ; .\.venv\Scripts\python.exe ..\tests\backend\_tmp_p40_dbg. ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\raiden...le or directory:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

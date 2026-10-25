@@ -6,6 +6,7 @@ Graph (artifact with manifest), Source_Record, OfficialNotice, HazardReport, Mes
 Incident, User and realtime Event serialize to the storage/wire format and parse back equal.
 Every created record id is unique within its record type.
 """
+# Feature: safepath-evacuation-navigation, Property 22: Serialization round trip
 from __future__ import annotations
 
 import json
@@ -16,7 +17,7 @@ from pathlib import Path
 from hypothesis import HealthCheck, given, settings, strategies as st
 
 from app.adapters.ports import Event
-from app.adapters.repository import MemoryRepository, SqliteRepository
+from app.adapters.repository import SqliteRepository
 from app.communication.events import event_to_dict
 from app.models.domain import Incident, OfficialNotice
 from app.models.ids import PREFIXES, new_id
@@ -28,7 +29,11 @@ from app.models.records import (
 from app.services.graph_artifact import read_artifact, write_artifact
 from strategies import NOW, graph_models, incidents, notices, reports
 
-SETTINGS = settings(max_examples=60, deadline=None, suppress_health_check=list(HealthCheck))
+# Profile "ci" (conftest.py) sets max_examples=100; keep that and only relax deadline/health checks.
+SETTINGS = settings(
+    settings.get_profile("ci"), max_examples=100, deadline=None,
+    suppress_health_check=list(HealthCheck),
+)
 
 _TXT = st.text(max_size=30)
 _ID = st.text(alphabet="abcdefghij0123456789_-", min_size=1, max_size=12)

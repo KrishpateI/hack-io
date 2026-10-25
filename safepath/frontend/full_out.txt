@@ -1,0 +1,21 @@
+﻿
+ RUN  v5.0.5 C:/Github/HackIO/hack-io/safepath/frontend
+
+npx.cmd : Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm 
+package
+At line:1 char:51
++ ... b\HackIO\hack-io\safepath\frontend" ; npx.cmd vitest run 2>&1 | Out-F ...
++                                           ~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Not implemented...vas npm package:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+ Test Files  31 passed (31)
+      Tests  591 passed (591)
+   Start at  20:33:05
+   Duration  44.39s (tests 46%, environment 44%, setup 4%, import 3%, transform 2%, worker 1%)
+
+Environment  jsdom was created 31 times ┬╖ 49.82s total, 44% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

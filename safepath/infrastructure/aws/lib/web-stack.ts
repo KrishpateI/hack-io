@@ -215,6 +215,12 @@ export class WebStack extends Stack {
     const domainName = ctx('safepath:domainName') as string | undefined;
     const certArn = ctx('safepath:certificateArn') as string | undefined;
     const customDomain = domainName && certArn;
+    if (!customDomain) {
+      // Req 31.5: CloudFront ignores minimumProtocolVersion on the default certificate (TLSv1 policy).
+      Annotations.of(this).addWarningV2('safepath:cloudfront-default-cert-tls',
+        'CloudFront uses the default *.cloudfront.net certificate, which accepts TLS 1.0+; the TLS 1.2 minimum is only '
+        + 'enforced with -c safepath:domainName=<host> -c safepath:certificateArn=<us-east-1 ACM ARN>.');
+    }
 
     return new cloudfront.Distribution(this, 'Distribution', {
       comment: `${config.prefix} SPA, PMTiles and GeoJSON`,

@@ -76,24 +76,27 @@ export function MessageChannel({ incidentId, messages, notices = [], sendMessage
 
       <div>
         <h3 className="mb-1 text-sm font-semibold">Community messages</h3>
-        <ul role="log" aria-live="polite" aria-relevant="additions" aria-label="Community messages" className="max-h-72 space-y-2 overflow-y-auto" tabIndex={0}>
-          {community.length === 0 && <li className="text-text-muted">No community messages yet.</li>}
-          {community.map((m) => (
-            <li key={m.message_id} data-testid="community-message" className="space-y-1 rounded border border-border-subtle bg-surface p-2">
-              <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                <span className="inline-flex items-center gap-1 rounded border border-unverified px-1.5 py-0.5 text-unverified">
-                  <StatusIcon kind="people" />
-                  <span>Community</span>
-                </span>
-                <span className="text-text-muted">{typeLabel(m.message_type)}</span>
-                <span className="text-text-muted">{m.alias ?? 'Anonymous'}</span>
-                <time dateTime={m.created_at ?? undefined} className="text-text-muted">{formatTime(m.created_at)}</time>
-              </div>
-              <p className="break-words">{m.content}</p>
-              {ASSISTANCE_MESSAGE_TYPES.includes(m.message_type) && <NoDispatchNotice />}
-            </li>
-          ))}
-        </ul>
+        {/* role="log" is not allowed on <ul>; the scrollable log wraps a real list (axe aria-allowed-role). */}
+        <div role="log" aria-live="polite" aria-relevant="additions" aria-label="Community messages" className="max-h-72 overflow-y-auto" tabIndex={0}>
+          <ul className="space-y-2">
+            {community.length === 0 && <li className="text-text-muted">No community messages yet.</li>}
+            {community.map((m) => (
+              <li key={m.message_id} data-testid="community-message" className="space-y-1 rounded border border-border-subtle bg-surface p-2">
+                <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                  <span className="inline-flex items-center gap-1 rounded border border-unverified px-1.5 py-0.5 text-unverified">
+                    <StatusIcon kind="people" />
+                    <span>Community</span>
+                  </span>
+                  <span className="text-text-muted">{typeLabel(m.message_type)}</span>
+                  <span className="text-text-muted">{m.alias ?? 'Anonymous'}</span>
+                  <time dateTime={m.created_at ?? undefined} className="text-text-muted">{formatTime(m.created_at)}</time>
+                </div>
+                <p className="break-words">{m.content}</p>
+                {ASSISTANCE_MESSAGE_TYPES.includes(m.message_type) && <NoDispatchNotice />}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       <form onSubmit={(e) => void submit(e)} noValidate className="space-y-2">

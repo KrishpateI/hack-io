@@ -1,0 +1,5 @@
+﻿playwright.config.ts(1,18): error TS2307: Cannot find module 'node:path' or its corresponding type declarations.
+playwright.config.ts(2,31): error TS2307: Cannot find module 'node:url' or its corresponding type declarations.
+playwright.config.ts(15,47): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+playwright.config.ts(16,15): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+TSC_EXIT 2

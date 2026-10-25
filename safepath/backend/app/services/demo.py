@@ -219,6 +219,10 @@ class DemoService:
             action: dict[str, Any] = {**base, "do": "calculate_routes", "endpoint": "POST /api/routes/calculate",
                                       "body": body, "expect": step.get("expect")}
             if row["scenario_id"] == STAIRWELL:
+                if "destination" not in body:  # the scenario has none: route to outside the building
+                    exit_point = self._building_exit_point()
+                    if exit_point is not None:
+                        body["destination"] = exit_point
                 actors = step.get("actors") or [step.get("actor", "A")]
                 action["bodies_by_actor"] = {
                     a: {**body, **self._indoor_origin(row, a)} for a in actors}
@@ -236,6 +240,26 @@ class DemoService:
             return {**base, "do": "observe", "actor": step.get("actor"),
                     "within_seconds": step.get("within_seconds")}
         return {**base, "do": kind}
+
+    def _building_exit_point(self) -> dict[str, float] | None:
+        """Outdoor node a ground-floor exit of the fictional building attaches to (first by id).
+
+        The blocked-stairwell scenario defines no destination; a route request still needs one,
+        so the console routes each user to just outside the SIMULATED building.
+        """
+        try:
+            g = self._graph()
+            indoor = {n.node_id for n in g.model.nodes if n.kind == "indoor"}
+            exits = sorted((e.from_node, e.to_node) for e in g.model.edges
+                           if getattr(e, "transition_type", None) == "exit"
+                           and e.from_node in indoor and e.to_node not in indoor)
+        except Exception:  # no graph / no indoor building merged: leave the body unchanged
+            log.exception("could not resolve a building exit for the stairwell scenario")
+            return None
+        if not exits:
+            return None
+        i = g.node_index[exits[0][1]]
+        return {"latitude": float(g.node_lat[i]), "longitude": float(g.node_lon[i])}
 
     @staticmethod
     def _indoor_origin(row: dict[str, Any], actor: str) -> dict[str, Any]:

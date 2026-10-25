@@ -34,11 +34,11 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - Render the Chicago_Extraction_Area (N 41.91, S 41.85, W -87.68, E -87.60) with a dashed distinct line style and the label "Data extraction boundary, not an official evacuation boundary"
     - Add `LayerToggles` that change layer `visibility` immediately
     - _Requirements: 2.3, 3.8, 34.3, 46.1_
-  - [x]* 1.5 Write property test and component tests for content classification and the disclaimer
+  - [x] 1.5 Write property test and component tests for content classification and the disclaimer
     - **Property 33: Content classification and labeling** (fast-check, numRuns 100)
     - Component tests: disclaimer present and verbatim at widths 320 and 2560 with no dismiss control, SIMULATED header indicator, 911 panel reachable in one interaction
     - **Validates: Requirements 1.1, 1.3, 10.4, 10.5, 10.8, 35.4, 36.5**
-  - [x]* 1.6 Write palette contrast test and wording lint
+  - [x] 1.6 Write palette contrast test and wording lint
     - Test every text/background token pair in `tokens.ts` for contrast ratio of at least 4.5:1
     - Add a lint test scanning UI strings and API explanation templates for forbidden claims ("safe route", "guaranteed", "certified", "approved", "flood-safe", dispatch/911 integration claims) outside the disclaimer
     - _Requirements: 1.5, 1.6, 1.7, 36.3, 17.7_
@@ -50,10 +50,10 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - [x] 3.1 Implement geographic utilities
     - In `backend/app/geo.py` implement bounds constants, boundary-inclusive `classify_coordinate` (invalid, outside-region, inside) identifying origin, destination or both, bbox clipping, haversine, and `building_height_class(height, floors)` with zero/negative/non-numeric treated as absent
     - _Requirements: 2.1, 2.4, 2.5, 6.2, 6.3_
-  - [x]* 3.2 Write property test for clipping and region bounds
+  - [x] 3.2 Write property test for clipping and region bounds
     - **Property 20: Geometry clipping and region bounds are exact and boundary-inclusive**
     - **Validates: Requirements 2.1, 2.4, 2.5, 23.8**
-  - [x]* 3.3 Write property test for building height class
+  - [x] 3.3 Write property test for building height class
     - **Property 21: Building height class is a pure, total function of source data**
     - **Validates: Requirements 6.2, 6.3**
   - [x] 3.4 Define Graph and provenance models and the versioned artifact format
@@ -61,14 +61,14 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - Validators: `distance_meters > 0`, `estimated_travel_time_seconds > 0`, endpoints exist, Level_Transition required when node levels differ
     - Implement artifact writer/reader (`nodes.jsonl.gz`, `edges.jsonl.gz`, `manifest.json` with sha256 and counts, `layers/*.geojson`), version id `v{UTC date}-{short hash}`, no overwrite of prior versions, `latest.json` updated last and atomically
     - _Requirements: 12.1, 12.2, 12.3, 12.5, 12.6, 12.7, 7.8, 10.1_
-  - [x]* 3.5 Write property test for graph structural invariants
+  - [x] 3.5 Write property test for graph structural invariants
     - **Property 18: Graph structural invariants** (positive distance/time, endpoints present, edges to absent nodes excluded with edge_id warning, level changes only via Level_Transition)
     - **Validates: Requirements 12.5, 12.7, 12.8, 21.2, 44.9, 5.6**
   - [x] 3.6 Build the Data_Pipeline framework
     - In `scripts/pipeline/` implement the fixed stage runner (check_availability, save_raw, reproject EPSG:26916, clip, clean_geometry, normalize, build_nodes_edges, save_outputs), fetch with 3 attempts and 60 s timeout, previous-copy fallback with timestamp warning, missing-source recording, per-stage failure isolation, fatal exit only when no street source exists in any form (leaving the saved Graph unchanged), and `summary_report.json` (feature count, URL, timestamp, acquisition status, warnings)
     - Auto-create a Source_Record for each retrieved dataset (OSM record with ODbL license and attribution restriction)
     - _Requirements: 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 3.7_
-  - [x]* 3.7 Write property test for pipeline source resolution
+  - [x] 3.7 Write property test for pipeline source resolution
     - **Property 42: Pipeline source resolution is deterministic**
     - **Validates: Requirements 3.5, 7.4, 7.5, 7.6, 7.7**
   - [x] 3.8 Implement `download_chicago_data.py`
@@ -80,7 +80,7 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - Merge Chicago Data Portal and OSM segments, extracting geometry, source id, road class, one-way, pedestrian access, bridge, tunnel, layer; assign `infrastructure_level` only where source identifies it and flag river crossings by source data
     - Store absent attributes as `Unknown` (never defaults); apply documented source precedence (CDP geometry and name, OSM access/bridge/tunnel/layer), record retained source and a conflict warning
     - _Requirements: 3.3, 3.4, 3.5, 3.6, 7.1_
-  - [x]* 3.10 Write property test for attribute normalization
+  - [x] 3.10 Write property test for attribute normalization
     - **Property 19: Missing attributes normalize to Unknown, never defaults**
     - **Validates: Requirements 3.4, 4.4, 4.5, 12.3**
   - [x] 3.11 Implement `import_elevation.py`
@@ -98,7 +98,7 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - [x] 3.14 Create the fixture graph and documented fallback dataset
     - Generate a small synthetic Chicago-like graph artifact in `tests/fixtures/graph/` and a `scripts/make_fixture_graph.py` so development, CI and demos work when real downloads are unavailable; label it Simulated and document the limitation in `data/processed/fallbacks.json`
     - _Requirements: 7.4, 7.5, 45.6, 45.7_
-  - [x]* 3.15 Write artifact smoke test and pipeline unit tests
+  - [x] 3.15 Write artifact smoke test and pipeline unit tests
     - Fixture-based tests for Unknown handling, conflict warnings, manifest checksums, per-neighborhood routable Node presence (Loop, West Loop, Riverwalk, Clark/Lake, Millennium Park, DePaul Loop, UIC, UIC-downtown corridor)
     - _Requirements: 2.2, 3.4, 3.5, 7.3, 7.8_
 
@@ -107,7 +107,7 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - `services/sources.py` with case-insensitive substring search on organization/title, exact filters on Data_Classification and verification status, 400 listing permitted values for invalid filter values, response within 2 s
     - Store catalog in `data/sources/catalog.json` and enforce a Source_Record on every rule, zone, closure, shelter, destination, notice and dataset
     - _Requirements: 10.1, 10.2, 10.7_
-  - [x]* 4.2 Write property test for catalog search and filter
+  - [x] 4.2 Write property test for catalog search and filter
     - **Property 34: Source catalog search and filter**
     - **Validates: Requirements 10.2, 10.7**
   - [x] 4.3 Implement `import_emergency_plan.py` for the 2007 CBD Evacuation Plan
@@ -124,7 +124,7 @@ Every task builds on earlier tasks and ends wired into the running app. Property
     - `pages/SourcesLimitations.tsx` listing all Source_Records (filter/search via `/api/sources`) and documented limitations; selected-feature popup showing source organization, URL, title, dates, classification, verification status and page/section within 1 s
     - Official information links (OEMC, Ready Illinois, UIC Ready) in the left sidebar component and a `HistoricalLabel` component with the text "Historical reference (2007), not a current evacuation order" used next to CBD-derived content
     - _Requirements: 8.10, 9.6, 10.3, 10.6, 46.6_
-  - [ ]* 4.6 Write unit tests for CBD extraction and source review
+  - [x] 4.6 Write unit tests for CBD extraction and source review
     - Recorded-fixture tests for page/section capture, not-found topics, unavailable appendices, unreachable URL handling, UIC exclusions
     - _Requirements: 8.4, 8.5, 8.7, 8.8, 9.3, 9.7_
 
@@ -171,61 +171,61 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - [x] 6.12 Implement RoutingService and `POST /api/routes/calculate`
     - `routing/service.py` orchestrating validate, load context (via a `ContextProvider` protocol with in-memory implementation), Rules_Engine, data-sufficiency check, restriction resolution, endpoint snapping, cost, A*, alternatives, explanation; non-route outcomes return HTTP 200 with empty geometry and explanation; overlay read failure fails closed with 503; works with AI disabled; computes routes at request time with no precomputed route
     - _Requirements: 13.1, 13.3, 13.6, 13.7, 13.9, 13.10, 15.5, 43.2, 43.4, 43.8, 11.3, 46.2, 46.3_
-  - [x]* 6.13 Create shared Hypothesis strategies
+  - [x] 6.13 Create shared Hypothesis strategies
     - `tests/backend/strategies.py`: `graphs()`, `restriction_sets(graph)`, `notices()`, `incidents()`, `coordinates()`, `raw_segments()` per the design
     - _Requirements: 44.5, 44.8_
-  - [x]* 6.14 Write property test for hard restrictions
+  - [x] 6.14 Write property test for hard restrictions
     - **Property 1: Hard restrictions are never traversed** (at least 100 examples)
     - **Validates: Requirements 14.1, 14.3, 14.4, 14.6, 17.1, 17.5, 18.1, 18.2, 20.1, 20.2, 44.5**
-  - [x]* 6.15 Write property test for search optimality
+  - [x] 6.15 Write property test for search optimality
     - **Property 2: Search returns an optimal path** (A* vs reference Dijkstra and brute force)
     - **Validates: Requirements 13.1, 44.1, 44.2**
-  - [x]* 6.16 Write property test for restriction add/remove
+  - [x] 6.16 Write property test for restriction add/remove
     - **Property 3: Restriction add then remove restores routing**
     - **Validates: Requirements 14.7, 16.3, 21.4, 24.6, 44.2**
-  - [x]* 6.17 Write property test for directed edges
+  - [x] 6.17 Write property test for directed edges
     - **Property 4: Directed edges are traversed only in their permitted direction**
     - **Validates: Requirements 11.7, 12.6, 44.3**
-  - [x]* 6.18 Write property test for alternatives
+  - [x] 6.18 Write property test for alternatives
     - **Property 5: Alternatives are valid, distinct and counted** (at least 100 graphs)
     - **Validates: Requirements 13.4, 44.8**
-  - [x]* 6.19 Write property test for unreachable or isolated endpoints
+  - [x] 6.19 Write property test for unreachable or isolated endpoints
     - **Property 6: Unreachable or isolated endpoints yield NO_VERIFIED_ROUTE_AVAILABLE** (outdoor graph; indoor variant added in task 11.7)
     - **Validates: Requirements 13.6, 14.8, 44.4**
-  - [x]* 6.20 Write property test for unconfirmed evidence
+  - [x] 6.20 Write property test for unconfirmed evidence
     - **Property 7: Unconfirmed evidence is a penalty, never a Hard_Restriction**
     - **Validates: Requirements 14.3, 14.5, 16.5, 20.6**
-  - [x]* 6.21 Write property test for cost decomposition
+  - [x] 6.21 Write property test for cost decomposition
     - **Property 8: Route_Cost decomposes into non-negative recorded components**
     - **Validates: Requirements 13.2, 13.5**
-  - [x]* 6.22 Write property test for Unknown data penalties
+  - [x] 6.22 Write property test for Unknown data penalties
     - **Property 9: Unknown or low-confidence data is never treated as safe**
     - **Validates: Requirements 12.4, 13.8, 17.4, 44.7**
-  - [x]* 6.23 Write property test for step-free profile
+  - [x] 6.23 Write property test for step-free profile
     - **Property 10: Step-free profile excludes known-inaccessible edges**
     - **Validates: Requirements 13.8**
-  - [x]* 6.24 Write property test for flood penalties
+  - [x] 6.24 Write property test for flood penalties
     - **Property 11: Flood penalties are monotone in elevation and positive for exposed infrastructure**
     - **Validates: Requirements 17.2, 17.3, 17.8**
-  - [x]* 6.25 Write property test for earthquake proximity penalty
+  - [x] 6.25 Write property test for earthquake proximity penalty
     - **Property 12: Earthquake proximity penalty depends on hazard association, not height class**
     - **Validates: Requirements 18.3, 18.4**
-  - [x]* 6.26 Write property test for fire smoke penalty
+  - [x] 6.26 Write property test for fire smoke penalty
     - **Property 13: Fire smoke penalty applies within 100 m of unconfirmed fire reports**
     - **Validates: Requirements 20.3**
-  - [x]* 6.27 Write property test for tornado behavior
+  - [x] 6.27 Write property test for tornado behavior
     - **Property 14: Tornado warning yields shelter-in-place and no outdoor edges**
     - **Validates: Requirements 19.1, 19.5, 19.7**
-  - [x]* 6.28 Write property test for policy precedence
+  - [x] 6.28 Write property test for policy precedence
     - **Property 15: Policy precedence follows the documented order**
     - **Validates: Requirements 11.4, 11.5, 11.6, 11.8, 19.6, 20.4, 44.6**
-  - [x]* 6.29 Write property test for ineligible records
+  - [x] 6.29 Write property test for ineligible records
     - **Property 16: Ineligible records never influence evaluation**
     - **Validates: Requirements 8.9, 9.5, 10.8, 11.9**
-  - [x]* 6.30 Write property test for the route response contract
+  - [x] 6.30 Write property test for the route response contract
     - **Property 17: Route responses satisfy the response contract**
     - **Validates: Requirements 15.1, 15.5, 15.6, 43.2, 43.3**
-  - [x]* 6.31 Write unit and example tests for routing
+  - [x] 6.31 Write unit and example tests for routing
     - Known 6-node graph shortest path, weights file validation (missing, negative, non-numeric), one example per Policy_Outcome, tornado with and without an official shelter, 200-request performance smoke on the fixture graph (p95 under 5 s)
     - _Requirements: 13.10, 13.12, 44.1, 19.3, 19.4_
 
@@ -253,22 +253,22 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - [x] 8.6 Export OpenAPI and generate the typed frontend client
     - Export `docs/openapi.json` from the app and generate `frontend/src/services/api.ts` via `openapi-typescript` with a thin fetch wrapper (bearer token, error envelope parsing); add npm and PowerShell scripts to regenerate
     - _Requirements: 42.2, 43.1_
-  - [ ]* 8.7 Write the Repository contract test suite
+  - [x] 8.7 Write the Repository contract test suite
     - One suite run against `MemoryRepository` and `SqliteRepository` covering put/get/query, if_absent conflicts, CAS conflicts, transact atomicity and `RepositoryUnavailable`
     - _Requirements: 30.9, 44.11_
-  - [ ]* 8.8 Write property test for serialization round trip
+  - [x] 8.8 Write property test for serialization round trip
     - **Property 22: Serialization round trip** (Graph, Source_Record, OfficialNotice, HazardReport, Message, CheckIn, Incident, User, Event; unique ids per type)
     - **Validates: Requirements 7.8, 30.1, 30.2, 30.3, 30.4, 30.5, 30.6, 30.8**
-  - [ ]* 8.9 Write property test for request validation
+  - [x] 8.9 Write property test for request validation
     - **Property 23: Invalid requests are rejected with the specified status and field errors**
     - **Validates: Requirements 13.11, 13.12, 23.7, 26.7, 26.8, 27.7, 28.4, 43.5, 43.6, 43.7**
-  - [ ]* 8.10 Write property test for sanitization
+  - [x] 8.10 Write property test for sanitization
     - **Property 24: Sanitization removes markup and is idempotent**
     - **Validates: Requirements 28.5**
-  - [ ]* 8.11 Write property test for public views
+  - [x] 8.11 Write property test for public views
     - **Property 30: Public views never leak private fields**
     - **Validates: Requirements 22.5, 31.6, 31.8**
-  - [ ]* 8.12 Write property test for rate limiting
+  - [x] 8.12 Write property test for rate limiting
     - **Property 32: Rate limiting admits at most the limit per window**
     - **Validates: Requirements 28.1, 28.2**
 
@@ -304,34 +304,34 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - [x] 9.10 Build community UI components
     - `ReportForm`, `MessageList` (Official notices in a visually distinct, text-labeled section), `CheckInForm` (shows "SafePath does not dispatch emergency services" with 911 guidance on "I need assistance"), report markers with Verification_Status chips including "Corroborated by community — not officially verified" and "Expired"
     - _Requirements: 23.6, 24.5, 24.8, 26.4, 26.5, 27.6, 16.2_
-  - [ ]* 9.11 Write property test for the verification lifecycle
+  - [ ] 9.11 Write property test for the verification lifecycle
     - **Property 25: Verification lifecycle rules**
     - **Validates: Requirements 23.3, 24.1, 24.2, 24.3, 24.4, 24.9, 28.6, 44.10**
-  - [ ]* 9.12 Write property test for status history under concurrency
+  - [ ] 9.12 Write property test for status history under concurrency
     - **Property 26: Status history is append-only and consistent under concurrency**
     - **Validates: Requirements 24.7, 24.10**
-  - [ ]* 9.13 Write property test for expiry
+  - [x] 9.13 Write property test for expiry
     - **Property 27: Expiry transitions are timely and exclusive**
     - **Validates: Requirements 24.5, 44.10**
-  - [ ]* 9.14 Write property test for report creation and duplicates
+  - [x] 9.14 Write property test for report creation and duplicates
     - **Property 28: Report creation, edge association and duplicate linking**
     - **Validates: Requirements 23.4, 28.3, 41.6**
-  - [ ]* 9.15 Write property test for check-in privacy and history
+  - [x] 9.15 Write property test for check-in privacy and history
     - **Property 31: Check-in privacy and history**
     - **Validates: Requirements 27.3, 27.4, 27.5, 27.8**
-  - [ ]* 9.16 Write property test for failed writes
+  - [ ] 9.16 Write property test for failed writes
     - **Property 35: Failed writes leave no trace** (fault injection into the Repository)
     - **Validates: Requirements 25.1, 30.9**
-  - [ ]* 9.17 Write property test for event application
+  - [x] 9.17 Write property test for event application
     - **Property 36: Event application is idempotent, order-tolerant by id, and catch-up is complete** (fast-check)
     - **Validates: Requirements 25.6, 25.8**
-  - [ ]* 9.18 Write property test for reconnect backoff
+  - [x] 9.18 Write property test for reconnect backoff
     - **Property 37: Reconnect backoff and polling bounds** (fast-check)
     - **Validates: Requirements 25.7, 32.4**
-  - [ ]* 9.19 Write property test for recalculation coalescing
+  - [x] 9.19 Write property test for recalculation coalescing
     - **Property 39: Route recalculation requests are coalesced** (fast-check with fake timers)
     - **Validates: Requirements 16.4, 16.7**
-  - [ ]* 9.20 Write realtime integration tests
+  - [x] 9.20 Write realtime integration tests
     - Two WebSocket clients receive the same report event within 5 s, 50 simulated clients delivery, persistence across repository reload, stale-banner component test
     - _Requirements: 25.3, 44.10, 44.11, 46.4_
 
@@ -351,16 +351,16 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - [x] 11.4 Implement the DemoService and admin endpoints
     - `services/demo.py` and routers: `POST /api/demo/{scenario}/start|advance|reset`, `POST/DELETE /api/demo/closures` for simulated closures and hazard polygons (Moderator only, 403 otherwise); reset within 30 s removes only that scenario's records and restores seeds, idempotent when already seeded; debris zones mark edges blocked within 5 s with Simulated zone ids cited in route explanations
     - _Requirements: 40.1, 40.2, 40.3, 40.6, 40.7, 37.4, 37.5, 38.3, 38.4, 39.5_
-  - [ ]* 11.5 Write property test for scenario reset
+  - [ ] 11.5 Write property test for scenario reset
     - **Property 40: Scenario reset is complete, isolated and idempotent**
     - **Validates: Requirements 40.3, 40.4, 40.7**
-  - [ ]* 11.6 Write property test for the authorization matrix
+  - [ ] 11.6 Write property test for the authorization matrix
     - **Property 29: Authorization matrix** across incident creation, report moderation, stairwell confirmation, message hiding, notice creation, demo admin actions and role self-assignment
     - **Validates: Requirements 21.8, 22.1, 22.4, 22.7, 24.9, 26.9, 28.8, 31.4, 31.7, 40.6, 42.3, 42.4**
-  - [ ]* 11.7 Write indoor tests including the indoor variant of Property 6
+  - [ ] 11.7 Write indoor tests including the indoor variant of Property 6
     - Indoor/outdoor connect only via Level_Transition, all-stairwells-removed gives NO_VERIFIED_ROUTE_AVAILABLE for that floor, individual stairwell closure reroutes
     - _Requirements: 21.2, 21.4, 21.7, 44.9, 44.4_
-  - [ ]* 11.8 Write backend scenario integration tests
+  - [ ] 11.8 Write backend scenario integration tests
     - Scenario 1 shortest plus disaster-adjusted route and recalculation after a simulated verified closure, Scenario 2 debris exclusion with zone references, Scenario 3 report, corroborate, moderator confirm, indoor reroute, assistance message published
     - _Requirements: 37.4, 37.5, 38.3, 38.4, 39.2, 39.3, 39.4, 39.5, 44.11_
 
@@ -384,10 +384,10 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - [x] 12.6 Write deployment and teardown tooling
     - `scripts/deploy.ps1`: refuse to run without the discovery gate, upload the Graph artifact, PMTiles and frontend bundle (building with only public identifiers), run `cdk deploy` with context flags, print the deployed URL; teardown limited to resources tagged `Project=SafePath`; failed deployments roll back only tagged resources created by that deployment; actual provisioning is run by the user after reviewing discovery results
     - _Requirements: 29.1, 29.6, 29.8, 31.2, 45.3_
-  - [ ]* 12.7 Write CDK assertion tests
+  - [ ] 12.7 Write CDK assertion tests
     - All resources tagged, DynamoDB `PAY_PER_REQUEST`, no EC2, log retention 7 days, API throttling 50/100, S3 public access blocked and encrypted, per-function IAM scoping, TLS minimum
     - _Requirements: 29.6, 31.1, 31.5, 32.1, 32.2, 32.5, 32.6_
-  - [ ]* 12.8 Run the Repository contract suite against DynamoDB Local
+  - [x] 12.8 Run the Repository contract suite against DynamoDB Local
     - Reuse the task 8.7 contract suite with `DynamoRepository`
     - _Requirements: 30.9, 44.11_
 
@@ -416,10 +416,10 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - [x] 13.8 Wire the application shell, responsiveness and accessibility
     - Compose `MainMap` and routing between all pages, Header with logo, "Chicago", demo mode indicator, connectivity status and profile control, responsive layout from 320 to 2560 px without horizontal scrolling for all header, sidebar and bottom controls, keyboard operability with visible focus, accessible names, text/icon plus color for every status
     - _Requirements: 34.1, 34.7, 36.2, 36.4, 46.7_
-  - [ ]* 13.9 Write frontend component and accessibility tests
+  - [ ] 13.9 Write frontend component and accessibility tests
     - Disclaimer on every page, SIMULATED indicator, historical label, 911 within one interaction, Corroborated text, stale banner, status chips with text and icon, keyboard operation, `axe-core` checks, layout at 320 and 2560
     - _Requirements: 1.1, 1.2, 8.10, 24.8, 25.5, 34.7, 36.2, 36.3, 36.4_
-  - [ ]* 13.10 Write Playwright end-to-end demo tests
+  - [ ] 13.10 Write Playwright end-to-end demo tests
     - Scenario 1 (flood, route change explanation within 5 s) and Scenario 3 (two browser contexts: report, corroborate, moderator confirm, indoor reroute) following the demo script
     - _Requirements: 37.5, 39.2, 39.3, 39.4, 39.6, 44.11, 46.4, 46.5_
 
@@ -427,7 +427,7 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - [x] 14.1 Implement the Offline_Manager
     - Workbox service worker precaching the app shell, runtime caching of PMTiles range requests, static GeoJSON (zoom 12 to 16) and static official guidance; IndexedDB queue (max 50, creation-order flush, client UUID idempotency key, "Queued — not yet received by server", "Rejected by server" with error and edit/discard); offline indicator with last sync time; "Cached as of [timestamp] — may be outdated" labels; `hooks/useOfflineQueue`
     - _Requirements: 41.1, 41.2, 41.3, 41.4, 41.5, 41.6, 41.7, 41.8_
-  - [ ]* 14.2 Write property test for the offline queue
+  - [x] 14.2 Write property test for the offline queue
     - **Property 38: Offline queue ordering, idempotence and capacity** (fast-check)
     - **Validates: Requirements 41.4, 41.5, 41.6, 41.7, 41.8**
   - [x] 14.3 Add the PMTiles extraction script
@@ -436,7 +436,7 @@ Every task builds on earlier tasks and ends wired into the running app. Property
   - [x] 14.4 Implement the optional AI_Assistant
     - `services/ai.py` with Bedrock client (15 s timeout), `POST /api/ai/summarize`, grounding guard that discards output referencing entities absent from the context or citing no supplied Source_Record and returns the unsummarized source data; never mutates Policy_Outcomes, routes, restrictions or Verification_Status; frontend AI-generated, non-authoritative label and "AI summaries unavailable" state
     - _Requirements: 33.1, 33.2, 33.3, 33.4, 33.5, 33.6, 33.7, 13.9_
-  - [ ]* 14.5 Write property test for AI grounding
+  - [x] 14.5 Write property test for AI grounding
     - **Property 41: AI output is accepted only if grounded**
     - **Validates: Requirements 33.2, 33.3, 33.6, 33.7**
   - [x] 14.6 Implement optional CTA transit alerts

@@ -1,6 +1,7 @@
 """Prefixed ULID identifiers, unique per record type (no external dependency)."""
 from __future__ import annotations
 
+import json
 import os
 import re
 import threading
@@ -79,4 +80,6 @@ def report_id_for(reporter_id: str, client_report_id: str | None) -> str:
     """Deterministic ``rpt_`` id (uuid5) when the client supplies an idempotency key (41.6)."""
     if client_report_id is None:
         return new_id("report")
-    return f"{PREFIXES['report']}_{uuid.uuid5(NS_REPORT, reporter_id + client_report_id)}"
+    # JSON-encode the pair so the boundary is unambiguous: ("a", "bc") != ("ab", "c").
+    name = json.dumps([reporter_id, client_report_id], ensure_ascii=False, separators=(",", ":"))
+    return f"{PREFIXES['report']}_{uuid.uuid5(NS_REPORT, name)}"

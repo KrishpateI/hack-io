@@ -18,6 +18,11 @@ export interface EventStoreState {
   appliedEventIds: Record<string, true>;
   /** Greatest event_id applied (event ids sort chronologically). */
   lastEventId: string | null;
+  /**
+   * Per-field versions, keyed by `${kind}:${entityId}` then field name: the event_id that
+   * last wrote each field. Kept outside the entities so consumers only see payload fields.
+   */
+  fieldVersions: Record<string, Record<string, string>>;
 }
 
 export const initialEventState: EventStoreState = {
@@ -27,6 +32,7 @@ export const initialEventState: EventStoreState = {
   restrictions: {},
   appliedEventIds: {},
   lastEventId: null,
+  fieldVersions: {},
 };
 
 /** Map an event type such as "report.created" or "check_in.updated" to an entity bucket. */
@@ -56,9 +62,11 @@ function entityId(kind: EntityKind, payload: Entity): string | null {
 
 /**
  * Apply one event. Idempotent: an already-applied event_id returns the same
- * state object. Entities are merged field-wise, but a field is only overwritten
- * by an event whose id is newer than the one that last wrote the entity, so
- * out-of-order arrival converges to the same result.
+ * state object. Entities are merged field-wise and each field carries its own
+ * version: a field is only overwritten by an event whose id is newer than the
+ * event that last wrote that field. The result therefore equals applying every
+ * distinct event once in event_id order, whatever the arrival order.
+ * `_event_id` / `_updated_at` always reflect the newest event for the entity.
  */
 export function applyEvent(state: EventStoreState, event: RealtimeEvent): EventStoreState {
   if (state.appliedEventIds[event.event_id]) return state;
@@ -74,12 +82,27 @@ export function applyEvent(state: EventStoreState, event: RealtimeEvent): EventS
   if (!id) return next;
   const bucket = state[kind];
   const existing = bucket[id];
-  const existingVersion = typeof existing?._event_id === 'string' ? existing._event_id : '';
-  const merged: Entity =
-    event.event_id > existingVersion
-      ? { ...existing, ...event.payload, _event_id: event.event_id, _updated_at: event.created_at }
-      : { ...event.payload, ...existing };
-  return { ...next, [kind]: { ...bucket, [id]: merged } };
+  const versionKey = `${kind}:${id}`;
+  const versions = state.fieldVersions[versionKey] ?? {};
+  const merged: Entity = { ...existing };
+  const nextVersions: Record<string, string> = { ...versions };
+  for (const [field, value] of Object.entries(event.payload ?? {})) {
+    const fieldVersion = versions[field];
+    if (fieldVersion === undefined || event.event_id > fieldVersion) {
+      merged[field] = value;
+      nextVersions[field] = event.event_id;
+    }
+  }
+  const entityVersion = typeof existing?._event_id === 'string' ? existing._event_id : '';
+  if (event.event_id > entityVersion) {
+    merged._event_id = event.event_id;
+    merged._updated_at = event.created_at;
+  }
+  return {
+    ...next,
+    [kind]: { ...bucket, [id]: merged },
+    fieldVersions: { ...state.fieldVersions, [versionKey]: nextVersions },
+  };
 }
 
 /** Apply a batch in event_id order. Duplicates are ignored. */

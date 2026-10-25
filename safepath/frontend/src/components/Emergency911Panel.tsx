@@ -11,7 +11,7 @@ export function Emergency911Panel() {
     <aside
       aria-label="Emergency 911 guidance"
       data-testid="emergency-911"
-      className="fixed bottom-3 right-3 z-50 max-w-xs rounded-lg border-2 border-closure bg-base p-2 text-sm text-text-primary shadow-lg"
+      className="fixed bottom-3 right-3 z-50 max-w-[calc(100vw-1.5rem)] rounded-lg sm:max-w-xs border-2 border-closure bg-base p-2 text-sm text-text-primary shadow-lg"
     >
       <button
         type="button"

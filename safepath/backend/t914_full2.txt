@@ -1,0 +1,284 @@
+........................................................................ [ 10%]
+........................................................................ [ 20%]
+........................................................................ [ 30%]
+.........F.............................................................. [ 41%]
+........................................................................ [ 51%]
+..........................F............................................. [ 61%]
+.....................................F.................................. [ 71%]
+.......s...s...s...s...s...s...s...s...s................................ [ 82%]
+........................................................................ [ 92%]
+...................F..................................                   [100%]
+================================== FAILURES ===================================
+__________________ test_committed_fixture_matches_generator ___________________
+
+fixture = (Graph(nodes=[Node(node_id='fx-uic', lat=41.8708, lon=-87.6505, kind='intersection', level='surface', elevation_m=176.... not use for real navigation.', 'simulated': True, 'source': 'SIMULATED-FIXTURE-GRAPH'}, 'type': 'FeatureCollection'}})
+tmp_path = WindowsPath('C:/Users/raidenagboh/AppData/Local/Temp/pytest-of-raidenagboh/pytest-3/test_committed_fixture_matches0')
+
+    def test_committed_fixture_matches_generator(fixture, tmp_path):
+        _, manifest, _ = fixture
+>       assert mfg.make_fixture(tmp_path, None) == manifest.version  # deterministic
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 'v20260101-1d036f' == 'v20260101-6b3896'
+E         
+E         - v20260101-6b3896
+E         + v20260101-1d036f
+
+..\tests\backend\test_fixture_graph.py:34: AssertionError
+______________________ test_failed_writes_leave_no_trace ______________________
+
+    @given(scenarios())
+>   def test_failed_writes_leave_no_trace(s):
+                   ^^^
+
+..\tests\backend\test_prop_failed_writes.py:214: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+s = {'backend': 'memory', 'op': 'hide', 'fail_at': 1, 'mid_op': 0}
+
+    @given(scenarios())
+    def test_failed_writes_leave_no_trace(s):
+        client, repo, auth, publisher = build_env(s["backend"])
+    
+        # ---- setup (no faults): incident, a report, a message
+        inc = ok(client.post("/api/incidents", json={"incident_type": "flood", "source": "p35",
+                                                     "simulation_flag": True},
+                             headers=hdr(auth, "mod")), 201)["incident_id"]
+        rid = ok(client.post("/api/reports", json={"incident_id": inc, "category": "blocked road",
+                                                    "description": "base", **POINT},
+                             headers=hdr(auth, "rep")), 201)["report_id"]
+        mid = ok(client.post("/api/messages", json={"incident_id": inc, "message_type": "update",
+                                                     "content": "base"},
+                             headers=hdr(auth, "u1")), 201)["message"]["message_id"]
+        op = s["op"]
+        if op in ("confirm", "dispute") and s["prior_vote"]:
+            kind = "corroborate" if op == "confirm" else "dispute"
+            ok(client.post(f"/api/reports/{rid}/{kind}", headers=hdr(auth, "v0")), 200)
+        if op == "resolve":
+            ok(client.post(f"/api/reports/{rid}/moderate", json={"action": "verify"},
+                           headers=hdr(auth, "mod")), 200)
+        if op == "checkin":  # provisions the account and sets the privacy preference
+            ok(client.put("/api/auth/me/privacy", json={"share_location": s["pref_share"]},
+                          headers=hdr(auth, "c1")), 200)
+    
+        # ---- operation under fault injection
+        before = snapshot(repo)
+        events_before = stored_event_ids(repo, inc)
+        published_before = len(publisher.published)
+        repo.arm(s["fail_at"], s["mid_op"])
+    
+        if op == "create_report":
+            resp = client.post("/api/reports", json={"incident_id": inc, **s["report"]},
+                               headers=hdr(auth, "rep2"))
+        elif op in ("confirm", "dispute"):
+            kind = "corroborate" if op == "confirm" else "dispute"
+            resp = client.post(f"/api/reports/{rid}/{kind}", headers=hdr(auth, "v1"))
+        elif op == "message":
+            resp = client.post("/api/messages", json={"incident_id": inc, **s["message"]},
+                               headers=hdr(auth, "u2"))
+        elif op == "checkin":
+            resp = client.post("/api/checkins", json={"incident_id": inc, **s["checkin"]},
+                               headers=hdr(auth, "c1"))
+        elif op in ("verify", "resolve"):
+            resp = client.post(f"/api/reports/{rid}/moderate", json={"action": op},
+                               headers=hdr(auth, "mod"))
+        else:  # hide
+            resp = client.post(f"/api/messages/{mid}/hide", headers=hdr(auth, "mod"))
+    
+        repo.armed = False
+        after = snapshot(repo)
+        new_published = publisher.published[published_before:]
+        new_events = stored_event_ids(repo, inc) - events_before
+        note(f"op={op} backend={s['backend']} fault={repo.fired} status={resp.status_code} "
+             f"published={[e.type for _, e in new_published]}")
+    
+        if resp.status_code == 503:
+            # Failed write: proper error, nothing persisted, nothing published.
+            assert repo.fired is not None, "503 without an injected fault"
+            assert resp.json()["error"]["code"] == "service_unavailable", resp.text
+>           assert after == before, f"{op}: 503 response but persisted state changed ({repo.fired})"
+E           AssertionError: hide: 503 response but persisted state changed (write #1: put audit)
+E           assert {'incidents':...', ...}}, ...} == {'incidents':...', ...}}, ...}
+E             
+E             Omitting 4 identical items, use -vv to show
+E             Differing items:
+E             {'messages': {('inc_01M5R5F5JC75KSB5DWS0HG2Z0N', 'msg_01M5R5F5KC946HPKTRC1YTEM66'): {'message_id': 'msg_01M5R5F5KC946HPKTRC1YTEM66', 'incident_id': 'inc_01M5R5F5JC75KSB5DWS0HG2Z0N', 'sender_id': 'u1', 'alias': 'Ivory Wren 789', ...}}} != {'messages': {('inc_01M5R5F5JC75KSB5DWS0HG2Z0N', 'msg_01M5R5F5KC946HPKTRC1YTEM66'): {'message_id': 'msg_01M5R5F5KC946HPKTRC1YTEM66', 'incident_id': 'inc_01M5R5F5JC75KSB5DWS0HG2Z0N', 'sender_id': 'u1', 'alias': 'Ivory Wren 789', ...}}}
+E             {'events': {('inc_01M5R5F5JC75KSB5DWS0HG2Z0N'...
+E             
+E             ...Full output truncated (2 lines hidden), use '-vv' to show
+E           Failing test case: test_failed_writes_leave_no_trace(
+E               s={'backend': 'memory', 'op': 'hide', 'fail_at': 1, 'mid_op': 0},
+E           )
+E           op=hide backend=memory fault=write #1: put audit status=503 published=['message_hidden']
+
+..\tests\backend\test_prop_failed_writes.py:273: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  safepath.auth:provider.py:72 SAFEPATH_TOKEN_SECRET not set; using an ephemeral random secret (tokens become invalid on restart)
+WARNING  app.services.reports:reports.py:97 SAFEPATH_ALIAS_SECRET not set; using the local development alias secret
+WARNING  app.communication.messaging:messaging.py:109 SAFEPATH_ALIAS_SECRET not set; using the local development alias secret
+ERROR    safepath.api:errors.py:69 repository unavailable: injected fault on put audit
+WARNING  safepath.auth:provider.py:72 SAFEPATH_TOKEN_SECRET not set; using an ephemeral random secret (tokens become invalid on restart)
+WARNING  app.services.reports:reports.py:97 SAFEPATH_ALIAS_SECRET not set; using the local development alias secret
+WARNING  app.communication.messaging:messaging.py:109 SAFEPATH_ALIAS_SECRET not set; using the local development alias secret
+ERROR    safepath.api:errors.py:69 repository unavailable: injected fault on put audit
+____________________ test_isolated_endpoint_is_identified _____________________
+  + Exception Group Traceback (most recent call last):
+  |   File "C:\Github\HackIO\hack-io\safepath\tests\backend\test_prop_unreachable_endpoints.py", line 124, in test_isolated_endpoint_is_identified
+  |     @given(st.data())
+  |                    ^^^
+  |   File "C:\Github\HackIO\hack-io\safepath\backend\.venv\Lib\site-packages\hypothesis\core.py", line 2299, in wrapped_test
+  |     raise the_error_hypothesis_found
+  | ExceptionGroup: Hypothesis found 2 distinct failures. (2 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "C:\Github\HackIO\hack-io\safepath\tests\backend\test_prop_unreachable_endpoints.py", line 150, in test_isolated_endpoint_is_identified
+    |     _assert_no_route(resp, iso)
+    |   File "C:\Github\HackIO\hack-io\safepath\tests\backend\test_prop_unreachable_endpoints.py", line 77, in _assert_no_route
+    |     assert who in resp.explanation, resp.explanation
+    | AssertionError: No verified route is available. The origin is isolated by hard restrictions.
+    | assert 'destination' in 'No verified route is available. The origin is isolated by hard restrictions.'
+    |  +  where 'No verified route is available. The origin is isolated by hard restrictions.' = RouteResponse(policy_outcome=<PolicyOutcome.NO_VERIFIED_ROUTE_AVAILABLE: 'NO_VERIFIED_ROUTE_AVAILABLE'>, explanation='...ied_route_available', label='algorithm-generated')], notices=[], missing_data=[], sources=['READY-ILLINOIS', 'src-cl']).explanation
+    | Failing test case: test_isolated_endpoint_is_identified(
+    |     data=data(...),
+    | )
+    | Draw 1: (Graph(status='ok',
+    |   version='t',
+    |   manifest=namespace(version='t', built_at=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc)),
+    |   model=Graph(nodes=[Node(node_id='n0', lat=41.87, lon=-87.6496, kind='intersection', level='surface', elevation_m='Unknown', elevation_conf='High', building_id=None), Node(node_id='n1', lat=41.8716, lon=-87.64880000000001, kind='intersection', level='surface', elevation_m='Unknown', elevation_conf='High', building_id=None), Node(node_id='n2', lat=41.8716, lon=-87.65, kind='intersection', level='surface', elevation_m='Unknown', elevation_conf='High', building_id=None), Node(node_id='n3', lat=41.8716, lon=-87.64840000000001, kind='intersection', level='surface', elevation_m='Unknown', elevation_conf='High', building_id=None), Node(node_id='n4', lat=41.87, lon=-87.64840000000001, kind='intersection', level='surface', elevation_m='Unknown', elevation_conf='High', building_id=None)], edges=[Edge(edge_id='e0', from_node='n0', to_node='n1', geometry='LINESTRING (-87.6496000 41.8700000, -87.6488000 41.8716000)', distance_meters=189.844, estimated_travel_time_seconds=135.603, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e1', from_node='n1', to_node='n0', geometry='LINESTRING (-87.6488000 41.8716000, -87.6496000 41.8700000)', distance_meters=189.844, estimated_travel_time_seconds=135.603, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e2', from_node='n0', to_node='n2', geometry='LINESTRING (-87.6496000 41.8700000, -87.6500000 41.8716000)', distance_meters=180.969, estimated_travel_time_seconds=129.264, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e3', from_node='n2', to_node='n0', geometry='LINESTRING (-87.6500000 41.8716000, -87.6496000 41.8700000)', distance_meters=180.969, estimated_travel_time_seconds=129.264, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e4', from_node='n0', to_node='n3', geometry='LINESTRING (-87.6496000 41.8700000, -87.6484000 41.8716000)', distance_meters=203.778, estimated_travel_time_seconds=145.556, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e5', from_node='n3', to_node='n0', geometry='LINESTRING (-87.6484000 41.8716000, -87.6496000 41.8700000)', distance_meters=203.778, estimated_travel_time_seconds=145.556, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e6', from_node='n0', to_node='n4', geometry='LINESTRING (-87.6496000 41.8700000, -87.6484000 41.8700000)', distance_meters=99.363, estimated_travel_time_seconds=70.974, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e7', from_node='n4', to_node='n0', geometry='LINESTRING (-87.6484000 41.8700000, -87.6496000 41.8700000)', distance_meters=99.363, estimated_travel_time_seconds=70.974, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e8', from_node='n0', to_node='n3', geometry='LINESTRING (-87.6496000 41.8700000, -87.6484000 41.8716000)', distance_meters=203.778, estimated_travel_time_seconds=145.556, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e9', from_node='n3', to_node='n0', geometry='LINESTRING (-87.6484000 41.8716000, -87.6496000 41.8700000)', distance_meters=203.778, estimated_travel_time_seconds=145.556, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e10', from_node='n0', to_node='n3', geometry='LINESTRING (-87.6496000 41.8700000, -87.6484000 41.8716000)', distance_meters=203.778, estimated_travel_time_seconds=145.556, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e11', from_node='n0', to_node='n3', geometry='LINESTRING (-87.6496000 41.8700000, -87.6484000 41.8716000)', distance_meters=203.778, estimated_travel_time_seconds=145.556, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e12', from_node='n2', to_node='n3', geometry='LINESTRING (-87.6500000 41.8716000, -87.6484000 41.8716000)', distance_meters=132.481, estimated_travel_time_seconds=94.629, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e13', from_node='n3', to_node='n2', geometry='LINESTRING (-87.6484000 41.8716000, -87.6500000 41.8716000)', distance_meters=132.481, estimated_travel_time_seconds=94.629, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static')], warnings=[]),
+    |   layers={},
+    |   warnings=[],
+    |   failed_versions={},
+    |   node_ids=['n0', 'n1', 'n2', 'n3', 'n4'],
+    |   node_index={'n0': 0, 'n1': 1, 'n2': 2, 'n3': 3, 'n4': 4},
+    |   node_lat=array([41.87  , 41.8716, 41.8716, 41.8716, 41.87  ]),
+    |   node_lon=array([-87.6496, -87.6488, -87.65  , -87.6484, -87.6484]),
+    |   edge_ids=['e0',
+    |    'e1',
+    |    'e2',
+    |    'e3',
+    |    'e4',
+    |    'e5',
+    |    'e6',
+    |    'e7',
+    |    'e8',
+    |    'e9',
+    |    'e10',
+    |    'e11',
+    |    'e12',
+    |    'e13'],
+    |   edge_from=array([0, 1, 0, 2, 0, 3, 0, 4, 0, 3, 0, 0, 2, 3], dtype=int32),
+    |   edge_to=array([1, 0, 2, 0, 3, 0, 4, 0, 3, 0, 3, 3, 3, 2], dtype=int32),
+    |   edge_dist=array([189.844, 189.844, 180.969, 180.969, 203.778, 203.778,  99.363,
+    |           99.363, 203.778, 203.778, 203.778, 203.778, 132.481, 132.481]),
+    |   edge_time=array([135.603, 135.603, 129.264, 129.264, 145.556, 145.556,  70.974,
+    |           70.974, 145.556, 145.556, 145.556, 145.556,  94.629,  94.629]),
+    |   adj_ptr=array([ 0,  7,  8, 10, 13, 14], dtype=int32),
+    |   adj_edges=array([ 0,  2,  4,  6,  8, 10, 11,  1,  3, 12,  5,  9, 13,  7],
+    |         dtype=int32),
+    |   _geoms=None,
+    |   _tree=None,
+    |   _lock=<unlocked _thread.lock object at 0x00000122C65DC680>),
+    |  3,
+    |  1)
+    | Draw 2: (True, False)
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "C:\Github\HackIO\hack-io\safepath\tests\backend\test_prop_unreachable_endpoints.py", line 150, in test_isolated_endpoint_is_identified
+    |     _assert_no_route(resp, iso)
+    |   File "C:\Github\HackIO\hack-io\safepath\tests\backend\test_prop_unreachable_endpoints.py", line 70, in _assert_no_route
+    |     assert resp.policy_outcome.value == "NO_VERIFIED_ROUTE_AVAILABLE"
+    | AssertionError: assert 'ROUTE_OPTIONS_AVAILABLE' == 'NO_VERIFIED_ROUTE_AVAILABLE'
+    |   
+    |   - NO_VERIFIED_ROUTE_AVAILABLE
+    |   + ROUTE_OPTIONS_AVAILABLE
+    | Failing test case: test_isolated_endpoint_is_identified(
+    |     data=data(...),
+    | )
+    | Draw 1: (Graph(status='ok',
+    |   version='t',
+    |   manifest=namespace(version='t', built_at=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc)),
+    |   model=Graph(nodes=[Node(node_id='n0', lat=41.87, lon=-87.6496, kind='intersection', level='surface', elevation_m='Unknown', elevation_conf='High', building_id=None), Node(node_id='n1', lat=41.8716, lon=-87.6496, kind='intersection', level='surface', elevation_m='Unknown', elevation_conf='High', building_id=None), Node(node_id='n2', lat=41.8716, lon=-87.65, kind='intersection', level='surface', elevation_m='Unknown', elevation_conf='High', building_id=None), Node(node_id='n3', lat=41.8716, lon=-87.64920000000001, kind='intersection', level='surface', elevation_m='Unknown', elevation_conf='High', building_id=None), Node(node_id='n4', lat=41.87, lon=-87.64920000000001, kind='intersection', level='surface', elevation_m='Unknown', elevation_conf='High', building_id=None)], edges=[Edge(edge_id='e0', from_node='n0', to_node='n1', geometry='LINESTRING (-87.6496000 41.8700000, -87.6496000 41.8716000)', distance_meters=177.912, estimated_travel_time_seconds=127.08, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e1', from_node='n1', to_node='n0', geometry='LINESTRING (-87.6496000 41.8716000, -87.6496000 41.8700000)', distance_meters=177.912, estimated_travel_time_seconds=127.08, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e2', from_node='n0', to_node='n2', geometry='LINESTRING (-87.6496000 41.8700000, -87.6500000 41.8716000)', distance_meters=180.969, estimated_travel_time_seconds=129.264, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e3', from_node='n2', to_node='n0', geometry='LINESTRING (-87.6500000 41.8716000, -87.6496000 41.8700000)', distance_meters=180.969, estimated_travel_time_seconds=129.264, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e4', from_node='n0', to_node='n3', geometry='LINESTRING (-87.6496000 41.8700000, -87.6492000 41.8716000)', distance_meters=180.969, estimated_travel_time_seconds=129.264, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e5', from_node='n3', to_node='n0', geometry='LINESTRING (-87.6492000 41.8716000, -87.6496000 41.8700000)', distance_meters=180.969, estimated_travel_time_seconds=129.264, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e6', from_node='n0', to_node='n4', geometry='LINESTRING (-87.6496000 41.8700000, -87.6492000 41.8700000)', distance_meters=33.121, estimated_travel_time_seconds=23.658, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e7', from_node='n4', to_node='n0', geometry='LINESTRING (-87.6492000 41.8700000, -87.6496000 41.8700000)', distance_meters=33.121, estimated_travel_time_seconds=23.658, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e8', from_node='n0', to_node='n3', geometry='LINESTRING (-87.6496000 41.8700000, -87.6492000 41.8716000)', distance_meters=180.969, estimated_travel_time_seconds=129.264, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e9', from_node='n3', to_node='n0', geometry='LINESTRING (-87.6492000 41.8716000, -87.6496000 41.8700000)', distance_meters=180.969, estimated_travel_time_seconds=129.264, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e10', from_node='n0', to_node='n3', geometry='LINESTRING (-87.6496000 41.8700000, -87.6492000 41.8716000)', distance_meters=180.969, estimated_travel_time_seconds=129.264, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e11', from_node='n0', to_node='n3', geometry='LINESTRING (-87.6496000 41.8700000, -87.6492000 41.8716000)', distance_meters=180.969, estimated_travel_time_seconds=129.264, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e12', from_node='n2', to_node='n3', geometry='LINESTRING (-87.6500000 41.8716000, -87.6492000 41.8716000)', distance_meters=66.24, estimated_travel_time_seconds=47.314, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static'), Edge(edge_id='e13', from_node='n3', to_node='n2', geometry='LINESTRING (-87.6492000 41.8716000, -87.6500000 41.8716000)', distance_meters=66.24, estimated_travel_time_seconds=47.314, travel_mode=['walking', 'driving'], source='osm', source_ids={}, road_type='Unknown', elevation_start='Unknown', elevation_end='Unknown', elevation_confidence='High', bridge_flag=False, tunnel_flag=False, infrastructure_level='surface', pedestrian_access=True, mobility_accessibility='accessible', current_closure_status='open', closure_verification=None, hazard_flags=[], data_timestamp=datetime.datetime(2026, 3, 15, 12, 0, tzinfo=datetime.timezone.utc), edge_kind='street', transition_type=None, classification='Static')], warnings=[]),
+    |   layers={},
+    |   warnings=[],
+    |   failed_versions={},
+    |   node_ids=['n0', 'n1', 'n2', 'n3', 'n4'],
+    |   node_index={'n0': 0, 'n1': 1, 'n2': 2, 'n3': 3, 'n4': 4},
+    |   node_lat=array([41.87  , 41.8716, 41.8716, 41.8716, 41.87  ]),
+    |   node_lon=array([-87.6496, -87.6496, -87.65  , -87.6492, -87.6492]),
+    |   edge_ids=['e0',
+    |    'e1',
+    |    'e2',
+    |    'e3',
+    |    'e4',
+    |    'e5',
+    |    'e6',
+    |    'e7',
+    |    'e8',
+    |    'e9',
+    |    'e10',
+    |    'e11',
+    |    'e12',
+    |    'e13'],
+    |   edge_from=array([0, 1, 0, 2, 0, 3, 0, 4, 0, 3, 0, 0, 2, 3], dtype=int32),
+    |   edge_to=array([1, 0, 2, 0, 3, 0, 4, 0, 3, 0, 3, 3, 3, 2], dtype=int32),
+    |   edge_dist=array([177.912, 177.912, 180.969, 180.969, 180.969, 180.969,  33.121,
+    |           33.121, 180.969, 180.969, 180.969, 180.969,  66.24 ,  66.24 ]),
+    |   edge_time=array([127.08 , 127.08 , 129.264, 129.264, 129.264, 129.264,  23.658,
+    |           23.658, 129.264, 129.264, 129.264, 129.264,  47.314,  47.314]),
+    |   adj_ptr=array([ 0,  7,  8, 10, 13, 14], dtype=int32),
+    |   adj_edges=array([ 0,  2,  4,  6,  8, 10, 11,  1,  3, 12,  5,  9, 13,  7],
+    |         dtype=int32),
+    |   _geoms=None,
+    |   _tree=None,
+    |   _lock=<unlocked _thread.lock object at 0x00000122CF0A6800>),
+    |  0,
+    |  1)
+    | Draw 2: (False, True)
+    | Explanation:
+    |     These lines were always and only run by failing test cases:
+    |         C:\Github\HackIO\hack-io\safepath\backend\app\routing\cost.py:243
+    |         C:\Github\HackIO\hack-io\safepath\backend\app\routing\explain.py:269
+    |         C:\Github\HackIO\hack-io\safepath\backend\app\routing\explain.py:276
+    |         C:\Github\HackIO\hack-io\safepath\backend\app\routing\explain.py:303
+    |         C:\Github\HackIO\hack-io\safepath\backend\app\routing\explain.py:325
+    |         (and 13 more with settings.verbosity >= verbose)
+    +------------------------------------
+________________________ test_graph_shrinks_to_minimum ________________________
+
+    def test_graph_shrinks_to_minimum():
+        g = find(graphs(), lambda g: g.num_edges >= 1, settings=settings(deadline=None))
+>       assert g.num_nodes == 3 and g.num_edges <= 4  # minimal: 3 nodes, no extra edges
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert (7 == 3)
+E        +  where 7 = Graph(status='ok', version='test', manifest=namespace(version='test'), model=Graph(nodes=[Node(node_id='n0', lat=41.87...]), edge_time=array([23.658]), adj_ptr=array([0, 1, 1, 1, 1, 1, 1, 1], dtype=int32), adj_edges=array([0], dtype=int32)).num_nodes
+
+..\tests\backend\test_strategies.py:74: AssertionError
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Github\HackIO\hack-io\safepath\backend\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv\Lib\site-packages\mangum\adapter.py:65
+  C:\Github\HackIO\hack-io\safepath\backend\.venv\Lib\site-packages\mangum\adapter.py:65: DeprecationWarning: There is no current event loop
+    asyncio.get_event_loop()
+
+tests/backend/test_demo_seed.py: 25 warnings
+tests/backend/test_demo_service.py: 42 warnings
+  C:\Github\HackIO\hack-io\safepath\backend\app\services\demo_data.py:99: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+    return transform(lambda x, y: (x / (_COS_REF * _M_PER_DEG), y / _M_PER_DEG), geom)
+
+tests/backend/test_demo_seed.py: 25 warnings
+tests/backend/test_demo_service.py: 45 warnings
+  C:\Github\HackIO\hack-io\safepath\backend\app\services\demo_data.py:279: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+    poly = transform(_xy, shape(g))
+
+tests/backend/test_prop_serialization_roundtrip.py::test_event_record_round_trip
+  C:\Github\HackIO\hack-io\safepath\backend\.venv\Lib\site-packages\hypothesis\strategies\_internal\strategies.py:550: HypothesisDeprecationWarning: extend=lambda c: st.one_of(st.lists(c, max_size=3), st.dictionaries(_ID, c, max_size=3)) doesn't use it's argument, and thus can't actually recurse!
+    self.do_validate()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED ..\tests\backend\test_fixture_graph.py::test_committed_fixture_matches_generator
+FAILED ..\tests\backend\test_prop_failed_writes.py::test_failed_writes_leave_no_trace
+FAILED ..\tests\backend\test_prop_unreachable_endpoints.py::test_isolated_endpoint_is_identified
+FAILED ..\tests\backend\test_strategies.py::test_graph_shrinks_to_minimum - A...
+4 failed, 689 passed, 9 skipped, 140 warnings in 968.80s (0:16:08)

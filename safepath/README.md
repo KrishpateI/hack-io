@@ -165,6 +165,21 @@ cd frontend; npm test                       # vitest + fast-check (numRuns 25 to
 cd infrastructure\aws; npm test; npx cdk synth -q    # offline, no AWS calls
 ```
 
+The Repository contract suite (`tests/backend/test_repository_contract.py`) runs against Memory, SQLite and
+`DynamoRepository` on an in-process fake. Its `dynamo_local` cases are skipped unless `DYNAMODB_ENDPOINT` points at
+DynamoDB Local. To run them (Docker, or Java 17+ with the downloaded `DynamoDBLocal.jar`):
+
+```powershell
+docker run --rm -d --name ddb-local -p 8001:8000 amazon/dynamodb-local -jar DynamoDBLocal.jar -inMemory
+# or: java -Djava.library.path=.\DynamoDBLocal_lib -jar DynamoDBLocal.jar -inMemory -port 8001
+$env:DYNAMODB_ENDPOINT = "http://localhost:8001"
+backend\.venv\Scripts\python.exe -m pytest -q -rs tests\backend\test_repository_contract.py
+Remove-Item Env:DYNAMODB_ENDPOINT; docker stop ddb-local
+```
+
+Port 8001 avoids the backend on 8000. The helpers refuse `*.amazonaws.com` endpoints and use dummy credentials, so
+this never touches an AWS account. Each run creates `contract-<random>-*` tables and drops them afterwards.
+
 Latest recorded run: [docs/test-results.md](docs/test-results.md) (1244 passed, 1 failed: an unused-variable lint error
 in `offline.test.ts`; the table predates later changes). On 2026-10-24 the frontend suite (25 files, 520 tests) passed
 again after the map fix below. The recorded run is a snapshot; run the script again for current numbers.

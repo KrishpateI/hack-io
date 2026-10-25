@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="3" time="0.935" timestamp="2026-10-24T20:16:20.524679-04:00" hostname="RAIDENAGBOHEC90"><testcase classname="tests.backend.test_demo_scenarios_integration" name="test_scenario1_flood_routes_and_recalculation_after_verified_closure" time="0.127" /><testcase classname="tests.backend.test_demo_scenarios_integration" name="test_scenario2_debris_zones_block_edges_and_are_cited" time="0.086" /><testcase classname="tests.backend.test_demo_scenarios_integration" name="test_scenario3_report_corroborate_confirm_reroute_and_assistance" time="0.037"><failure message="AssertionError: {&quot;error&quot;:{&quot;code&quot;:&quot;validation_error&quot;,&quot;message&quot;:&quot;invalid fields: destination&quot;,&quot;fields&quot;:[{&quot;field&quot;:&quot;destination&quot;,&quot;problem&quot;:&quot;required object with latitude and longitude&quot;}],&quot;retry_after_seconds&quot;:null}}&#10;assert 400 == 200&#10; +  where 400 = &lt;Response [400 Bad Request]&gt;.status_code">env = (&lt;starlette.testclient.TestClient object at 0x0000022593A38980&gt;, &lt;fastapi.applications.FastAPI object at 0x0000022593A...OjE3OTI5NzM3ODEsImtpbmQiOiJ1c2VyIiwic3ViIjoibW9kIn0.d14c94011842d1c591ca408a3ab4a9395a79ab4b9a115724d6c77b590aa1e8b6'})
+
+    def test_scenario3_report_corroborate_confirm_reroute_and_assistance(env):
+        client, app, repo, auth, m = env
+        start(client, m, STAIR)
+        row = dd.get_scenario(repo, STAIR)
+        iid = row["incident_id"]
+        users = {u["key"]: u for u in row["resolved"]["users"]}
+        assert {"A", "B", "C"} &lt;= set(users)
+        stair_edges = set(row["resolved"]["closure"]["edge_ids"])
+        received = []  # what User B's subscription to the incident channel delivers
+        app.state.publisher.subscribe(iid, received.append)
+    
+        def act(actor, action, **kw):
+            return client.post(f"/api/demo/scenarios/{STAIR}/act",
+                               json={"actor": actor, "action": action, **kw}, headers=m)
+    
+        reroute_bodies = apply(client, m, STAIR, "reroute")["client_action"]["bodies_by_actor"]
+        assert set(reroute_bodies) == {"A", "B", "C"}
+&gt;       before = {k: calculate(client, b) for k, b in reroute_bodies.items()}
+                     ^^^^^^^^^^^^^^^^^^^^
+
+..\tests\backend\test_demo_scenarios_integration.py:247: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = &lt;starlette.testclient.TestClient object at 0x0000022593A38980&gt;
+body = {'incident_id': 'sim-blocked-stairwell', 'travel_mode': 'walking', 'mobility_profile': 'standard', 'alternatives': 1, ...}
+
+    def calculate(client, body):
+        started = time.monotonic()
+        r = client.post("/api/routes/calculate", json=body)
+        elapsed = time.monotonic() - started
+&gt;       assert r.status_code == 200, r.text
+E       AssertionError: {"error":{"code":"validation_error","message":"invalid fields: destination","fields":[{"field":"destination","problem":"required object with latitude and longitude"}],"retry_after_seconds":null}}
+E       assert 400 == 200
+E        +  where 400 = &lt;Response [400 Bad Request]&gt;.status_code
+
+..\tests\backend\test_demo_scenarios_integration.py:54: AssertionError</failure></testcase></testsuite></testsuites>

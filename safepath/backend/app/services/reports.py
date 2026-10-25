@@ -284,12 +284,16 @@ class ReportService:
 
     def _find_duplicate(self, incident_id: str, category: str, lat: float, lon: float,
                         now: datetime) -> str | None:
-        """Oldest earlier same-category report within 50 m and 60 min (never itself a duplicate)."""
+        """Oldest earlier active same-category report within 50 m and 60 min (28.3).
+
+        Any active match qualifies, including one that is itself a duplicate; the
+        duplicate chain is not followed.
+        """
         rows = self.repo.query(REPORTS_TABLE, {"pk": incident_id}, limit=1000)
         best: HazardReportRecord | None = None
         for row in rows:
             r = _row_to_record(row)
-            if r.category != category or r.verification_status in _INACTIVE or r.duplicate_of:
+            if r.category != category or r.verification_status in _INACTIVE:
                 continue
             if now - r.created_at > DUPLICATE_WINDOW:
                 continue

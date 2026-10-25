@@ -2,6 +2,7 @@
 
 **Validates: Requirements 28.5**
 """
+# Feature: safepath-evacuation-navigation, Property 24: Sanitization removes markup and is idempotent
 from __future__ import annotations
 
 import re
@@ -40,7 +41,7 @@ _mixed = st.lists(st.one_of(_plain, _markup, st.sampled_from(["<", ">", "&"])), 
 _TAG_RE = re.compile(r"<\s*/?\s*[A-Za-z!?]")
 
 
-@settings(max_examples=200, deadline=None)
+@settings(deadline=None)
 @given(text=st.one_of(_mixed, st.text(max_size=80)))
 def test_no_markup_and_idempotent(text: str) -> None:
     out = sanitize_text(text)
@@ -49,13 +50,13 @@ def test_no_markup_and_idempotent(text: str) -> None:
     assert sanitize_text(out) == out
 
 
-@settings(max_examples=100, deadline=None)
+@settings(deadline=None)
 @given(text=_plain)
 def test_plain_text_preserved(text: str) -> None:
     assert sanitize_text(text) == text
 
 
-@settings(max_examples=100, deadline=None)
+@settings(deadline=None)
 @given(inner=_plain, tag=st.sampled_from(["b", "i", "p", "div", "a"]))
 def test_wrapping_tags_stripped_text_kept(inner: str, tag: str) -> None:
     assert sanitize_text(f"<{tag}>{inner}</{tag}>") == inner
