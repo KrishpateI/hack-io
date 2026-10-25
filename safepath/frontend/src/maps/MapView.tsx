@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+// MapLibre 6 loads its worker from a sibling URL of its own module. In a production bundle that
+// sibling does not exist (the request 404s/403s and no tiles render), so ship the worker as a
+// hashed asset and point MapLibre at it explicitly.
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import {
   buildBasemapStyle,
   probePmtiles,
@@ -18,6 +22,8 @@ import { attachInspector, type InspectMapLike } from '../components/inspect/atta
 import type { MapClick } from '../components/inspect/inspectModel';
 import { useReducedMotion } from '../components/ios/hooks/useReducedMotion';
 import type { Appearance } from '../styles/tokens';
+
+if (typeof maplibregl.setWorkerUrl === 'function') maplibregl.setWorkerUrl(maplibreWorkerUrl);
 
 const SRC_EXTRACTION = 'extraction-area';
 const PADDING_ANIMATION_MS = 250;

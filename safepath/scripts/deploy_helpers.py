@@ -315,10 +315,17 @@ def frontend_env(outputs: Mapping[str, str], realtime: str = "sse") -> dict[str,
     api = outputs.get("ApiViaCloudFront") or outputs.get("HttpApiUrl") or ""
     if not api:
         raise ValueError("stack outputs contain no API URL (HttpApiUrl)")
-    env = {"VITE_API_BASE_URL": api.rstrip("/"), "VITE_REALTIME_MODE": realtime}
+    # The frontend appends "/api/..." itself, so the base must be the origin. ApiViaCloudFront ends in
+    # "/api"; passing it through unchanged produced "/api/api/..." requests that all returned 404.
+    base = api.rstrip("/")
+    if base.endswith("/api"):
+        base = base[: -len("/api")]
+    env = {"VITE_API_BASE_URL": base, "VITE_REALTIME_MODE": realtime}
     site = outputs.get("SiteUrl")
     if site:
         env["VITE_PMTILES_URL"] = site.rstrip("/") + "/tiles/chicago.pmtiles"
+        # chicago.pmtiles is a vector (MVT) extract; the frontend defaults to raster and renders nothing.
+        env["VITE_PMTILES_KIND"] = "vector"
     return env
 
 

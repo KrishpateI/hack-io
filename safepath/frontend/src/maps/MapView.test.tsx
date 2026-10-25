@@ -48,7 +48,7 @@ vi.mock('maplibre-gl', () => {
     remove() {}
   }
   class NavigationControl {}
-  return { Map, NavigationControl, addProtocol: vi.fn() };
+  return { Map, NavigationControl, addProtocol: vi.fn(), setWorkerUrl: vi.fn() };
 });
 
 import { MapView } from './MapView';

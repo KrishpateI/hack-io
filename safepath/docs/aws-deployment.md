@@ -2,33 +2,38 @@
 
 ## Sandbox discovery
 
-Generated: 2026-10-24T18:44:25+00:00 (read-only probes; nothing was created, modified or deleted).
+Generated: 2026-10-25T06:09:20+00:00 (read-only probes; nothing was created, modified or deleted).
 
-- Status: `unavailable`
-- Region: `not set`
-- Deployable (gate): `false`
-- Reason: boto3 not installed, no credentials configured, or no region set
+- Status: `ok`
+- Region: `us-east-2`
+- Deployable (gate): `true`
+- Caller: account `********0117`, principal type `assumed-role`
 
-### Steps to enable discovery
+### Service availability
 
-1. Install the AWS CLI v2 (https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
-2. Install boto3: backend\.venv\Scripts\python -m pip install -e "backend[aws]" (from safepath/).
-3. Configure sandbox credentials: `aws configure` or set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY (and AWS_SESSION_TOKEN) plus AWS_DEFAULT_REGION.
-4. Re-run: backend\.venv\Scripts\python scripts\aws_discover.py
+| Service | Required | State | Detail |
+|---|---|---|---|
+| dynamodb | yes | available |  |
+| s3 | yes | available |  |
+| lambda | yes | available |  |
+| apigateway | yes | available |  |
+| logs | yes | available |  |
+| appsync | no | available |  |
+| cognito | no | available |  |
+| cloudfront | no | available |  |
+| bedrock | no | available |  |
+| budgets | no | unknown | ParamValidationError |
+| servicequotas | no | denied | AccessDeniedException |
 
 ### Substitution matrix
 
 | Feature | State | Labeled substitute | CDK flag |
 |---|---|---|---|
-| Real-time delivery: AppSync Events | unknown | API Gateway WebSocket | `-c realtime=apigw-ws` |
-| Authentication: Amazon Cognito | unknown | Backend-signed demo tokens (DemoTokenAuthProvider) | `-c useCognito=false` |
-| Frontend CDN: CloudFront | unknown | S3 static website hosting (documented alternative) | `-c enableCloudFront=false` |
-| AI summaries: Amazon Bedrock | unknown | AI feature disabled (UI shows 'AI summaries unavailable') | `-c enableBedrock=false` |
 | Cost guard: AWS Budgets | unknown | No budget stack; monitor cost manually | `-c enableBudget=false` |
 
 ### CDK context flags
 
-`-c useCognito=false -c realtime=apigw-ws -c enableBudget=false -c enableBedrock=false -c enableCloudFront=false`
+`-c useCognito=true -c realtime=appsync -c enableBudget=false -c enableBedrock=true -c enableCloudFront=true`
 
 Gate file: `infrastructure/aws/discovery.json` (the deploy script requires `deployable: true`).
 

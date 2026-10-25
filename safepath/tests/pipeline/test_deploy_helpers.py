@@ -170,6 +170,14 @@ def test_frontend_env_uses_public_ids_only():
         dh.frontend_env({})
 
 
+def test_frontend_env_cloudfront_base_has_no_api_suffix():
+    # The frontend appends /api/... itself; a base ending in /api produced /api/api/... 404s.
+    env = dh.frontend_env({"ApiViaCloudFront": "https://d1.cloudfront.net/api", "SiteUrl": "https://d1.cloudfront.net"})
+    assert env["VITE_API_BASE_URL"] == "https://d1.cloudfront.net"
+    assert env["VITE_PMTILES_URL"] == "https://d1.cloudfront.net/tiles/chicago.pmtiles"
+    assert env["VITE_PMTILES_KIND"] == "vector"
+
+
 def test_cli_roundtrip(capsys):
     assert dh.main(["check-stack", "--prefix", "safepath", "safepath-api"]) == 0
     assert dh.main(["check-stack", "--prefix", "safepath", "evil-api"]) == 2
