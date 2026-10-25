@@ -17,23 +17,13 @@ from app.api.routers.reports import get_report_service, public_report
 from app.api.routers.routes import get_routing_service
 from app.disasters.base import IncidentContext
 from app.models.routing import LatLon
-from app.routing.graph import Graph, _xy, decode_geometry
+from app.routing.graph import Graph, _xy, edge_line_geojson_at
 from app.routing.service import _module_for
 
 log = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["graph"])
 
 MAX_NEAR_RESULTS = 25
-
-
-def _geometry(graph: Graph, idx: int) -> dict[str, Any]:
-    e = graph.edge(idx)
-    coords = decode_geometry(e.geometry)
-    if coords is None:
-        a, b = int(graph.edge_from[idx]), int(graph.edge_to[idx])
-        coords = [(float(graph.node_lon[a]), float(graph.node_lat[a])),
-                  (float(graph.node_lon[b]), float(graph.node_lat[b]))]
-    return {"type": "LineString", "coordinates": [[x, y] for x, y in coords]}
 
 
 def _restriction_causes(app: FastAPI, graph: Graph, incident_id: str, edge_id: str) -> dict[str, Any]:
@@ -76,7 +66,7 @@ def edge_payload(app: FastAPI, graph: Graph, idx: int, incident_id: str | None) 
     sids = edge.source_ids or {}
     name = sids.get("street_name") or sids.get("name")
     body["street_name"] = name if name else "Unknown"
-    body["geometry_geojson"] = _geometry(graph, idx)
+    body["geometry_geojson"] = edge_line_geojson_at(graph, idx)
     body["restrictions"] = (_restriction_causes(app, graph, incident_id, edge.edge_id)
                             if incident_id else {"incident_id": None, "available": False, "causes": []})
     body["reports"] = _reports_touching(app, incident_id, edge.edge_id) if incident_id else []

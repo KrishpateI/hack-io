@@ -279,6 +279,31 @@ class Graph:
         }
 
 
+def edge_line_geojson_at(graph: Graph, idx: int) -> dict:
+    """GeoJSON LineString (``[lon, lat]`` pairs) for the edge at index ``idx``.
+
+    Uses the decoded edge geometry; falls back to the straight segment between the edge's
+    endpoint nodes when the geometry string is undecodable.
+    """
+    coords = decode_geometry(graph.edge(idx).geometry)
+    if coords is None:
+        a, b = int(graph.edge_from[idx]), int(graph.edge_to[idx])
+        coords = [(float(graph.node_lon[a]), float(graph.node_lat[a])),
+                  (float(graph.node_lon[b]), float(graph.node_lat[b]))]
+    return {"type": "LineString", "coordinates": [[x, y] for x, y in coords]}
+
+
+def edge_line_geojson(graph: Graph, edge_id: str) -> dict | None:
+    """GeoJSON LineString for ``edge_id``, or None when the edge is not in the loaded graph."""
+    if graph.model is None:
+        return None
+    try:
+        idx = graph.edge_ids.index(edge_id)
+    except ValueError:
+        return None
+    return edge_line_geojson_at(graph, idx)
+
+
 def _list_versions(root: Path) -> list[str]:
     """Version directories (with a manifest), newest first by version id."""
     gdir = root / "graphs"

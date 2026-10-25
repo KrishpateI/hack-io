@@ -43,17 +43,21 @@ export interface DestinationInput {
 
 /** Everything the manager renders besides the artifact layers fetched from the API. */
 export interface MapLayerInputs {
-  /** Optional faint street/graph overlay (LineString features). */
-  graphEdges?: FC | null;
   routes?: RouteLineInput[];
   reports?: ReportMarkerInput[];
   incidentBoundaries?: FC | null;
+  /**
+   * SIMULATED hazard areas. `flood` is the scenario's modeled low-lying street set (the former
+   * separate low-lying/elevation layer is merged into it, design D3); no depth values.
+   */
   hazards?: { debris?: FC | null; fire?: FC | null; flood?: FC | null };
-  /** Scenario flood highlight GeoJSON (lowest ~20% elevation), SIMULATED, no depth values. */
-  floodHighlight?: FC | null;
-  /** Restricted edges (LineString features) from route restrictions/closures. */
+  /** Restricted edges (LineString features), drawn in the red hatched `restrictions` style. */
   restrictions?: FC | null;
-  /** Confirmed closures (lines or points). */
+  /**
+   * Interim edge-restriction lines from the live restriction reducer. Drawn in the `restrictions`
+   * source together with `restrictions`; the `closures` source carries only report-derived
+   * closure points.
+   */
   closures?: FC | null;
   start?: LngLat | null;
   destination?: DestinationInput | null;
@@ -64,9 +68,23 @@ export interface MapLayerInputs {
 
 /** Source ids the manager owns. */
 export const SOURCE_IDS = [
-  'graph', 'buildings', 'cta-stations', 'simulated-station', 'elevation', 'debris', 'fire',
+  'buildings', 'cta-stations', 'simulated-station', 'debris', 'fire',
   'flood', 'incidents', 'restrictions', 'closures', 'routes', 'reports', 'markers', 'verified',
 ] as const;
 export type SourceId = (typeof SOURCE_IDS)[number];
+
+/** Artifact layers fetched from GET /api/layers/{name}. */
+export type ArtifactName = 'buildings' | 'cta_stations' | 'simulated_station';
+
+/** Load state of one artifact layer (shared with the status store in layerData.ts). */
+export interface ArtifactStatus {
+  status: 'idle' | 'loading' | 'loaded' | 'failed';
+  /** Feature count of the last successful load. */
+  count?: number;
+  /** Optional per Building_Height_Class counts (buildings only). */
+  classCounts?: Partial<Record<'Low-rise' | 'Mid-rise' | 'High-rise' | 'Unknown', number>>;
+}
+
+export type ArtifactStatusMap = Partial<Record<ArtifactName, ArtifactStatus>>;
 
 export const EMPTY_FC: FC = { type: 'FeatureCollection', features: [] };

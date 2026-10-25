@@ -14,10 +14,9 @@ describe('MapLayerControls', () => {
       expect(sw).toHaveProperty('checked', t.visible);
     }
     expect(within(group).getByRole('switch', { name: 'Data extraction boundary' })).toBeChecked();
-    // The street graph is off by default and says so in text, not only by position or color.
-    const graph = within(group).getByRole('switch', { name: 'Street graph (faint)' });
-    expect(graph).not.toBeChecked();
-    expect(graph.closest('div.flex')).toHaveTextContent('Off');
+    // The street graph and low-lying toggles were removed (no data source / merged into flood area).
+    expect(within(group).queryByRole('switch', { name: 'Street graph (faint)' })).toBeNull();
+    expect(within(group).queryByRole('switch', { name: 'SIMULATED low-lying areas' })).toBeNull();
   });
 
   it('calls onToggle with the layer id and the new state', async () => {
@@ -26,8 +25,15 @@ describe('MapLayerControls', () => {
     await userEvent.click(screen.getByRole('switch', { name: 'Data extraction boundary' }));
     expect(onToggle).toHaveBeenCalledTimes(1);
     expect(onToggle).toHaveBeenCalledWith('extraction', false);
-    await userEvent.click(screen.getByRole('switch', { name: 'Street graph (faint)' }));
-    expect(onToggle).toHaveBeenLastCalledWith('graph', true);
+    await userEvent.click(screen.getByRole('switch', { name: 'Buildings (height class)' }));
+    expect(onToggle).toHaveBeenLastCalledWith('buildings', false);
+  });
+
+  it('passes legend presence through to the legend', () => {
+    const all = INITIAL_TOGGLES.map((t) => ({ ...t, visible: true }));
+    render(<MapLayerControls layers={all} onToggle={() => {}} legendPresence={{ start: true }} />);
+    expect(screen.getByTestId('legend-start')).toBeInTheDocument();
+    expect(screen.queryByText(/Height Unknown/)).toBeNull();
   });
 
   it('reflects the visibility it is given', () => {
@@ -75,7 +81,8 @@ describe('useLayerToggles', () => {
     render(<Harness />);
     expect(visibility()).toEqual(DEFAULT_LAYER_VISIBILITY);
     expect(INITIAL_TOGGLES.map((t) => t.id)).toEqual(['extraction', ...TOGGLES.map((t) => t.id)]);
-    expect(DEFAULT_LAYER_VISIBILITY.graph).toBe(false);
+    expect('graph' in DEFAULT_LAYER_VISIBILITY).toBe(false);
+    expect('elevation' in DEFAULT_LAYER_VISIBILITY).toBe(false);
     expect(DEFAULT_LAYER_VISIBILITY.extraction).toBe(true);
   });
 
@@ -85,8 +92,8 @@ describe('useLayerToggles', () => {
     await userEvent.click(sw);
     expect(visibility().extraction).toBe(false);
     expect(screen.getByRole('switch', { name: 'Data extraction boundary' })).not.toBeChecked();
-    await userEvent.click(screen.getByRole('switch', { name: 'Street graph (faint)' }));
-    expect(visibility().graph).toBe(true);
+    await userEvent.click(screen.getByRole('switch', { name: 'Buildings (height class)' }));
+    expect(visibility().buildings).toBe(false);
     expect(visibility().extraction).toBe(false);
   });
 });

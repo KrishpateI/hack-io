@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from app.config import Settings
 from app.main import create_app
 from app.models.graph import Edge, Graph as GraphModel, Node
-from app.routing.graph import FALLBACK, INSUFFICIENT_DATA, OK, Graph, decode_geometry
+from app.routing.graph import FALLBACK, INSUFFICIENT_DATA, OK, Graph, decode_geometry, edge_line_geojson, edge_line_geojson_at
 from app.routing.runtime import GRAPH_ROOT_ENV
 from app.services.graph_artifact import write_artifact
 
@@ -66,6 +66,19 @@ def test_decode_geometry():
     assert decode_geometry("LINESTRING(-87.6 41.8, -87.5 41.9)") == [(-87.6, 41.8), (-87.5, 41.9)]
     assert decode_geometry("[[-87.6,41.8],[-87.5,41.9]]") == [(-87.6, 41.8), (-87.5, 41.9)]
     assert decode_geometry("abc") is None and decode_geometry("") is None
+
+
+def test_edge_line_geojson_by_id_and_fallback(tmp_path):
+    _write(tmp_path)
+    g = Graph.load(tmp_path)
+    assert edge_line_geojson(g, "e1") == {"type": "LineString",
+                                          "coordinates": [[-87.65, 41.88], [-87.64, 41.88]]}
+    # undecodable geometry falls back to the from->to endpoint segment (c -> b)
+    assert edge_line_geojson(g, "e3") == {"type": "LineString",
+                                          "coordinates": [[-87.64, 41.89], [-87.64, 41.88]]}
+    assert edge_line_geojson(g, "e3") == edge_line_geojson_at(g, g.edge_ids.index("e3"))
+    assert edge_line_geojson(g, "missing") is None
+    assert edge_line_geojson(Graph(), "e1") is None
 
 
 def test_checksum_failure_falls_back_to_previous(tmp_path):

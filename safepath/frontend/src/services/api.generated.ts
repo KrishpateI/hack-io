@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/ai/summarize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Summarize */
+        post: operations["summarize_api_ai_summarize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/guest": {
         parameters: {
             query?: never;
@@ -373,6 +390,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/graph/edges/near": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Edges Near */
+        get: operations["edges_near_api_graph_edges_near_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/graph/edges/{edge_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Edge */
+        get: operations["get_edge_api_graph_edges__edge_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/graph/status": {
         parameters: {
             query?: never;
@@ -434,6 +485,63 @@ export interface paths {
         };
         /** Get Incident */
         get: operations["get_incident_api_incidents__incident_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/incidents/{incident_id}/map-overlays": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Map Overlays */
+        get: operations["get_map_overlays_api_incidents__incident_id__map_overlays_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/indoor/building": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Indoor Building
+         * @description Public, read-only. Every feature and the collection carry the SIMULATED notice.
+         */
+        get: operations["indoor_building_api_indoor_building_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/layers/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Layer
+         * @description Return one GeoJSON layer of the loaded graph (public, read-only).
+         */
+        get: operations["get_layer_api_layers__name__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -687,6 +795,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/transit/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Transit Alerts
+         * @description Current CTA alerts, or ``available: false`` with 'Live transit alerts are unavailable'.
+         *
+         *     ``station_alerts`` associates route alerts with stations served; entrance safety stays Unknown.
+         */
+        get: operations["transit_alerts_api_transit_alerts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sse/incidents/{incident_id}": {
         parameters: {
             query?: never;
@@ -861,6 +991,70 @@ export interface components {
             /** User Id */
             user_id: string;
         };
+        /**
+         * MapOverlayFeature
+         * @description GeoJSON Feature. ``properties`` is allow-listed by the service (no private or depth keys).
+         */
+        MapOverlayFeature: {
+            /**
+             * Geometry
+             * @description GeoJSON geometry (LineString, Polygon or MultiPolygon)
+             */
+            geometry: {
+                [key: string]: unknown;
+            };
+            /** Properties */
+            properties: {
+                [key: string]: unknown;
+            };
+            /**
+             * Type
+             * @constant
+             */
+            type: "Feature";
+        };
+        /** MapOverlayFeatureCollection */
+        MapOverlayFeatureCollection: {
+            /** Features */
+            features: components["schemas"]["MapOverlayFeature"][];
+            /**
+             * Type
+             * @constant
+             */
+            type: "FeatureCollection";
+        };
+        /** MapOverlayHazards */
+        MapOverlayHazards: {
+            debris: components["schemas"]["MapOverlayFeatureCollection"];
+            fire: components["schemas"]["MapOverlayFeatureCollection"];
+            flood: components["schemas"]["MapOverlayFeatureCollection"];
+        };
+        /** MapOverlayLimitations */
+        MapOverlayLimitations: {
+            /** Graph Loaded */
+            graph_loaded: boolean;
+            /** Missing Edge Geometry */
+            missing_edge_geometry: number;
+        };
+        /**
+         * MapOverlays
+         * @description Everything the map needs to draw hazards and restrictions for one incident.
+         */
+        MapOverlays: {
+            /** Disclaimer */
+            disclaimer: string;
+            /** Generated At */
+            generated_at: string;
+            hazards: components["schemas"]["MapOverlayHazards"];
+            /** Incident Id */
+            incident_id: string;
+            limitations: components["schemas"]["MapOverlayLimitations"];
+            /** Overlay Version */
+            overlay_version: number;
+            restrictions: components["schemas"]["MapOverlayFeatureCollection"];
+            /** Simulation Flag */
+            simulation_flag: boolean;
+        };
         /** NoticeCreate */
         NoticeCreate: {
             /** Edge Ids */
@@ -895,6 +1089,24 @@ export interface components {
             source_url: string;
             /** Text */
             text: string;
+        };
+        /** NoticeIn */
+        NoticeIn: {
+            /** Notice Id */
+            notice_id?: string | null;
+            /**
+             * Simulation Flag
+             * @default false
+             */
+            simulation_flag: boolean;
+            /** Source Organization */
+            source_organization?: string | null;
+            /** Source Record Id */
+            source_record_id: string;
+            /** Text */
+            text: string;
+            /** Verification Status */
+            verification_status?: string | null;
         };
         /** OfficialNotice */
         OfficialNotice: {
@@ -971,6 +1183,20 @@ export interface components {
         };
         /** RestrictionConsidered */
         RestrictionConsidered: {
+            /** Id */
+            id: string;
+            /** Kind */
+            kind: string;
+            /**
+             * Simulated
+             * @default false
+             */
+            simulated: boolean;
+            /** Source Record Id */
+            source_record_id?: string | null;
+        };
+        /** RestrictionIn */
+        RestrictionIn: {
             /** Id */
             id: string;
             /** Kind */
@@ -1166,6 +1392,28 @@ export interface components {
              */
             verification_status: "verified" | "unverified" | "unknown" | "simulated";
         };
+        /** SummarizeRequest */
+        SummarizeRequest: {
+            /** Hazard Flags */
+            hazard_flags?: string[];
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "notice_summary" | "route_flags" | "report_categorize" | "verification_explainer";
+            /** Notices */
+            notices?: components["schemas"]["NoticeIn"][];
+            /** Penalty Components */
+            penalty_components?: {
+                [key: string]: number;
+            };
+            /** Restrictions Considered */
+            restrictions_considered?: components["schemas"]["RestrictionIn"][];
+            /** Sources */
+            sources?: string[];
+            /** Text */
+            text?: string | null;
+        };
         /**
          * UncertaintyLevel
          * @enum {string}
@@ -1211,6 +1459,39 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+        };
+    };
+    summarize_api_ai_summarize_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SummarizeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1874,6 +2155,78 @@ export interface operations {
             };
         };
     };
+    edges_near_api_graph_edges_near_get: {
+        parameters: {
+            query: {
+                lat: number;
+                lon: number;
+                radius?: number;
+                limit?: number;
+                incident_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_edge_api_graph_edges__edge_id__get: {
+        parameters: {
+            query?: {
+                incident_id?: string | null;
+            };
+            header?: never;
+            path: {
+                edge_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     graph_status_api_graph_status_get: {
         parameters: {
             query?: never;
@@ -1989,6 +2342,93 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Incident"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_map_overlays_api_incidents__incident_id__map_overlays_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MapOverlays"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    indoor_building_api_indoor_building_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_layer_api_layers__name__get: {
+        parameters: {
+            query?: {
+                bbox?: string | null;
+                simplify?: boolean;
+            };
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
@@ -2583,6 +3023,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    transit_alerts_api_transit_alerts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };

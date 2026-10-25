@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { MapLayerControls, type LayerToggleItem } from './MapLayerControls';
-import { DATA_LAYER_GROUPS, TOGGLES } from './layers/styles';
+import { DATA_LAYER_GROUPS, TOGGLES, type LegendPresence } from './layers/styles';
 
 /** Toggle key -> MapLibre layer ids. Later tasks append entries. */
 export const LAYER_GROUPS: Record<string, string[]> = {
@@ -28,8 +28,10 @@ export interface UseLayerToggles {
 }
 
 /** Owns the layer visibility state that `MapView` used to keep internally. */
-export function useLayerToggles(options: { historicalLayers?: string[] } = {}): UseLayerToggles {
-  const { historicalLayers } = options;
+export function useLayerToggles(
+  options: { historicalLayers?: string[]; legendPresence?: LegendPresence } = {},
+): UseLayerToggles {
+  const { historicalLayers, legendPresence } = options;
   const [layerVisibility, setVisibility] = useState<Record<string, boolean>>(DEFAULT_LAYER_VISIBILITY);
 
   const setLayerVisible = useCallback((id: string, visible: boolean) => {
@@ -42,8 +44,15 @@ export function useLayerToggles(options: { historicalLayers?: string[] } = {}): 
   );
 
   const controls = useMemo(
-    () => <MapLayerControls layers={toggles} onToggle={setLayerVisible} historicalLayers={historicalLayers} />,
-    [toggles, setLayerVisible, historicalLayers],
+    () => (
+      <MapLayerControls
+        layers={toggles}
+        onToggle={setLayerVisible}
+        historicalLayers={historicalLayers}
+        legendPresence={legendPresence}
+      />
+    ),
+    [toggles, setLayerVisible, historicalLayers, legendPresence],
   );
 
   return { layerVisibility, toggles, setLayerVisible, controls };

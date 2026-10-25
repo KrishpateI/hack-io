@@ -258,6 +258,11 @@ export type OfficialNotice = Schemas['OfficialNotice'];
 export const listNotices = (incidentId: string, signal?: AbortSignal) =>
   getJson<OfficialNotice[]>('/api/notices', { incident_id: incidentId }, signal);
 
+/** Hazard areas and restricted edges for one incident (public, read-only, `Cache-Control: no-store`). */
+export type MapOverlays = Schemas['MapOverlays'];
+export const getMapOverlays = (incidentId: string, signal?: AbortSignal) =>
+  getJson<MapOverlays>(`/api/incidents/${encodeURIComponent(incidentId)}/map-overlays`, undefined, signal);
+
 /** Ask for a presigned upload target for a JPEG/PNG photo (<= 10 MB). */
 export const presignPhoto = (body: { content_type: 'image/jpeg' | 'image/png'; size: number }, signal?: AbortSignal) =>
   postJson<ResponseOf<'/api/photos/presign', 'post'>>('/api/photos/presign', body, signal);

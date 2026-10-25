@@ -1,6 +1,6 @@
 import { formatStamp } from '../../components/offline/OfflineStatus';
 import { useOffline } from '../../hooks/useOffline';
-import { HISTORICAL_LAYER_LABEL, visibleLegend, type LegendEntry } from './styles';
+import { HISTORICAL_LAYER_LABEL, visibleLegend, type LegendEntry, type LegendPresence } from './styles';
 
 const POLYS: Record<string, string> = {
   triangle: '8,1 15,14 1,14',
@@ -33,11 +33,13 @@ interface Props {
   visible: Record<string, boolean>;
   /** Layers derived from CBD data show the historical label (Req 8.10). */
   historicalLayers?: string[];
+  /** Entry id -> data present (from `legendPresence`). When given, entries without data are omitted. */
+  presence?: LegendPresence;
 }
 
 /** Text legend: every symbol has a text description, so meaning never relies on color alone. */
-export function Legend({ visible, historicalLayers }: Props) {
-  const entries = visibleLegend(visible);
+export function Legend({ visible, historicalLayers, presence }: Props) {
+  const entries = visibleLegend(visible, presence);
   const off = useOffline();
   const showCached = off.layersCached || off.offline;
   return (

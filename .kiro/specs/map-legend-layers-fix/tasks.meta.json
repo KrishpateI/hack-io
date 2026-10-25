@@ -1,0 +1,223 @@
+{
+  "pbtResults": {
+    "1. Write bug condition exploration tests": {
+      "status": "passed",
+      "failingExample": "Backend (14 failed / 2 passed, Memory + FakeDynamo): GET /api/incidents/{sim-flood-loop|sim-earthquake-debris|sim-fire-downtown|sim-tornado-shelter}/map-overlays -> 404 not_found while scenario data exists (flood_highlight present, 2 debris zones, 1 SIMULATED temporary_perimeter notice with Polygon, closure edge fx-sim-e031 in graph); /api/demo/scenarios -> 404 with demo mode off; after closure step + fresh client -> 404; after add_debris -> 404; hypothesis minimal example kept_zones=[] applied=[] removed=[] decimal_coords=False depth_keys=False -> 404. Frontend (7 failed): fire perimeter counterexample [41.86,-87.61,50] -> fire source 0 features; impassable_polygon restriction_added edge_ids [] counterexample [1,20] -> 0 polygons (expected 1); fresh reducer after closure -> restrictions source 0 features; graph toggle exists and graph source empty; tornado visibleLegend(defaults) lists [\"closure\",\"verified\",\"hazard-flood\",\"hazard-debris\",\"hazard-fire\"]; simulated_station 503 -> legend still includes sim-station; no retry after 6 min (1 request).",
+      "lastRunTimestamp": 1792917024094
+    },
+    "2. Write preservation property tests (BEFORE implementing fix)": {
+      "status": "passed",
+      "lastRunTimestamp": 1792917376696
+    }
+  },
+  "executionHistory": {
+    "1. Write bug condition exploration tests": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916586775
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916606910
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792917403653
+      }
+    ],
+    "2. Write preservation property tests (BEFORE implementing fix)": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916586853
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916607516
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792917404548
+      }
+    ],
+    "3.1 Add shared edge geometry helper": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916586936
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792917410369
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792917928137
+      }
+    ],
+    "3.2 Implement `build_map_overlays` service": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916586975
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792917933387
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792918190193
+      }
+    ],
+    "3.3 Add `GET /api/incidents/{incident_id}/map-overlays` router": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916587024
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792918195254
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792918528106
+      }
+    ],
+    "3.4 Regenerate OpenAPI and frontend API types": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916587078
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792918533270
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792918647493
+      }
+    ],
+    "3.5 Add frontend overlay data path": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916587131
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792918652342
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792919266413
+      }
+    ],
+    "3.6 Update layer styles, legend and inspector": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916587164
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792917411181
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792917927547
+      }
+    ],
+    "3.7 Add artifact status store with retry": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916587208
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792917411967
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792917926454
+      }
+    ],
+    "3.8 Wire AppShell": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916587243
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792919271042
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792919723571
+      }
+    ],
+    "3.9 Verify bug condition exploration tests now pass": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916587280
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792919730600
+      }
+    ],
+    "3.10 Verify preservation tests still pass": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916587326
+      },
+      {
+        "executionId": "5bed728b-6525-44a7-95e9-b735df3e36d3",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792919729765
+      }
+    ],
+    "4. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916587373
+      }
+    ],
+    "5. Redeploy API Lambda and frontend (ONLY after explicit user approval)": [
+      {
+        "executionId": "5827daeb-ece3-4e32-9bf9-38e478d93cd5",
+        "chatSessionId": "sess_0d7bd69b-ca68-400f-a188-f305fa6a19f5",
+        "timestamp": 1792916587457
+      }
+    ]
+  }
+}

@@ -6,7 +6,7 @@ import type { Incident, RouteResponse } from './api';
 import type { RealtimeEvent } from './eventStore';
 import { toMapRoutes } from '../components/route/routeGeometry';
 import type { Destination, LatLng } from '../components/sidebar/StartDestinationPicker';
-import type { DestinationInput, FC, LngLat, ReportMarkerInput, RouteLineInput } from '../maps/layers/types';
+import type { DestinationInput, FC, LngLat, MapLayerInputs, ReportMarkerInput, RouteLineInput } from '../maps/layers/types';
 
 type Raw = Record<string, unknown>;
 
@@ -166,6 +166,154 @@ export function closureFeatures(
     }
   }
   return { type: 'FeatureCollection', features };
+}
+
+// ------------------------------------------------------------------ map-overlays snapshot + live events
+export type HazardKind = 'flood' | 'debris' | 'fire';
+const HAZARD_KINDS: readonly HazardKind[] = ['flood', 'debris', 'fire'];
+
+type FCLike = { features?: readonly unknown[] | null } | null | undefined;
+
+/**
+ * Structural subset of the `MapOverlays` payload (GET /api/incidents/{id}/map-overlays) that the
+ * merge needs. The generated `MapOverlays` type is assignable to it.
+ */
+export interface OverlaySnapshotLike {
+  incident_id: string;
+  overlay_version: number;
+  restrictions?: FCLike;
+  hazards?: Partial<Record<HazardKind, FCLike>> | null;
+}
+
+/** A realtime event as the merge sees it; `incident_id` / `event_id` are optional. */
+export type OverlayEventLike = Pick<RealtimeEvent, 'type' | 'payload'> & { incident_id?: string; event_id?: string };
+
+/** Snapshot features with live restriction events applied on top. */
+export interface MergedOverlays {
+  incidentId: string | null;
+  /** Highest overlay version reflected (snapshot version or a newer applied event). */
+  overlayVersion: number | null;
+  /** Restricted edge lines with geometry (snapshot features). */
+  restrictions: FC;
+  hazards: Record<HazardKind, FC>;
+  /**
+   * Restrictions added after the snapshot whose geometry is not known yet. Edge lines can be drawn
+   * through `useEdgeCoordinates` + `closureFeatures` until the debounced refetch delivers them.
+   */
+  pending: Record<string, ActiveRestriction>;
+  /** Edge ids of `pending`, deduplicated, in first-seen order. */
+  pendingEdgeIds: string[];
+}
+
+const emptyFC = (): FC => ({ type: 'FeatureCollection', features: [] });
+
+export const EMPTY_OVERLAYS: MergedOverlays = Object.freeze({
+  incidentId: null,
+  overlayVersion: null,
+  restrictions: emptyFC(),
+  hazards: { flood: emptyFC(), debris: emptyFC(), fire: emptyFC() },
+  pending: {},
+  pendingEdgeIds: [],
+}) as MergedOverlays;
+
+const copyFeatures = (c: FCLike): FC['features'] =>
+  (Array.isArray(c?.features) ? c.features : []).filter(
+    (f): f is FC['features'][number] => !!f && typeof f === 'object' && !!(f as { geometry?: unknown }).geometry,
+  );
+
+const restrictionIdOf = (f: FC['features'][number]): string | null => str(f.properties?.restriction_id);
+
+/**
+ * Merge the map-overlays snapshot with live `restriction_added` / `restriction_removed` events.
+ *
+ * - Only events with `payload.overlay_version > snapshot.overlay_version` are applied (older ones are
+ *   already reflected in the snapshot). Without a snapshot every versioned event applies.
+ * - Events are applied in `overlay_version` order and deduplicated, so duplicates and out-of-order
+ *   delivery give the same result. Events without a numeric `overlay_version` are ignored (the
+ *   debounced refetch picks the change up).
+ * - Events whose `incident_id` differs from the snapshot's are ignored.
+ * - `restriction_removed` drops every feature with that `restriction_id` (edge lines and areas).
+ * - `restriction_added` for an id with no feature keeps its `edge_ids` pending.
+ */
+export function mergeRestrictions(
+  snapshot: OverlaySnapshotLike | null | undefined,
+  events: readonly OverlayEventLike[],
+): MergedOverlays {
+  const base = snapshot && typeof snapshot.overlay_version === 'number' ? snapshot.overlay_version : -Infinity;
+  let restrictions = copyFeatures(snapshot?.restrictions);
+  const hazards = Object.fromEntries(HAZARD_KINDS.map((k) => [k, copyFeatures(snapshot?.hazards?.[k])])) as Record<
+    HazardKind,
+    FC['features']
+  >;
+
+  const seen = new Set<string>();
+  const applicable: { removed: boolean; id: string; version: number; event: OverlayEventLike }[] = [];
+  for (const e of events) {
+    const type = e.type.toLowerCase();
+    if (type !== 'restriction_added' && type !== 'restriction_removed') continue;
+    if (snapshot && e.incident_id && e.incident_id !== snapshot.incident_id) continue;
+    const p = e.payload ?? {};
+    const id = str(p.restriction_id) ?? str(p.id);
+    const version = num(p.overlay_version);
+    if (!id || version === null || !(version > base)) continue;
+    const key = `${type}|${id}|${version}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    applicable.push({ removed: type === 'restriction_removed', id, version, event: e });
+  }
+  applicable.sort((a, b) => a.version - b.version);
+
+  let pending: Record<string, ActiveRestriction> = {};
+  let overlayVersion = Number.isFinite(base) ? base : null;
+  for (const a of applicable) {
+    overlayVersion = a.version;
+    if (a.removed) {
+      restrictions = restrictions.filter((f) => restrictionIdOf(f) !== a.id);
+      for (const k of HAZARD_KINDS) hazards[k] = hazards[k].filter((f) => restrictionIdOf(f) !== a.id);
+      if (a.id in pending) {
+        pending = { ...pending };
+        delete pending[a.id];
+      }
+      continue;
+    }
+    const drawn =
+      restrictions.some((f) => restrictionIdOf(f) === a.id) ||
+      HAZARD_KINDS.some((k) => hazards[k].some((f) => restrictionIdOf(f) === a.id));
+    if (!drawn) pending = applyRestrictionEvent(pending, { type: 'restriction_added', payload: a.event.payload });
+  }
+
+  const pendingEdgeIds = [...new Set(Object.values(pending).flatMap((r) => r.edge_ids))];
+  return {
+    incidentId: snapshot?.incident_id ?? null,
+    overlayVersion,
+    restrictions: { type: 'FeatureCollection', features: restrictions },
+    hazards: {
+      flood: { type: 'FeatureCollection', features: hazards.flood },
+      debris: { type: 'FeatureCollection', features: hazards.debris },
+      fire: { type: 'FeatureCollection', features: hazards.fire },
+    },
+    pending,
+    pendingEdgeIds,
+  };
+}
+
+/** Restriction ids currently in force in a merged state (drawn features and pending ones). */
+export function mergedRestrictionIds(merged: MergedOverlays): Set<string> {
+  const ids = new Set<string>(Object.keys(merged.pending));
+  const all = [merged.restrictions, merged.hazards.flood, merged.hazards.debris, merged.hazards.fire];
+  for (const c of all) for (const f of c.features) {
+    const id = restrictionIdOf(f);
+    if (id) ids.add(id);
+  }
+  return ids;
+}
+
+/** Layer inputs from a merged state: SIMULATED hazard areas and restricted edge lines. */
+export function overlayLayerInputs(merged: MergedOverlays): Required<Pick<MapLayerInputs, 'hazards' | 'restrictions'>> {
+  return {
+    hazards: { flood: merged.hazards.flood, debris: merged.hazards.debris, fire: merged.hazards.fire },
+    restrictions: merged.restrictions,
+  };
 }
 
 // ------------------------------------------------------------------ indoor start positions

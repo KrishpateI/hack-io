@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  buildClosures, buildElevation, buildHazard, buildIncidentBoundaries, buildMarkers, buildReports,
+  buildClosures, buildHazard, buildIncidentBoundaries, buildMarkers, buildReports,
   buildRoutes, buildSimulatedStation, buildStations, buildVerified, isVerifiedDestination,
 } from './data';
 import { renderIcon } from './icons';
@@ -29,7 +29,8 @@ describe('style definitions', () => {
     const ids = LAYER_DEFS.map((d) => d.layer.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(Object.values(DATA_LAYER_GROUPS).flat().sort()).toEqual([...ids].sort());
-    expect(TOGGLES.find((t) => t.id === 'graph')?.defaultVisible).toBe(false);
+    // elevation (merged into the flood area, D3) and graph (no data source, D4) are removed
+    expect(TOGGLES.some((t) => t.id === 'graph' || t.id === 'elevation')).toBe(false);
   });
 
   it('normalizes unknown or missing height classes to Unknown', () => {
@@ -92,14 +93,22 @@ describe('data builders', () => {
     expect(out.features.every((f) => f.properties?.simulated === true)).toBe(true);
   });
 
-  it('elevation highlight is SIMULATED and drops depth values', () => {
-    const out = buildElevation(fc(poly({ depth_m: 2, flood_depth: 1, keep: 'x' })));
+  it('hazard areas are SIMULATED and drop depth values', () => {
+    const out = buildHazard('flood', fc(poly({ depth_m: 2, flood_depth: 1, keep: 'x' })));
     const p = out.features[0].properties!;
-    expect(String(p.label)).toContain('SIMULATED');
+    expect(p.label).toBe('SIMULATED flood area (modeled low-lying streets, no depth values)');
     expect(p).not.toHaveProperty('depth_m');
     expect(p).not.toHaveProperty('flood_depth');
     expect(p.keep).toBe('x');
-    expect(buildElevation(null).features).toEqual([]);
+    expect(buildHazard('flood', null).features).toEqual([]);
+  });
+
+  it('hazards keep server labels that start with SIMULATED, otherwise use the default', () => {
+    const kept = buildHazard('debris', fc(poly({ label: 'SIMULATED scenario area, not applied to routing' })));
+    expect(kept.features[0].properties?.label).toBe('SIMULATED scenario area, not applied to routing');
+    const replaced = buildHazard('fire', fc(poly({ label: 'Official evacuation zone' })));
+    expect(replaced.features[0].properties?.label).toBe('SIMULATED fire perimeter');
+    expect(replaced.features[0].properties?.simulated).toBe(true);
   });
 
   it('hazards and incident boundaries are labeled; CBD layers get the historical label', () => {
@@ -184,7 +193,8 @@ describe('MapLayers manager', () => {
     expect(f.map.setGlyphs).toHaveBeenCalledOnce();
     expect(f.layers.size).toBe(LAYER_DEFS.length);
     expect(f.map.addImage).toHaveBeenCalledTimes(Object.keys(ICONS).length);
-    expect((f.layers.get('graph-line')!.layout as Record<string, string>).visibility).toBe('none');
+    expect(f.layers.has('graph-line')).toBe(false);
+    expect([...f.sources.keys()].some((id) => id === 'graph' || id === 'elevation')).toBe(false);
     expect((f.layers.get('routes-primary')!.layout as Record<string, string>).visibility).toBe('visible');
   });
 
@@ -193,12 +203,13 @@ describe('MapLayers manager', () => {
     const m = new MapLayers(f.map);
     m.init();
     m.setInputs({
-      floodHighlight: fc(poly({ depth_m: 3 })),
+      hazards: { flood: fc(poly({ depth_m: 3 })) },
       routes: [{ id: 'r', kind: 'primary', coordinates: [[0, 0], [1, 1]] }],
       destination: { id: 'd', name: 'x', lng: 0, lat: 0, simulated: true },
     });
-    const elev = f.sources.get('elevation')!.data as FC;
-    expect(String(elev.features[0].properties?.label)).toContain('SIMULATED');
+    const flood = f.sources.get('flood')!.data as FC;
+    expect(String(flood.features[0].properties?.label)).toContain('SIMULATED');
+    expect(flood.features[0].properties).not.toHaveProperty('depth_m');
     expect((f.sources.get('routes')!.data as FC).features).toHaveLength(1);
     expect((f.sources.get('markers')!.data as FC).features[0].properties?.label).toBe(SIMULATION_DESTINATION_LABEL);
   });
@@ -253,7 +264,7 @@ describe('MapLayers.setAppearance', () => {
     m.setAppearance('light');
     expect(f.map.setPaintProperty).not.toHaveBeenCalled();
     m.init();
-    expect(f.map.setPaintProperty).toHaveBeenCalledWith('elevation-label', 'text-color', expect.any(String));
+    expect(f.map.setPaintProperty).toHaveBeenCalledWith('flood-label', 'text-color', expect.any(String));
     const bare = fakeMap();
     delete (bare.map as { setPaintProperty?: unknown }).setPaintProperty;
     const m2 = new MapLayers(bare.map);
@@ -307,5 +318,13 @@ describe('Legend', () => {
     rerender(<Legend visible={{ ...all, buildings: false }} historicalLayers={['flood']} />);
     expect(screen.queryByText(/Height Unknown/)).toBeNull();
     expect(screen.getByTestId('legend-historical')).toBeInTheDocument();
+  });
+
+  it('with presence, lists only entries whose data is present', () => {
+    const all = Object.fromEntries(TOGGLES.map((t) => [t.id, true]));
+    render(<Legend visible={all} presence={{ 'route-primary': true, 'hazard-fire': false }} />);
+    expect(screen.getByTestId('legend-route-primary')).toBeInTheDocument();
+    expect(screen.queryByTestId('legend-hazard-fire')).toBeNull();
+    expect(screen.queryByText(/Height Unknown/)).toBeNull();
   });
 });

@@ -4,8 +4,6 @@
  */
 import {
   buildClosures,
-  buildElevation,
-  buildGraphEdges,
   buildHazard,
   buildIncidentBoundaries,
   buildMarkers,
@@ -46,7 +44,7 @@ const ARTIFACT_SOURCE: Record<ArtifactLayerName, SourceId> = {
 };
 
 /** Default-color label layers whose text/halo follow the Appearance (Req 5.6-5.8). */
-export const APPEARANCE_LABEL_LAYERS = ['elevation-label', 'hazards-label', 'fire-label', 'flood-label', 'cta-stations-label'] as const;
+export const APPEARANCE_LABEL_LAYERS = ['hazards-label', 'fire-label', 'flood-label', 'cta-stations-label'] as const;
 
 export const LABEL_PAINT: Record<Appearance, { text: string; halo: string }> = {
   light: { text: '#1c1c1e', halo: '#ffffff' },
@@ -138,19 +136,24 @@ export class MapLayers {
     if (!this.initialized) return;
     const h = inputs.historicalLayers;
     const rep = buildReports(inputs.reports);
-    this.setSourceData('graph', buildGraphEdges(inputs.graphEdges));
-    this.setSourceData('elevation', buildElevation(inputs.floodHighlight, h));
     this.setSourceData('debris', buildHazard('debris', inputs.hazards?.debris, h));
     this.setSourceData('fire', buildHazard('fire', inputs.hazards?.fire, h));
     this.setSourceData('flood', buildHazard('flood', inputs.hazards?.flood, h));
     this.setSourceData('incidents', buildIncidentBoundaries(inputs.incidentBoundaries));
-    this.setSourceData('restrictions', buildRestrictions(inputs.restrictions));
-    this.setSourceData('closures', buildClosures(inputs.closures, rep.closurePoints));
+    // Edge restrictions (snapshot and interim live lines) draw in the hatched restrictions style;
+    // the closures source carries only report-derived closure points.
+    this.setSourceData('restrictions', buildRestrictions(mergeFC(inputs.restrictions, inputs.closures)));
+    this.setSourceData('closures', buildClosures(null, rep.closurePoints));
     this.setSourceData('reports', rep.reports);
     this.setSourceData('routes', buildRoutes(inputs.routes));
     this.setSourceData('markers', buildMarkers(inputs.start, inputs.destination));
     this.setSourceData('verified', buildVerified(inputs.verifiedDestinations));
   }
+}
+
+function mergeFC(a: FC | null | undefined, b: FC | null | undefined): FC {
+  const list = (x: FC | null | undefined) => (x && Array.isArray(x.features) ? x.features : []);
+  return { type: 'FeatureCollection', features: [...list(a), ...list(b)] };
 }
 
 export { ARTIFACT_SOURCE };

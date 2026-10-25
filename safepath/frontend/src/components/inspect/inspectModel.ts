@@ -58,10 +58,8 @@ const LAYER_KINDS: { match: (id: string) => boolean; kind: InspectKind; priority
   { match: (id) => id.startsWith('routes-'), kind: 'route', priority: 2, layer: 'routes' },
   { match: (id) => id === 'closures-line' || id.startsWith('restrictions-'), kind: 'closure', priority: 3, layer: 'closures' },
   { match: (id) => /^(flood|debris|fire)-|^hazards-label$/.test(id), kind: 'hazard_zone', priority: 4, layer: 'hazards' },
-  { match: (id) => id.startsWith('elevation-'), kind: 'hazard_zone', priority: 4, layer: 'elevation' },
   { match: (id) => id.startsWith('incidents-'), kind: 'official', priority: 5, layer: 'incidents' },
   { match: (id) => id.startsWith('buildings-'), kind: 'building', priority: 6, layer: 'buildings' },
-  { match: (id) => id === 'graph-line', kind: 'road', priority: 7, layer: 'graph' },
 ];
 
 /** Interactive MapLibre layer ids (those that appear in LAYER_KINDS), for queryRenderedFeatures. */
@@ -69,7 +67,7 @@ export const INTERACTIVE_LAYER_IDS: string[] = [
   'reports-symbol', 'closures-symbol', 'verified-symbol', 'markers-symbol', 'cta-stations-circle',
   'cta-stations-label', 'simulated-station-icon', 'routes-primary', 'routes-alt', 'routes-casing',
   'closures-line', 'restrictions-line', 'restrictions-hatch', 'flood-fill', 'debris-fill', 'fire-fill',
-  'elevation-fill', 'incidents-line', 'buildings-fill', 'graph-line',
+  'incidents-line', 'buildings-fill',
 ];
 
 const str = (v: unknown): string | null => (typeof v === 'string' && v.trim() ? v : null);

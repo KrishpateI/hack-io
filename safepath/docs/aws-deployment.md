@@ -2,7 +2,7 @@
 
 ## Sandbox discovery
 
-Generated: 2026-10-25T06:09:20+00:00 (read-only probes; nothing was created, modified or deleted).
+Generated: 2026-10-25T09:19:41+00:00 (read-only probes; nothing was created, modified or deleted).
 
 - Status: `ok`
 - Region: `us-east-2`

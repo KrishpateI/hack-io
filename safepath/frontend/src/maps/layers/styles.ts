@@ -4,11 +4,13 @@
  */
 import { palette } from '../../styles/tokens';
 import type { IconShape, IconSpec } from './icons';
+import type { ArtifactStatus, ArtifactStatusMap, DestinationInput, FC, MapLayerInputs } from './types';
 
 export const SIMULATED_LABEL = 'SIMULATED';
 export const SIMULATION_DESTINATION_LABEL = 'SIMULATION DESTINATION — NOT an official evacuation shelter';
 export const HISTORICAL_LAYER_LABEL = 'Historical reference (2007), not a current evacuation order';
-export const ELEVATION_LABEL = 'SIMULATED low-lying area (relative elevation, no depth values)';
+/** Flood area and low-lying area are the same scenario data, so they share one entry (design D3). */
+export const FLOOD_AREA_LABEL = 'SIMULATED flood area (modeled low-lying streets, no depth values)';
 
 /** Building_Height_Class colors; Unknown is distinct (dark slate + dashed outline). */
 export const HEIGHT_CLASS_COLORS = {
@@ -120,7 +122,6 @@ export interface ToggleDef {
 
 /** Ordered bottom to top. Each layer belongs to exactly one toggle. */
 export const LAYER_DEFS: { toggle: string; layer: LayerDef }[] = [
-  { toggle: 'graph', layer: { id: 'graph-line', type: 'line', source: 'graph', paint: { 'line-color': palette.textMuted, 'line-opacity': 0.3, 'line-width': 1 } } },
   {
     toggle: 'buildings',
     layer: {
@@ -133,12 +134,6 @@ export const LAYER_DEFS: { toggle: string; layer: LayerDef }[] = [
   },
   { toggle: 'buildings', layer: { id: 'buildings-outline', type: 'line', source: 'buildings', minzoom: 13, filter: knownHeight, paint: { 'line-color': palette.border, 'line-width': 0.6 } } },
   { toggle: 'buildings', layer: { id: 'buildings-unknown-outline', type: 'line', source: 'buildings', minzoom: 13, filter: ['!', knownHeight], paint: { 'line-color': palette.textMuted, 'line-width': 0.9, 'line-dasharray': [2, 2] } } },
-  {
-    toggle: 'elevation',
-    layer: { id: 'elevation-fill', type: 'fill', source: 'elevation', paint: { 'fill-color': HAZARD_COLORS.flood, 'fill-opacity': 0.18 } },
-  },
-  { toggle: 'elevation', layer: { id: 'elevation-outline', type: 'line', source: 'elevation', paint: { 'line-color': HAZARD_COLORS.flood, 'line-width': 1.5, 'line-dasharray': [1, 2] } } },
-  { toggle: 'elevation', layer: { id: 'elevation-label', type: 'symbol', source: 'elevation', layout: labelLayout({ 'text-offset': [0, 0], 'text-anchor': 'center' }), paint: labelPaint() } },
   { toggle: 'hazards', layer: { id: 'flood-fill', type: 'fill', source: 'flood', paint: { 'fill-color': HAZARD_COLORS.flood, 'fill-opacity': 0.4 } } },
   { toggle: 'hazards', layer: { id: 'flood-outline', type: 'line', source: 'flood', paint: { 'line-color': HAZARD_COLORS.flood, 'line-width': 2 } } },
   { toggle: 'hazards', layer: { id: 'debris-fill', type: 'fill', source: 'debris', paint: { 'fill-color': HAZARD_COLORS.debris, 'fill-opacity': 0.4 } } },
@@ -172,12 +167,10 @@ const TOGGLE_META: { id: string; label: string; defaultVisible: boolean }[] = [
   { id: 'reports', label: 'Community reports (unverified)', defaultVisible: true },
   { id: 'hazards', label: 'SIMULATED hazards', defaultVisible: true },
   { id: 'incidents', label: 'Incident boundaries', defaultVisible: true },
-  { id: 'elevation', label: 'SIMULATED low-lying areas', defaultVisible: true },
   { id: 'verified', label: 'Verified destinations', defaultVisible: true },
   { id: 'transit', label: 'CTA stations', defaultVisible: true },
   { id: 'simulated_station', label: 'SIMULATED station', defaultVisible: true },
   { id: 'buildings', label: 'Buildings (height class)', defaultVisible: true },
-  { id: 'graph', label: 'Street graph (faint)', defaultVisible: false },
 ];
 
 export const TOGGLES: ToggleDef[] = TOGGLE_META.map((t) => ({
@@ -211,10 +204,9 @@ export const LEGEND_ENTRIES: LegendEntry[] = [
   { id: 'report-corroborated', toggle: 'reports', label: 'Corroborated report (diamond)', shape: 'diamond', color: palette.unverified },
   { id: 'report-disputed', toggle: 'reports', label: 'Disputed report (hollow square)', shape: 'square', color: palette.unverified, hollow: true },
   { id: 'verified', toggle: 'verified', label: 'Verified destination with official source (star)', shape: 'star', color: palette.verified },
-  { id: 'hazard-flood', toggle: 'hazards', label: 'SIMULATED flood area', shape: 'fill', color: HAZARD_COLORS.flood },
+  { id: 'hazard-flood', toggle: 'hazards', label: FLOOD_AREA_LABEL, shape: 'fill', color: HAZARD_COLORS.flood },
   { id: 'hazard-debris', toggle: 'hazards', label: 'SIMULATED debris zone (dotted outline)', shape: 'fill', color: HAZARD_COLORS.debris, dashed: true },
   { id: 'hazard-fire', toggle: 'hazards', label: 'SIMULATED fire perimeter (dash-dot outline)', shape: 'fill', color: HAZARD_COLORS.fire, dashed: true },
-  { id: 'elevation', toggle: 'elevation', label: 'SIMULATED low-lying area (no depth values)', shape: 'fill', color: HAZARD_COLORS.flood, dashed: true },
   { id: 'incident', toggle: 'incidents', label: 'Incident boundary (dotted yellow)', shape: 'line', color: HAZARD_COLORS.incident, dashed: true },
   { id: 'transit', toggle: 'transit', label: 'CTA station (GTFS data only)', shape: 'circle', color: HAZARD_COLORS.station },
   { id: 'sim-station', toggle: 'simulated_station', label: 'SIMULATED station (hexagon)', shape: 'hexagon', color: HAZARD_COLORS.simulatedStation },
@@ -224,10 +216,77 @@ export const LEGEND_ENTRIES: LegendEntry[] = [
   { id: 'height-unknown', toggle: 'buildings', label: 'Height Unknown (dashed outline)', shape: 'fill', color: HEIGHT_CLASS_COLORS.Unknown, dashed: true },
   { id: 'start', toggle: 'markers', label: 'Start', shape: 'circle', color: palette.route },
   { id: 'destination', toggle: 'markers', label: SIMULATION_DESTINATION_LABEL, shape: 'hexagon', color: palette.routeAlt, hollow: true },
-  { id: 'graph', toggle: 'graph', label: 'Street graph (faint)', shape: 'line', color: palette.textMuted },
 ];
 
-/** Legend entries for toggles that are currently visible. */
-export function visibleLegend(visible: Record<string, boolean>): LegendEntry[] {
-  return LEGEND_ENTRIES.filter((e) => visible[e.toggle] !== false);
+/** Legend entry id -> whether its data is currently on the map. */
+export type LegendPresence = Record<string, boolean>;
+
+/**
+ * Legend entries for toggles that are currently visible. With `presence`, an entry is listed only
+ * when its data is also present (Req 2.9); without it, the toggle-only behavior is kept.
+ */
+export function visibleLegend(visible: Record<string, boolean>, presence?: LegendPresence): LegendEntry[] {
+  return LEGEND_ENTRIES.filter((e) => visible[e.toggle] !== false && (!presence || presence[e.id] === true));
+}
+
+// ------------------------------------------------------------------ legend presence
+// Kept free of `data.ts` imports (data.ts imports this module); the predicates mirror the builders.
+const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+const hasGeometry = (src: FC | null | undefined): boolean =>
+  !!src && Array.isArray(src.features) && src.features.some((f) => !!f && !!f.geometry);
+const isOfficialDestination = (d: DestinationInput): boolean =>
+  d.simulated !== true && d.source_record?.is_official === true;
+
+function artifactPresent(s: ArtifactStatus | undefined): boolean {
+  return s?.status === 'loaded' && (s.count === undefined || s.count > 0);
+}
+
+const HEIGHT_ENTRY: Record<HeightClass, string> = {
+  'Low-rise': 'height-low',
+  'Mid-rise': 'height-mid',
+  'High-rise': 'height-high',
+  Unknown: 'height-unknown',
+};
+
+/**
+ * Which legend entries have data on the map, from the layer inputs and the artifact-layer load
+ * status. Pure; every entry id in LEGEND_ENTRIES gets a boolean.
+ */
+export function legendPresence(inputs: MapLayerInputs, artifactStatus: ArtifactStatusMap = {}): LegendPresence {
+  const routes = (inputs.routes ?? []).filter((r) => Array.isArray(r.coordinates) && r.coordinates.length >= 2);
+  const statuses = new Set<string>();
+  let closurePoint = false;
+  for (const r of inputs.reports ?? []) {
+    if (!finite(r.lng) || !finite(r.lat)) continue;
+    const sym = reportSymbol(r.verification_status, r.confirmed_closure === true);
+    if (sym.group === 'closures') closurePoint = true;
+    else if (sym.group === 'reports') statuses.add(r.verification_status);
+  }
+  const start = inputs.start;
+  const dest = inputs.destination;
+  const buildings = artifactStatus.buildings;
+  const buildingsPresent = artifactPresent(buildings);
+  const out: LegendPresence = {
+    'route-primary': routes.some((r) => r.kind === 'primary'),
+    'route-alt': routes.some((r) => r.kind === 'alternative'),
+    closure: hasGeometry(inputs.restrictions) || hasGeometry(inputs.closures) || closurePoint,
+    'report-unverified': statuses.has('Unverified'),
+    'report-corroborated': statuses.has('Corroborated'),
+    'report-disputed': statuses.has('Disputed'),
+    verified: (inputs.verifiedDestinations ?? []).some((d) => isOfficialDestination(d) && finite(d.lng) && finite(d.lat)),
+    'hazard-flood': hasGeometry(inputs.hazards?.flood),
+    'hazard-debris': hasGeometry(inputs.hazards?.debris),
+    'hazard-fire': hasGeometry(inputs.hazards?.fire),
+    incident: hasGeometry(inputs.incidentBoundaries),
+    transit: artifactPresent(artifactStatus.cta_stations),
+    'sim-station': artifactPresent(artifactStatus.simulated_station),
+    start: !!start && finite(start[0]) && finite(start[1]),
+    destination: !!dest && finite(dest.lng) && finite(dest.lat) && !isOfficialDestination(dest),
+  };
+  for (const [cls, id] of Object.entries(HEIGHT_ENTRY) as [HeightClass, string][]) {
+    // Per-class counts when the store provides them; otherwise every class counts as present.
+    const counts = buildings?.classCounts;
+    out[id] = buildingsPresent && (counts ? (counts[cls] ?? 0) > 0 : true);
+  }
+  return out;
 }

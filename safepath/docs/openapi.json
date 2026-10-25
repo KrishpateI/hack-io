@@ -352,6 +352,146 @@
         "title": "LoginBody",
         "type": "object"
       },
+      "MapOverlayFeature": {
+        "additionalProperties": false,
+        "description": "GeoJSON Feature. ``properties`` is allow-listed by the service (no private or depth keys).",
+        "properties": {
+          "geometry": {
+            "additionalProperties": true,
+            "description": "GeoJSON geometry (LineString, Polygon or MultiPolygon)",
+            "title": "Geometry",
+            "type": "object"
+          },
+          "properties": {
+            "additionalProperties": true,
+            "title": "Properties",
+            "type": "object"
+          },
+          "type": {
+            "const": "Feature",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "geometry",
+          "properties"
+        ],
+        "title": "MapOverlayFeature",
+        "type": "object"
+      },
+      "MapOverlayFeatureCollection": {
+        "additionalProperties": false,
+        "properties": {
+          "features": {
+            "items": {
+              "$ref": "#/components/schemas/MapOverlayFeature"
+            },
+            "title": "Features",
+            "type": "array"
+          },
+          "type": {
+            "const": "FeatureCollection",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "features"
+        ],
+        "title": "MapOverlayFeatureCollection",
+        "type": "object"
+      },
+      "MapOverlayHazards": {
+        "additionalProperties": false,
+        "properties": {
+          "debris": {
+            "$ref": "#/components/schemas/MapOverlayFeatureCollection"
+          },
+          "fire": {
+            "$ref": "#/components/schemas/MapOverlayFeatureCollection"
+          },
+          "flood": {
+            "$ref": "#/components/schemas/MapOverlayFeatureCollection"
+          }
+        },
+        "required": [
+          "flood",
+          "debris",
+          "fire"
+        ],
+        "title": "MapOverlayHazards",
+        "type": "object"
+      },
+      "MapOverlayLimitations": {
+        "additionalProperties": false,
+        "properties": {
+          "graph_loaded": {
+            "title": "Graph Loaded",
+            "type": "boolean"
+          },
+          "missing_edge_geometry": {
+            "minimum": 0.0,
+            "title": "Missing Edge Geometry",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "missing_edge_geometry",
+          "graph_loaded"
+        ],
+        "title": "MapOverlayLimitations",
+        "type": "object"
+      },
+      "MapOverlays": {
+        "additionalProperties": false,
+        "description": "Everything the map needs to draw hazards and restrictions for one incident.",
+        "properties": {
+          "disclaimer": {
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "generated_at": {
+            "title": "Generated At",
+            "type": "string"
+          },
+          "hazards": {
+            "$ref": "#/components/schemas/MapOverlayHazards"
+          },
+          "incident_id": {
+            "title": "Incident Id",
+            "type": "string"
+          },
+          "limitations": {
+            "$ref": "#/components/schemas/MapOverlayLimitations"
+          },
+          "overlay_version": {
+            "title": "Overlay Version",
+            "type": "integer"
+          },
+          "restrictions": {
+            "$ref": "#/components/schemas/MapOverlayFeatureCollection"
+          },
+          "simulation_flag": {
+            "title": "Simulation Flag",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "incident_id",
+          "simulation_flag",
+          "overlay_version",
+          "generated_at",
+          "disclaimer",
+          "restrictions",
+          "hazards",
+          "limitations"
+        ],
+        "title": "MapOverlays",
+        "type": "object"
+      },
       "NoticeCreate": {
         "additionalProperties": false,
         "properties": {
@@ -2596,6 +2736,50 @@
           }
         },
         "summary": "Get Incident",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
+    "/api/incidents/{incident_id}/map-overlays": {
+      "get": {
+        "operationId": "get_map_overlays_api_incidents__incident_id__map_overlays_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "maxLength": 64,
+              "minLength": 1,
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapOverlays"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Map Overlays",
         "tags": [
           "incidents"
         ]

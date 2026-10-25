@@ -5,7 +5,7 @@
  * stay absent or "Unknown"; nothing is inferred (Req 1.6, 35.2).
  */
 import {
-  ELEVATION_LABEL,
+  FLOOD_AREA_LABEL,
   HISTORICAL_LAYER_LABEL,
   SIMULATED_LABEL,
   SIMULATION_DESTINATION_LABEL,
@@ -75,28 +75,26 @@ export function buildSimulatedStation(src: FC | null | undefined): FC {
   });
 }
 
-/** Lowest-elevation highlight from the scenario: SIMULATED label, no depth values (Req 38.3). */
-export function buildElevation(src: FC | null | undefined, historical?: readonly string[]): FC {
-  return fc(
-    withProps(src, 'elevation', 'elevation_highlight', () => ({
-      simulated: true,
-      label: applyHistorical(ELEVATION_LABEL, 'elevation', historical),
-    })).features.map((f) => ({ ...f, properties: stripDepth(f.properties ?? {}) })),
-  );
-}
-
 export type HazardKind = 'debris' | 'fire' | 'flood';
 const HAZARD_LABELS: Record<HazardKind, string> = {
   debris: 'SIMULATED debris zone',
   fire: 'SIMULATED fire perimeter',
-  flood: 'SIMULATED flood area',
+  flood: FLOOD_AREA_LABEL,
 };
 
+/**
+ * SIMULATED hazard areas. A server label that already starts with "SIMULATED" (for example
+ * "SIMULATED scenario area, not applied to routing") is kept; anything else gets the default
+ * SIMULATED label. Depth-like keys are always dropped (Req 3.9, 38.3).
+ */
 export function buildHazard(kind: HazardKind, src: FC | null | undefined, historical?: readonly string[]): FC {
-  return withProps(src, kind, `${kind}_hazard`, () => ({
-    simulated: true,
-    label: applyHistorical(HAZARD_LABELS[kind], kind, historical),
-  }));
+  return fc(
+    withProps(src, kind, `${kind}_hazard`, (f) => {
+      const server = f.properties?.label;
+      const base = typeof server === 'string' && server.startsWith(SIMULATED_LABEL) ? server : HAZARD_LABELS[kind];
+      return { simulated: true, label: applyHistorical(base, kind, historical) };
+    }).features.map((f) => ({ ...f, properties: stripDepth(f.properties ?? {}) })),
+  );
 }
 
 export function buildIncidentBoundaries(src: FC | null | undefined): FC {
@@ -113,10 +111,6 @@ export function buildIncidentBoundaries(src: FC | null | undefined): FC {
 
 export function buildRestrictions(src: FC | null | undefined): FC {
   return withProps(src, 'restrictions', 'restriction_edge', () => ({}));
-}
-
-export function buildGraphEdges(src: FC | null | undefined): FC {
-  return withProps(src, 'graph', 'graph_edge', () => ({}));
 }
 
 export function buildRoutes(routes: readonly RouteLineInput[] | undefined): FC {

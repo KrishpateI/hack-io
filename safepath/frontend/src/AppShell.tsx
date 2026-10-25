@@ -30,10 +30,13 @@ import { useActiveRestrictions, useEdgeCoordinates } from './hooks/useActiveRest
 import { useActiveRoute } from './hooks/useActiveRoute';
 import { useAuth } from './hooks/useAuth';
 import { useIncident } from './hooks/useIncident';
+import { useMapOverlays } from './hooks/useMapOverlays';
 import { useOffline, useOfflineLifecycle } from './hooks/useOffline';
 import { OfflineStatus } from './components/offline/OfflineStatus';
 import { useRealtime } from './hooks/useRealtime';
 import { useDemoStatus, useMe } from './hooks/useSessionInfo';
+import { useArtifactStatus } from './maps/layers/layerData';
+import { legendPresence } from './maps/layers/styles';
 import type { MapLayerInputs } from './maps/layers/types';
 import { useLayerToggles } from './maps/useLayerToggles';
 import { useAppearance } from './styles/appearance';
@@ -167,7 +170,7 @@ export function AppShell() {
   const nav = useNavigation();
   const tier = useViewportTier();
   const appearance = useAppearance();
-  const layerToggles = useLayerToggles();
+  const artifactStatus = useArtifactStatus();
   // The setting lives in state (initialised from storage) so toggling it registers or removes the
   // global handler immediately; `onShortcutsChange` also persists it (Req 16.4, 16.5).
   const [shortcutsEnabled, setShortcutsEnabled] = useState(readShortcuts);
@@ -230,24 +233,31 @@ export function AppShell() {
   const rt = useRealtime(incidentId, onEvent);
   useOfflineLifecycle(incidentId ? rt : undefined);
   const off = useOffline();
+  // Live restriction events (indoor view, restriction count); the map draws from the overlays snapshot.
   const restrictions = useActiveRestrictions(incidentId);
+  // Hazard areas and restricted edges for the selected incident, snapshot + live events (Req 2.1-2.6, 2.11).
+  const overlays = useMapOverlays(incidentId);
   const route = useActiveRoute({ incidentId, body, stale: incidentId !== null && rt.stale });
   const { onEvent: onRestrictionEvent } = restrictions;
+  const { handleEvent: onOverlayEvent } = overlays;
   const { handleEvent: onRouteEvent } = route;
   useEffect(() => {
     sink.current = (e) => {
       onRestrictionEvent(e);
+      onOverlayEvent(e);
       onRouteEvent(e);
     };
-  }, [onRestrictionEvent, onRouteEvent]);
+  }, [onRestrictionEvent, onOverlayEvent, onRouteEvent]);
 
   // ---- map data
   const fetchedReports = useFetchedReports(incidentId, auth.ready);
   const reportRows = useMemo(() => mergeById(fetchedReports, rt.store.reports as Record<string, Raw>, ['report_id', 'id']), [fetchedReports, rt.store.reports]);
   const markers = useMemo(() => reportMarkers(reportRows), [reportRows]);
-  const edgeIds = useMemo(() => Object.values(restrictions.restrictions).flatMap((r) => r.edge_ids), [restrictions.restrictions]);
-  const edgeCoords = useEdgeCoordinates(edgeIds, incidentId);
+  // Restrictions added after the snapshot have no geometry yet: draw their edges from
+  // GET /api/graph/edges/{id} until the debounced refetch delivers them.
+  const pendingEdgeCoords = useEdgeCoordinates(overlays.pendingEdgeIds, incidentId);
   const activeRestrictions = restrictions.restrictions;
+  const pendingRestrictions = overlays.merged.pending;
   const selectedId = route.response?.routes.some((r) => r.route_id === selectedRouteId) ? selectedRouteId : null;
 
   const layerInputs = useMemo<MapLayerInputs>(
@@ -255,13 +265,20 @@ export function AppShell() {
       routes: routeLines(route.response, selectedId),
       reports: markers,
       incidentBoundaries: incidentBoundaryFC(incident),
-      closures: closureFeatures(activeRestrictions, edgeCoords),
+      hazards: overlays.inputs.hazards,
+      restrictions: overlays.inputs.restrictions,
+      // Interim lines for pending restrictions; MapLayers draws them in the restrictions style and
+      // keeps the closures source for report-derived closure points.
+      closures: closureFeatures(pendingRestrictions, pendingEdgeCoords),
       start: indoor ? null : startPoint(start),
       destination: indoor ? null : destinationInput(destination),
       historicalLayers: [],
     }),
-    [route.response, selectedId, markers, incident, activeRestrictions, edgeCoords, indoor, start, destination],
+    [route.response, selectedId, markers, incident, overlays.inputs, pendingRestrictions, pendingEdgeCoords, indoor, start, destination],
   );
+  // The legend lists only entries whose data is on the map (Req 2.9, 2.10).
+  const presence = useMemo(() => legendPresence(layerInputs, artifactStatus), [layerInputs, artifactStatus]);
+  const layerToggles = useLayerToggles({ legendPresence: presence });
 
   // ---- inspector / map clicks
   const inspector = useFeatureInspector({ incidentId });
